@@ -13,49 +13,49 @@ struct CpsrLineInfo CpsrLineInfo[15];
 
 static void GetRowsRange(INT32 *pnStart,INT32 *pnWidth,INT32 nRowFrom,INT32 nRowTo)
 {
-  INT32 i,nStart,nWidth;
+   INT32 i;
 
-  // Get the range of scroll values within nRowCount rows
-  // Start with zero range
-  nStart = BURN_ENDIAN_SWAP_INT16(CpsrRows[nRowFrom&0x3ff]); nStart&=0x3ff; nWidth=0;
-  for (i=nRowFrom;i<nRowTo;i++)
-  {
-    INT32 nViz; INT32 nDiff;
-    nViz = BURN_ENDIAN_SWAP_INT16(CpsrRows[i&0x3ff]); nViz&=0x3ff;
-    // Work out if this is on the left or the right of our
-    // start point.
-    nDiff=nViz-nStart;
-    // clip to 10-bit signed
-    nDiff=((nDiff+0x200)&0x3ff)-0x200;
-    if (nDiff>=0)
-    {
-      // On the right
-      if (nDiff>=nWidth) nWidth=nDiff; // expand width to cover it
-    }
-    else
-    {
-      // On the left
-      nStart+=nDiff; nStart&=0x3ff;
-      nWidth-=nDiff; // expand width to cover it
-    }
-  }
+   // Get the range of scroll values within nRowCount rows
+   // Start with zero range
+   INT32 nStart = (BURN_ENDIAN_SWAP_INT16(CpsrRows[nRowFrom&0x3ff])) & 0x3ff;
+   INT32 nWidth = 0;
 
-  if (nWidth>0x400) nWidth=0x400;
+   for (i=nRowFrom;i<nRowTo;i++)
+   {
+      INT32 nViz = BURN_ENDIAN_SWAP_INT16(CpsrRows[i&0x3ff]); nViz&=0x3ff;
+      /* Work out if this is on the left or the right of our start point. */
+      INT32 nDiff = nViz - nStart;
+      /* clip to 10-bit signed */
+      nDiff=((nDiff+0x200)&0x3ff)-0x200;
+      if (nDiff>=0)
+      {
+         /* On the right */
+         if (nDiff>=nWidth) nWidth=nDiff; // expand width to cover it
+      }
+      else
+      {
+         /* On the left */
+         nStart+=nDiff; nStart&=0x3ff;
+         nWidth-=nDiff; // expand width to cover it
+      }
+   }
 
-  *pnStart=nStart;
-  *pnWidth=nWidth;
+   if (nWidth>0x400) nWidth=0x400;
+
+   *pnStart=nStart;
+   *pnWidth=nWidth;
 }
 
 
-static INT32 PrepareRows()
+static INT32 PrepareRows(void)
 {
-  INT32 y; INT32 r;
+  INT32 y;
   struct CpsrLineInfo *pli;
   // Calculate the amount of pixels to shift each
   // row of the tile lines, assuming we draw tile x at
   // (x-pli->nTileStart)<<4  -  i.e. 0, 16, ...
+  INT32 r = nShiftY-16;
 
-  r=nShiftY-16;
   for (y = -1, pli = CpsrLineInfo; y < EndLineInfo; y++, pli++)
   {
     // Maximum row scroll left and right on this line

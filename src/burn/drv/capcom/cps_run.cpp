@@ -30,32 +30,29 @@ static void CpsQSoundCheatSearchCallback()
 {
 	// Q-Sound Shared RAM ranges - not useful for cheat searching, and runs the Z80
 	// in the handler, exclude it from cheat searching
-	if (Cps == 2) {
-		CheatSearchExcludeAddressRange(0x618000, 0x619FFF);
-	}
+   CheatSearchExcludeAddressRange(0x618000, 0x619FFF);
 }
 
 static INT32 DrvReset()
 {
 	// Reset machine
-	if (Cps == 2 ||  CpsBootlegEEPROM) EEPROMReset();
+   EEPROMReset();
 
 	SekOpen(0);
 	SekReset();
 	SekClose();
 
-	if (((Cps == 2) && !Cps2DisableQSnd)) {
+	if (!Cps2DisableQSnd)
+   {
 		ZetOpen(0);
 		ZetReset();
 		ZetClose();
 	}
 
-	if (Cps == 2) {
-		// Disable beam-synchronized interrupts
-		*((UINT16*)(CpsReg + 0x4E)) = BURN_ENDIAN_SWAP_INT16(0x0200);
-		*((UINT16*)(CpsReg + 0x50)) = BURN_ENDIAN_SWAP_INT16(nCpsNumScanlines);
-		*((UINT16*)(CpsReg + 0x52)) = BURN_ENDIAN_SWAP_INT16(nCpsNumScanlines);
-	}
+   // Disable beam-synchronized interrupts
+   *((UINT16*)(CpsReg + 0x4E)) = BURN_ENDIAN_SWAP_INT16(0x0200);
+   *((UINT16*)(CpsReg + 0x50)) = BURN_ENDIAN_SWAP_INT16(nCpsNumScanlines);
+   *((UINT16*)(CpsReg + 0x52)) = BURN_ENDIAN_SWAP_INT16(nCpsNumScanlines);
 
 	SekOpen(0);
 	CpsMapObjectBanks(0);
@@ -63,13 +60,11 @@ static INT32 DrvReset()
 
 	nCpsCyclesExtra = 0;
 
-	if (((Cps == 2) && !Cps2DisableQSnd)) {			// Sound init (QSound)
+	if ((!Cps2DisableQSnd))			// Sound init (QSound)
 		QsndReset();
-	}
 	
-	if (CpsRunResetCallbackFunction) {
+	if (CpsRunResetCallbackFunction)
 		CpsRunResetCallbackFunction();
-	}
 	
 	HiscoreReset();
 
@@ -106,24 +101,19 @@ INT32 CpsRunInit()
 {
 	SekInit(0, 0x68000);					// Allocate 68000
 	
-	if (CpsMemInit()) {						// Memory init
+	if (CpsMemInit())						// Memory init
 		return 1;
-	}
 	
-	if (Cps == 2) {
-		EEPROMInit(&cps2_eeprom_interface);
-	}
+   EEPROMInit(&cps2_eeprom_interface);
 
 	CpsRwInit();							// Registers setup
 
-	if (CpsPalInit()) {						// Palette init
+	if (CpsPalInit())						// Palette init
 		return 1;
-	}
-	if (CpsObjInit()) {						// Sprite init
+	if (CpsObjInit()) 					// Sprite init
 		return 1;
-	}
 
-	if (((Cps == 2) && !Cps2DisableQSnd)) {			// Sound init (QSound)
+	if ((!Cps2DisableQSnd)) {			// Sound init (QSound)
 		if (QsndInit()) {
 			return 1;
 		}
@@ -131,7 +121,7 @@ INT32 CpsRunInit()
 		QsndSetRoute(BURN_SND_QSND_OUTPUT_2, 1.00, BURN_SND_ROUTE_RIGHT);
 	}
 
-	if (Cps == 2 || CpsBootlegEEPROM) EEPROMReset();
+	if (CpsBootlegEEPROM) EEPROMReset();
 	
 	if (CpsRunInitCallbackFunction) {
 		CpsRunInitCallbackFunction();
@@ -144,19 +134,18 @@ INT32 CpsRunInit()
 	
 	pBurnDrvPalette = CpsPal;
 	
-	if (Cps == 2) {
-		CheatSearchInitCallbackFunction = CpsQSoundCheatSearchCallback;
-	}
+   CheatSearchInitCallbackFunction = CpsQSoundCheatSearchCallback;
 
 	return 0;
 }
 
 INT32 CpsRunExit()
 {
-	if (Cps == 2 || CpsBootlegEEPROM) EEPROMExit();
+	if (CpsBootlegEEPROM) EEPROMExit();
 
 	// Sound exit
-	if (((Cps == 2) && !Cps2DisableQSnd)) QsndExit();
+	if (!Cps2DisableQSnd)
+      QsndExit();
 
 	// Graphics exit
 	CpsObjExit();
@@ -291,9 +280,8 @@ INT32 Cps2Frame()
 	nDisplayEnd = nCpsCycles * (nFirstLine + 224) / nCpsNumScanlines;	// Account for VBlank
 
 	nInterrupt = 0;
-	for (i = 0; i < MAX_RASTER + 2; i++) {
+	for (i = 0; i < MAX_RASTER + 2; i++)
 		nRasterline[i] = 0;
-	}
 
 	// Determine which (if any) of the line counters generates the first IRQ
 	bEnableAutoIrq50 = bEnableAutoIrq52 = false;

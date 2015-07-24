@@ -28,40 +28,33 @@ static struct ObjFrame of[3];
 
 INT32 CpsObjInit()
 {
-	nMax = 0x100;				// CPS1 has 256 sprites
-
-	if (Cps == 2) {				// CPS2 has 1024 sprites
-		nMax = 0x400;
-	}
-
+   nMax = 0x400; /* CPS2 has 1024 sprites */
 	nFrameCount = 2;			// CPS2 sprites lagged by 1 frame and double buffered
 								// CPS1 sprites lagged by 1 frame
-
 	ObjMem = (UINT8*)BurnMalloc((nMax << 3) * nFrameCount);
-	if (ObjMem == NULL) {
+	if (!ObjMem)
 		return 1;
-	}
 
 	// Set up the frame buffers
-	for (INT32 i = 0; i < nFrameCount; i++) {
+	for (INT32 i = 0; i < nFrameCount; i++)
+   {
 		of[i].Obj = ObjMem + (nMax << 3) * i;
 		of[i].nCount = 0;
 	}
 
 	nGetNext=0;
 
-	if (Cps == 2) {
-		memset(ZBuf, 0, 384 * 224 * 2);
-		nMaxZMask = nZOffset = 0;
-		nMaxZValue = 1;
-	}
+   memset(ZBuf, 0, 384 * 224 * 2);
+   nMaxZMask = nZOffset = 0;
+   nMaxZValue = 1;
 
 	return 0;
 }
 
 INT32 CpsObjExit()
 {
-	for (INT32 i = 0; i < nFrameCount; i++) {
+	for (INT32 i = 0; i < nFrameCount; i++)
+   {
 		of[i].Obj = NULL;
 		of[i].nCount = 0;
 	}
@@ -79,10 +72,8 @@ INT32 CpsObjGet()
 {
 	INT32 i;
 	UINT8 *pg, *po;
-	struct ObjFrame* pof;
 	UINT8* Get = NULL;
-	
-	pof = of + nGetNext;
+	struct ObjFrame *pof = of + nGetNext;
 
 	pof->nCount = 0;
 
@@ -102,18 +93,18 @@ INT32 CpsObjGet()
 	for (pg = Get, i = 0; i < nMax; pg += 8, i++) {
 		UINT16* ps = (UINT16*)pg;
 
-      if (BURN_ENDIAN_SWAP_INT16(ps[1]) & 0x8000)	{														// end of sprite list
+      /* end of sprite list */
+      if (BURN_ENDIAN_SWAP_INT16(ps[1]) & 0x8000)
          break;
-      }
-      if (BURN_ENDIAN_SWAP_INT16(ps[3]) >= 0xff00) {														// end of sprite list (ringdest)
+      /* end of sprite list (ringdest) */
+      if (BURN_ENDIAN_SWAP_INT16(ps[3]) >= 0xff00)
          break;
-      }
 		
-		if ((BURN_ENDIAN_SWAP_INT16(ps[0]) | BURN_ENDIAN_SWAP_INT16(ps[3])) == 0) {													// sprite blank
+      /* sprite blank */
+		if ((BURN_ENDIAN_SWAP_INT16(ps[0]) | BURN_ENDIAN_SWAP_INT16(ps[3])) == 0)
 			continue;
-		}
 
-		// Okay - this sprite is active:
+		/* Okay - this sprite is active: */
 		memcpy(po, pg, 8); // copy it over
 
 		pof->nCount++;
@@ -121,9 +112,8 @@ INT32 CpsObjGet()
 	}
 
 	nGetNext++;
-	if (nGetNext >= nFrameCount) {
+	if (nGetNext >= nFrameCount)
 		nGetNext = 0;
-	}
 
 	return 0;
 }
@@ -132,7 +122,8 @@ void CpsObjDrawInit()
 {
 	nZOffset = nMaxZMask;
 
-	if (nZOffset >= 0xFC00) {
+	if (nZOffset >= 0xFC00)
+   {
 		// The Z buffer might moverflow the next fram, so initialise it
 		memset(ZBuf, 0, 384 * 224 * 2);
 		nZOffset = 0;
@@ -147,135 +138,123 @@ void CpsObjDrawInit()
 // Delay sprite drawing by one frame
 INT32 Cps2ObjDraw(INT32 nLevelFrom, INT32 nLevelTo)
 {
-	const INT32 nPsAdd = 4;
-
-	UINT16 *ps;
-	struct ObjFrame *pof;
 	CpstOneDoFn pCpstOne;
-	INT32 nCount;
-
+	const INT32 nPsAdd = 4;
 	bool bMask = 0;
-
 	// Draw the earliest frame we have in history
-	pof = of + nGetNext;
-
+	struct ObjFrame *pof = of + nGetNext;
 	// Point to Obj list
-	ps = (UINT16*)pof->Obj + nPsAdd * (nMaxZValue - nZOffset - 1);
-	nCount = nZOffset + pof->nCount;
+	UINT16 *ps = (UINT16*)pof->Obj + nPsAdd * (nMaxZValue - nZOffset - 1);
+	INT32 nCount = nZOffset + pof->nCount;
 
 	// Go through all the Objs
-	for (ZValue = (UINT16)nMaxZValue; ZValue <= nCount; ZValue++, ps += nPsAdd) {
-		INT32 x, y, n, a, bx, by, dx, dy;
-		INT32 nFlip;
-		INT32 v = BURN_ENDIAN_SWAP_INT16(ps[0]) >> 13;
+	for (ZValue = (UINT16)nMaxZValue; ZValue <= nCount; ZValue++, ps += nPsAdd)
+   {
+      INT32 x, y, n, a, bx, by, dx, dy;
+      INT32 nFlip;
+      INT32 v = BURN_ENDIAN_SWAP_INT16(ps[0]) >> 13;
 
-		// Check if sprite is between these levels
-		if (v > nLevelTo) {
-			bMask = 1;
-			continue;
-		}
-		if (v < nLevelFrom) {
-			continue;
-		}
+      // Check if sprite is between these levels
+      if (v > nLevelTo)
+      {
+         bMask = 1;
+         continue;
+      }
+      if (v < nLevelFrom)
+         continue;
 
-		if (bMask) {
-			nMaxZMask = ZValue;
-		} else {
-			nMaxZValue = ZValue;
-		}
+      if (bMask)
+         nMaxZMask = ZValue;
+      else
+         nMaxZValue = ZValue;
 
-		// Select CpstOne function;
-		if (bMask || nMaxZMask > nMaxZValue) {
-			pCpstOne = CpstOneObjDoX[1];
-		} else {
-			pCpstOne = CpstOneObjDoX[0];
-		}
+      // Select CpstOne function;
+      if (bMask || nMaxZMask > nMaxZValue)
+         pCpstOne = CpstOneObjDoX[1];
+      else
+         pCpstOne = CpstOneObjDoX[0];
 
-		x = BURN_ENDIAN_SWAP_INT16(ps[0]);
-		y = BURN_ENDIAN_SWAP_INT16(ps[1]);
-		n = BURN_ENDIAN_SWAP_INT16(ps[2]);
-		a = BURN_ENDIAN_SWAP_INT16(ps[3]);
+      x = BURN_ENDIAN_SWAP_INT16(ps[0]);
+      y = BURN_ENDIAN_SWAP_INT16(ps[1]);
+      n = BURN_ENDIAN_SWAP_INT16(ps[2]);
+      a = BURN_ENDIAN_SWAP_INT16(ps[3]);
 
-		if (a & 0x80) {														// marvel vs capcom ending sprite off-set
-			x += CpsSaveFrg[0][0x9];
-		}
-		
-		// CPS2 coords are 10 bit signed (-512 to 511)
-		x &= 0x03FF; x ^= 0x200; x -= 0x200;
-		y &= 0x03FF; y ^= 0x200; y -= 0x200;
+      if (a & 0x80)	// marvel vs capcom ending sprite off-set
+         x += CpsSaveFrg[0][0x9];
+
+      // CPS2 coords are 10 bit signed (-512 to 511)
+      x &= 0x03FF; x ^= 0x200; x -= 0x200;
+      y &= 0x03FF; y ^= 0x200; y -= 0x200;
 
 #if 0
-		// This *MAY* be needed to get correct sprite positions when raster interrups are used.
-		if (nRasterline[1]) {
-			for (INT32 i = 1; i < MAX_RASTER; i++) {
-				if ((y < nRasterline[i]) || (nRasterline[i] == 0)) {
-					x -= CpsSaveFrg[i - 1][0x09];
-					y -= CpsSaveFrg[i - 1][0x0B];
-					break;
-				}
-			}
-		} else {
-			x -= CpsSaveFrg[0][0x9];
-			y -= CpsSaveFrg[0][0xB];
-		}
+      // This *MAY* be needed to get correct sprite positions when raster interrups are used.
+      if (nRasterline[1]) {
+         for (INT32 i = 1; i < MAX_RASTER; i++) {
+            if ((y < nRasterline[i]) || (nRasterline[i] == 0)) {
+               x -= CpsSaveFrg[i - 1][0x09];
+               y -= CpsSaveFrg[i - 1][0x0B];
+               break;
+            }
+         }
+      } else {
+         x -= CpsSaveFrg[0][0x9];
+         y -= CpsSaveFrg[0][0xB];
+      }
 #else
-		// Ignore sprite offsets when raster interrupts are used (seems to work for all games).
-		x += pof->nShiftX;
-		y += pof->nShiftY;
+      // Ignore sprite offsets when raster interrupts are used (seems to work for all games).
+      x += pof->nShiftX;
+      y += pof->nShiftY;
 
-//		x -= CpsSaveFrg[0][0x9];
-//		y -= CpsSaveFrg[0][0xB];
+      //		x -= CpsSaveFrg[0][0x9];
+      //		y -= CpsSaveFrg[0][0xB];
 
 #endif
-		n |= (BURN_ENDIAN_SWAP_INT16(ps[1]) & 0x6000) << 3;	// high bits of address
-		
-		// Find the palette for the tiles on this sprite
-		CpstPal = CpsPal + ((a & 0x1F) << 4);
+      n |= (BURN_ENDIAN_SWAP_INT16(ps[1]) & 0x6000) << 3;	// high bits of address
 
-		nFlip = (a >> 5) & 3;
-		// Find out sprite size
-		bx = ((a >> 8) & 15) + 1;
-		by = ((a >> 12) & 15) + 1;
+      // Find the palette for the tiles on this sprite
+      CpstPal = CpsPal + ((a & 0x1F) << 4);
 
-		// Take care with tiles if the sprite goes off the screen
-		if (x < 0 || y < 0 || x + (bx << 4) > 383 || y + (by << 4) > 223) {
-			nCpstType = CTT_16X16 | CTT_CARE;
-		} else {
-			nCpstType = CTT_16X16;
-		}
+      nFlip = (a >> 5) & 3;
+      // Find out sprite size
+      bx = ((a >> 8) & 15) + 1;
+      by = ((a >> 12) & 15) + 1;
 
-//		if (v == 0) {
-//			bprintf(PRINT_IMPORTANT, _T("  - %4i: 0x%04X 0x%04X 0x%04X 0x%04X\n"), ZValue - (UINT16)nMaxZValue, ps[0], ps[1], ps[2], ps[3]);
-//		}
+      // Take care with tiles if the sprite goes off the screen
+      if (x < 0 || y < 0 || x + (bx << 4) > 383 || y + (by << 4) > 223)
+         nCpstType = CTT_16X16 | CTT_CARE;
+      else
+         nCpstType = CTT_16X16;
 
-		nCpstFlip = nFlip;
-		for (dy = 0; dy < by; dy++) {
-			for (dx = 0; dx < bx; dx++) {
-				INT32 ex, ey;
+      //		if (v == 0) {
+      //			bprintf(PRINT_IMPORTANT, _T("  - %4i: 0x%04X 0x%04X 0x%04X 0x%04X\n"), ZValue - (UINT16)nMaxZValue, ps[0], ps[1], ps[2], ps[3]);
+      //		}
 
-				if (nFlip & 1) {
-					ex = (bx - dx - 1);
-				} else {
-					ex = dx;
-				}
+      nCpstFlip = nFlip;
+      for (dy = 0; dy < by; dy++) {
+         for (dx = 0; dx < bx; dx++) {
+            INT32 ex, ey;
 
-				if (nFlip & 2) {
-					ey = (by - dy - 1);
-				} else {
-					ey = dy;
-				}
+            if (nFlip & 1)
+               ex = (bx - dx - 1);
+            else
+               ex = dx;
 
-				nCpstX = x + (ex << 4);
-				nCpstY = y + (ey << 4);
+            if (nFlip & 2)
+               ey = (by - dy - 1);
+            else
+               ey = dy;
 
-//				nCpstTile = n + (dy << 4) + dx;								// normal version
-				nCpstTile = (n & ~0x0F) + (dy << 4) + ((n + dx) & 0x0F);	// pgear fix
-				nCpstTile <<= 7;						// Find real tile address					
+            nCpstX = x + (ex << 4);
+            nCpstY = y + (ey << 4);
 
-				pCpstOne();
-			}
-		}
-	}
+            //				nCpstTile = n + (dy << 4) + dx;								// normal version
+            nCpstTile = (n & ~0x0F) + (dy << 4) + ((n + dx) & 0x0F);	// pgear fix
+            nCpstTile <<= 7;						// Find real tile address					
+
+            pCpstOne();
+         }
+      }
+   }
 
 	return 0;
 }

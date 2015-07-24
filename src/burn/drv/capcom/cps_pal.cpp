@@ -13,9 +13,8 @@ INT32 CpsPalInit()
 
 	nLen = 0xc00 * sizeof(UINT32);
 	CpsPal = (UINT32*)BurnMalloc(nLen);
-	if (CpsPal == NULL) {
+	if (CpsPal == NULL)
 		return 1;
-	}
 
 	return 0;
 }
@@ -32,17 +31,17 @@ INT32 CpsPalUpdate(UINT8* pNewPal)
 	INT32 nCtrl = CpsReg[nCpsPalCtrlReg];
 	UINT16 *PaletteRAM = (UINT16*)pNewPal;
 	
-	for (INT32 nPage = 0; nPage < 6; nPage++) {
-		if (BIT(nCtrl, nPage)) {
-			for (INT32 Offset = 0; Offset < 0x200; ++Offset) {
+	for (INT32 nPage = 0; nPage < 6; nPage++)
+   {
+		if (BIT(nCtrl, nPage))
+      {
+			for (INT32 Offset = 0; Offset < 0x200; ++Offset)
+         {
 				INT32 Palette = BURN_ENDIAN_SWAP_INT16(*(PaletteRAM++));
-				INT32 r, g, b, Bright;
-				
-				Bright = 0x0f + ((Palette >> 12) << 1);
-
-				r = ((Palette >> 8) & 0x0f) * 0x11 * Bright / 0x2d;
-				g = ((Palette >> 4) & 0x0f) * 0x11 * Bright / 0x2d;
-				b = ((Palette >> 0) & 0x0f) * 0x11 * Bright / 0x2d;
+				INT32 Bright = 0x0f + ((Palette >> 12) << 1);
+				INT32 r = ((Palette >> 8) & 0x0f) * 0x11 * Bright / 0x2d;
+				INT32 g = ((Palette >> 4) & 0x0f) * 0x11 * Bright / 0x2d;
+				INT32 b = ((Palette >> 0) & 0x0f) * 0x11 * Bright / 0x2d;
 				
 				CpsPal[(0x200 * nPage) + (Offset ^ 15)] = BurnHighCol(r, g, b, 0);
 			}
