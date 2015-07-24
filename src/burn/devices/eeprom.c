@@ -4,7 +4,7 @@
 #define SERIAL_BUFFER_LENGTH 40
 #define MEMORY_SIZE 1024
 
-static const eeprom_interface *intf;
+static const struct eeprom_interface *intf;
 
 static INT32 serial_count;
 static UINT8 serial_buffer[SERIAL_BUFFER_LENGTH];
@@ -17,6 +17,20 @@ static INT32 locked;
 static INT32 reset_delay;
 
 static INT32 neeprom_available = 0;
+
+// default for most in fba
+const struct eeprom_interface eeprom_interface_93C46 =
+{
+	6,		// address bits 6
+	16,		// data bits    16
+	"*110",		// read         1 10 aaaaaa
+	"*101",		// write        1 01 aaaaaa dddddddddddddddd
+	"*111",		// erase        1 11 aaaaaa
+	"*10000xxxx",	// lock         1 00 00xxxx
+	"*10011xxxx",	// unlock       1 00 11xxxx
+	1,
+	0
+};
 
 static INT32 eeprom_command_match(const char *buf, const char *cmd, INT32 len)
 {
@@ -64,7 +78,7 @@ INT32 EEPROMAvailable()
 	return neeprom_available;
 }
 
-void EEPROMInit(const eeprom_interface *interface)
+void EEPROMInit(const struct eeprom_interface *interface)
 {
 	intf = interface;
 

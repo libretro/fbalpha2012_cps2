@@ -136,8 +136,8 @@ inline static void SingleStep_PC()
 // ----------------------------------------------------------------------------
 // Default memory access handlers
 
-UINT8 __fastcall DefReadByte(UINT32) { return 0; }
-void __fastcall DefWriteByte(UINT32, UINT8) { }
+UINT8 __fastcall DefReadByte(UINT32 a) { return 0; }
+void __fastcall DefWriteByte(UINT32 a, UINT8 b) { }
 
 #define DEFWORDHANDLERS(i)																				\
 	UINT16 __fastcall DefReadWord##i(UINT32 a) { SEK_DEF_READ_WORD(i, a) }				\
@@ -527,8 +527,6 @@ struct A68KInter {
 	UINT32   (__fastcall *Dir32)(UINT32 a);
 };
 
-extern "C" {
-
 #ifdef EMU_A68K
  UINT8* OP_ROM = NULL;
  UINT8* OP_RAM = NULL;
@@ -543,7 +541,6 @@ extern "C" {
  UINT32 mame_debug = 0, cur_mrhard = 0, m68k_illegal_opcode = 0, illegal_op = 0, illegal_pc = 0, opcode_entry = 0;
 
  struct A68KInter a68k_memory_intf;
-}
 
 UINT8  __fastcall A68KRead8 (UINT32 a) { return ReadByte(a);}
 UINT16 __fastcall A68KRead16(UINT32 a) { return ReadWord(a);}
@@ -574,7 +571,6 @@ void __fastcall A68KChangePC(UINT32 pc)
 #endif
 
 #ifdef EMU_M68K
-extern "C" {
 UINT32 __fastcall M68KReadByte(UINT32 a) { return (UINT32)ReadByte(a); }
 UINT32 __fastcall M68KReadWord(UINT32 a) { return (UINT32)ReadWord(a); }
 UINT32 __fastcall M68KReadLong(UINT32 a) { return               ReadLong(a); }
@@ -607,7 +603,6 @@ void (__fastcall *M68KWriteLongDebug)(UINT32, UINT32);
 void __fastcall M68KWriteByte(UINT32 a, UINT32 d) { WriteByte(a, d); }
 void __fastcall M68KWriteWord(UINT32 a, UINT32 d) { WriteWord(a, d); }
 void __fastcall M68KWriteLong(UINT32 a, UINT32 d) { WriteLong(a, d); }
-}
 #endif
 
 #if defined EMU_A68K
@@ -727,7 +722,7 @@ static INT32 SekSetup(struct A68KContext* psr)
 // Callbacks for Musashi
 
 #ifdef EMU_M68K
-extern "C" INT32 M68KIRQAcknowledge(INT32 nIRQ)
+INT32 M68KIRQAcknowledge(INT32 nIRQ)
 {
 	if (nSekIRQPending[nSekActive] & SEK_IRQSTATUS_AUTO) {
 		m68k_set_irq(0);
@@ -741,25 +736,23 @@ extern "C" INT32 M68KIRQAcknowledge(INT32 nIRQ)
 	return M68K_INT_ACK_AUTOVECTOR;
 }
 
-extern "C" void M68KResetCallback()
+void M68KResetCallback(void)
 {
-	if (pSekExt->ResetCallback) {
+	if (pSekExt->ResetCallback)
 		pSekExt->ResetCallback();
-	}
 }
 
-extern "C" void M68KRTECallback()
+void M68KRTECallback(void)
 {
 	if (pSekExt->RTECallback) {
 		pSekExt->RTECallback();
 	}
 }
 
-extern "C" void M68KcmpildCallback(UINT32 val, INT32 reg)
+void M68KcmpildCallback(UINT32 val, INT32 reg)
 {
-	if (pSekExt->CmpCallback) {
+	if (pSekExt->CmpCallback)
 		pSekExt->CmpCallback(val, reg);
-	}
 }
 #endif
 
@@ -851,7 +844,7 @@ static UINT8 SekCheatRead(UINT32 a)
 	return SekReadByte(a);
 }
 
-static cpu_core_config SekCheatCpuConfig =
+static struct cpu_core_config SekCheatCpuConfig =
 {
 	SekOpen,
 	SekClose,
@@ -872,7 +865,7 @@ INT32 SekInit(INT32 nCount, INT32 nCPUType)
 	struct SekExt* ps = NULL;
 
 #if !defined BUILD_A68K
-	bBurnUseASMCPUEmulation = false;
+	bBurnUseASMCPUEmulation = FALSE;
 #endif
 
 	if (nSekActive >= 0) {
@@ -880,9 +873,8 @@ INT32 SekInit(INT32 nCount, INT32 nCPUType)
 		nSekActive = -1;
 	}
 
-	if (nCount > nSekCount) {
+	if (nCount > nSekCount)
 		nSekCount = nCount;
-	}
 
 	// Allocate cpu extenal data (memory map etc)
 	SekExt[nCount] = (struct SekExt*)malloc(sizeof(struct SekExt));
@@ -1698,11 +1690,7 @@ INT32 SekSetWriteLongHandler(INT32 i, pSekWriteLongHandler pHandler)
 // ----------------------------------------------------------------------------
 // Query register values
 
-#ifdef EMU_A68K
 INT32 SekGetPC(INT32 n)
-#else
-INT32 SekGetPC(INT32)
-#endif
 {
 #if defined FBA_DEBUG
 	if (!DebugCPU_SekInitted) bprintf(PRINT_ERROR, _T("SekGetPC called without init\n"));
@@ -1751,7 +1739,7 @@ INT32 SekDbgGetCPUType()
 	return 0;
 }
 
-INT32 SekDbgGetPendingIRQ()
+INT32 SekDbgGetPendingIRQ(void)
 {
 #if defined FBA_DEBUG
 	if (!DebugCPU_SekInitted) bprintf(PRINT_ERROR, _T("SekDbgGetPendingIRQ called without init\n"));
@@ -1761,7 +1749,7 @@ INT32 SekDbgGetPendingIRQ()
 	return nSekIRQPending[nSekActive] & 7;
 }
 
-UINT32 SekDbgGetRegister(SekRegister nRegister)
+UINT32 SekDbgGetRegister(enum SekRegister nRegister)
 {
 #if defined FBA_DEBUG
 	if (!DebugCPU_SekInitted) bprintf(PRINT_ERROR, _T("SekDbgGetRegister called without init\n"));
@@ -1892,7 +1880,7 @@ UINT32 SekDbgGetRegister(SekRegister nRegister)
 	}
 }
 
-bool SekDbgSetRegister(SekRegister nRegister, UINT32 nValue)
+BOOL SekDbgSetRegister(enum SekRegister nRegister, UINT32 nValue)
 {
 #if defined FBA_DEBUG
 	if (!DebugCPU_SekInitted) bprintf(PRINT_ERROR, _T("SekDbgSetRegister called without init\n"));
@@ -1930,7 +1918,7 @@ bool SekDbgSetRegister(SekRegister nRegister, UINT32 nValue)
 				m68k_set_reg(M68K_REG_PC, nValue);
 			}
 			SekClose();
-			return true;
+			return TRUE;
 
 		case SEK_REG_SR:
 			break;
@@ -1956,7 +1944,7 @@ bool SekDbgSetRegister(SekRegister nRegister, UINT32 nValue)
 			break;
 	}
 
-	return false;
+	return FALSE;
 }
 
 // ----------------------------------------------------------------------------

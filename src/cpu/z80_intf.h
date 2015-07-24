@@ -5,6 +5,10 @@
  #define __fastcall
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "z80/z80.h"
 
 extern INT32 nHasZet;
@@ -31,7 +35,7 @@ void ZetMapMemory(UINT8 *Mem, INT32 nStart, INT32 nEnd, INT32 nFlags);
 
 INT32 ZetMemCallback(INT32 nStart,INT32 nEnd,INT32 nMode);
 INT32 ZetMapArea(INT32 nStart, INT32 nEnd, INT32 nMode, UINT8 *Mem);
-INT32 ZetMapArea(INT32 nStart, INT32 nEnd, INT32 nMode, UINT8 *Mem01, UINT8 *Mem02);
+INT32 ZetMapArea2(INT32 nStart, INT32 nEnd, INT32 nMode, UINT8 *Mem01, UINT8 *Mem02);
 
 void ZetReset();
 INT32 ZetGetPC(INT32 n);
@@ -61,3 +65,7 @@ void ZetSetInHandler(UINT8 (__fastcall *pHandler)(UINT16));
 void ZetSetOutHandler(void (__fastcall *pHandler)(UINT16, UINT8));
 
 void ZetSetBUSREQLine(INT32 nStatus);
+
+#ifdef __cplusplus
+}
+#endif

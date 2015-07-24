@@ -34,7 +34,7 @@ CpsRWSoundCommandCallback CpsRWSoundCommandCallbackFunction = NULL;
 
 static INT32 nCalc[2] = {0, 0};
 
-static const bool nCPSExtraNVRAM = false;
+static const BOOL nCPSExtraNVRAM = FALSE;
 static INT32 n664001;
 
 #define INP(nnnn) UINT8 CpsInp##nnnn[8];

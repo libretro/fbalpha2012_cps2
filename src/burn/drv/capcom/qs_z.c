@@ -16,7 +16,7 @@ static INT32 QsndZBankMap()
 
    // Read and fetch the bank
    ZetMapArea(0x8000, 0xbfff, 0, Bank);
-   ZetMapArea(0x8000, 0xbfff, 2, Bank, CpsZRom + nOff);
+   ZetMapArea2(0x8000, 0xbfff, 2, Bank, CpsZRom + nOff);
 
    return 0;
 }

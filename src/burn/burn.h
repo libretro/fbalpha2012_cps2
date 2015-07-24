@@ -15,6 +15,18 @@
  #define MAX_PATH 	260
 #endif
 
+#ifndef BOOL
+#define BOOL unsigned char
+#endif
+
+#ifndef TRUE
+#define TRUE 1
+#endif
+
+#ifndef FALSE
+#define FALSE 0
+#endif
+
 #include <time.h>
 
 extern TCHAR szAppHiscorePath[MAX_PATH];
@@ -79,7 +91,12 @@ __extension__ typedef long long				INT64;
 
 extern INT32 nBurnVer;						// Version number of the library
 
-enum BurnCartrigeCommand { CART_INIT_START, CART_INIT_END, CART_EXIT };
+enum BurnCartrigeCommand
+{
+   CART_INIT_START,
+   CART_INIT_END,
+   CART_EXIT
+};
 
 // ---------------------------------------------------------------------------
 // Callbacks
@@ -89,10 +106,10 @@ extern INT32 (__cdecl *BurnExtLoadRom)(UINT8* Dest, INT32* pnWrote, INT32 i);
 
 // Application-defined progress indicator functions
 extern INT32 (__cdecl *BurnExtProgressRangeCallback)(double dProgressRange);
-extern INT32 (__cdecl *BurnExtProgressUpdateCallback)(double dProgress, const TCHAR* pszText, bool bAbs);
+extern INT32 (__cdecl *BurnExtProgressUpdateCallback)(double dProgress, const TCHAR* pszText, BOOL bAbs);
 
 // Application-defined catridge initialisation function
-extern INT32 (__cdecl *BurnExtCartridgeSetupCallback)(BurnCartrigeCommand nCommand);
+extern INT32 (__cdecl *BurnExtCartridgeSetupCallback)(enum BurnCartrigeCommand nCommand);
 
 // Application-defined colour conversion function
 extern UINT32 (__cdecl *BurnHighCol) (INT32 r, INT32 g, INT32 b, INT32 i);
@@ -170,14 +187,14 @@ struct BurnDIPInfo {
 
 // ---------------------------------------------------------------------------
 
-extern bool bBurnUseMMX;
-extern bool bBurnUseASMCPUEmulation;
+extern BOOL bBurnUseMMX;
+extern BOOL bBurnUseASMCPUEmulation;
 
 extern UINT32 nFramesEmulated;
 extern UINT32 nFramesRendered;
 extern clock_t starttime;					// system time when emulation started and after roms loaded
 
-extern bool bForce60Hz;
+extern BOOL bForce60Hz;
 
 extern INT32 nBurnFPS;
 extern INT32 nBurnCPUSpeedAdjust;
@@ -219,7 +236,7 @@ INT32 BurnLibExit();
 INT32 BurnDrvInit();
 INT32 BurnDrvExit();
 
-INT32 BurnDrvCartridgeSetup(BurnCartrigeCommand nCommand);
+INT32 BurnDrvCartridgeSetup(enum BurnCartrigeCommand nCommand);
 
 INT32 BurnDrvFrame();
 INT32 BurnDrvRedraw();
@@ -227,7 +244,7 @@ INT32 BurnRecalcPal();
 INT32 BurnDrvGetPaletteEntries();
 
 INT32 BurnSetProgressRange(double dProgressRange);
-INT32 BurnUpdateProgress(double dProgressStep, const TCHAR* pszText, bool bAbs);
+INT32 BurnUpdateProgress(double dProgressStep, const TCHAR* pszText, BOOL bAbs);
 
 void BurnLocalisationSetName(char *szName, TCHAR *szLongName);
 
@@ -263,7 +280,7 @@ INT32 BurnDrvGetFullSize(INT32* pnWidth, INT32* pnHeight);
 INT32 BurnDrvGetAspect(INT32* pnXAspect, INT32* pnYAspect);
 INT32 BurnDrvGetHardwareCode();
 INT32 BurnDrvGetFlags();
-bool BurnDrvIsWorking();
+BOOL BurnDrvIsWorking();
 INT32 BurnDrvGetMaxPlayers();
 INT32 BurnDrvSetVisibleSize(INT32 pnWidth, INT32 pnHeight);
 INT32 BurnDrvSetAspect(INT32 pnXAspect, INT32 pnYAspect);
@@ -274,7 +291,7 @@ INT32 BurnDrvGetSampleName(char** pszName, UINT32 i, INT32 nAka);
 
 void Reinitialise();
 
-extern bool bDoIpsPatch;
+extern BOOL bDoIpsPatch;
 void IpsApplyPatches(UINT8* base, char* rom_name);
 
 // ---------------------------------------------------------------------------
@@ -529,6 +546,6 @@ void IpsApplyPatches(UINT8* base, char* rom_name);
 #define FBF_PWRINST										(1 << 8)
 
 #ifdef __cplusplus
- } // End of extern "C"
+} // End of extern "C"
 #endif
 

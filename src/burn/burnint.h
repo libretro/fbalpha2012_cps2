@@ -7,6 +7,10 @@
 #include <string.h>
 #include <assert.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #if defined(__LIBRETRO__) && defined(_MSC_VER)
 #include <tchar.h>
 #else
@@ -104,7 +108,8 @@ INT32 BurnTransferInit();
 // ---------------------------------------------------------------------------
 // Setting up cpus for cheats
 
-struct cpu_core_config {
+struct cpu_core_config
+{
 	void (*open)(INT32);		// cpu open
 	void (*close)();		// cpu close
 
@@ -122,7 +127,7 @@ struct cpu_core_config {
 	UINT32 nAddressXor;		// fix endianness for some cpus
 };
 
-void CpuCheatRegister(INT32 type, cpu_core_config *config);
+void CpuCheatRegister(INT32 type, struct cpu_core_config *config);
 
 // burn_memory.cpp
 void BurnInitMemoryManager();
@@ -206,3 +211,7 @@ extern UINT8 DebugCPU_I8039Initted;
 extern UINT8 DebugCPU_SH2Initted;
 
 void DebugTrackerExit();
+
+#ifdef __cplusplus
+}
+#endif

@@ -140,7 +140,7 @@ INT32 Cps2ObjDraw(INT32 nLevelFrom, INT32 nLevelTo)
 {
 	CpstOneDoFn pCpstOne;
 	const INT32 nPsAdd = 4;
-	bool bMask = 0;
+	BOOL bMask = 0;
 	// Draw the earliest frame we have in history
 	struct ObjFrame *pof = of + nGetNext;
 	// Point to Obj list

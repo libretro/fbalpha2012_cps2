@@ -3,15 +3,15 @@
 
 static INT32 nQsndCyclesExtra;
 
-static INT32 qsndTimerOver(INT32, INT32)
+static INT32 qsndTimerOver(INT32 a, INT32 b)
 {
-//	bprintf(PRINT_NORMAL, _T("  - IRQ -> 1.\n"));
-	ZetSetIRQLine(0xFF, ZET_IRQSTATUS_AUTO);
+   //	bprintf(PRINT_NORMAL, _T("  - IRQ -> 1.\n"));
+   ZetSetIRQLine(0xFF, ZET_IRQSTATUS_AUTO);
 
-	return 0;
+   return 0;
 }
 
-INT32 QsndInit()
+INT32 QsndInit(void)
 {
 	INT32 nRate;
 
@@ -24,11 +24,10 @@ INT32 QsndInit()
    nCpsZ80Cycles = 8000000 * 100 / nBurnFPS;
    BurnTimerAttachZet(8000000);
 
-	if (nBurnSoundRate >= 0) {
+	if (nBurnSoundRate >= 0)
 		nRate = nBurnSoundRate;
-	} else {
+   else
 		nRate = 11025;
-	}
 
 	QscInit(nRate);		// Init QSound chip
 
@@ -76,7 +75,7 @@ void QsndNewFrame()
 	QscNewFrame();
 }
 
-void QsndEndFrame()
+void QsndEndFrame(void)
 {
 	BurnTimerEndFrame(nCpsZ80Cycles);
 	if (pBurnSoundOut) QscUpdate(nBurnSoundLen);
@@ -87,11 +86,10 @@ void QsndEndFrame()
 
 void QsndSyncZ80()
 {
-	int nCycles = (INT64)SekTotalCycles() * nCpsZ80Cycles / nCpsCycles;
+   int nCycles = (INT64)SekTotalCycles() * nCpsZ80Cycles / nCpsCycles;
 
-	if (nCycles <= ZetTotalCycles()) {
-		return;
-	}
+   if (nCycles <= ZetTotalCycles())
+      return;
 
-	BurnTimerUpdate(nCycles);
+   BurnTimerUpdate(nCycles);
 }

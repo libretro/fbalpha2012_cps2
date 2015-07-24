@@ -7,7 +7,7 @@ UINT8 Cpi01A = 0, Cpi01C = 0, Cpi01E = 0;
 
 static INT32 nInterrupt;
 static INT32 nIrqLine, nIrqCycles;
-static bool bEnableAutoIrq50, bEnableAutoIrq52;				// Trigger an interrupt every 32 scanlines
+static BOOL bEnableAutoIrq50, bEnableAutoIrq52;				// Trigger an interrupt every 32 scanlines
 
 static const INT32 nFirstLine = 0x10;							// The first scanline of the display
 
@@ -71,7 +71,7 @@ static INT32 DrvReset()
 	return 0;
 }
 
-static const eeprom_interface qsound_eeprom_interface =
+static const struct eeprom_interface qsound_eeprom_interface =
 {
 	7,		/* address bits */
 	8,		/* data bits */
@@ -84,7 +84,7 @@ static const eeprom_interface qsound_eeprom_interface =
 	0
 };
 
-static const eeprom_interface cps2_eeprom_interface =
+static const struct eeprom_interface cps2_eeprom_interface =
 {
 	6,		/* address bits */
 	16,		/* data bits */
@@ -284,16 +284,16 @@ INT32 Cps2Frame()
 		nRasterline[i] = 0;
 
 	// Determine which (if any) of the line counters generates the first IRQ
-	bEnableAutoIrq50 = bEnableAutoIrq52 = false;
+	bEnableAutoIrq50 = bEnableAutoIrq52 = FALSE;
 	nIrqLine50 = nIrqLine52 = nCpsNumScanlines;
 	if (BURN_ENDIAN_SWAP_INT16(*((UINT16*)(CpsReg + 0x50))) & 0x8000) {
-		bEnableAutoIrq50 = true;
+		bEnableAutoIrq50 = TRUE;
 	}
 	if (bEnableAutoIrq50 || (BURN_ENDIAN_SWAP_INT16(*((UINT16*)(CpsReg + 0x4E))) & 0x0200) == 0) {
 		nIrqLine50 = (BURN_ENDIAN_SWAP_INT16(*((UINT16*)(CpsReg + 0x50))) & 0x01FF);
 	}
 	if (BURN_ENDIAN_SWAP_INT16(*((UINT16*)(CpsReg + 0x52))) & 0x8000) {
-		bEnableAutoIrq52 = true;
+		bEnableAutoIrq52 = TRUE;
 	}
 	if (bEnableAutoIrq52 || (BURN_ENDIAN_SWAP_INT16(*((UINT16*)(CpsReg + 0x4E))) & 0x0200) == 0) {
 		nIrqLine52 = (BURN_ENDIAN_SWAP_INT16(*((UINT16*)(CpsReg + 0x52))) & 0x01FF);

@@ -23,7 +23,7 @@ struct _HiscoreMemRange
 	UINT8 *Data;
 };
 
-_HiscoreMemRange HiscoreMemRange[HISCORE_MAX_RANGES];
+struct _HiscoreMemRange HiscoreMemRange[HISCORE_MAX_RANGES];
 
 INT32 EnableHiscores;
 static INT32 HiscoresInUse;
@@ -31,16 +31,12 @@ static INT32 HiscoresInUse;
 static INT32 nCpuType;
 extern INT32 nSekCount;
 
-static void set_cpu_type()
+static void set_cpu_type(void)
 {
 	if (nSekCount > -1)
-	{
 		nCpuType = 1;			// Motorola 68000
-	}
 	else if (nHasZet > -1)
-	{
 		nCpuType = 5;			// Zilog Z80
-	}
 	else
 	{
 		nCpuType = 0;			// Unknown (don't use cheats)
@@ -61,7 +57,7 @@ static void cpu_open(INT32 nCpu)
 	}
 }
 
-static void cpu_close()
+static void cpu_close(void)
 {
 	switch (nCpuType)
 	{
@@ -211,7 +207,7 @@ static INT32 matching_game_name (const char *pBuf, const char *name)
 	return (*pBuf == ':');
 }
 
-static INT32 CheckHiscoreAllowed()
+static INT32 CheckHiscoreAllowed(void)
 {
 	INT32 Allowed = 1;
 	
@@ -221,7 +217,7 @@ static INT32 CheckHiscoreAllowed()
 	return Allowed;
 }
 
-void HiscoreInit()
+void HiscoreInit(void)
 {
 	if (!CheckHiscoreAllowed()) return;
 	
@@ -320,7 +316,7 @@ void HiscoreInit()
 	nCpuType = -1;
 }
 
-void HiscoreReset()
+void HiscoreReset(void)
 {
 	if (!CheckHiscoreAllowed() || !HiscoresInUse) return;
 	
@@ -343,7 +339,7 @@ void HiscoreReset()
 	}
 }
 
-void HiscoreApply()
+void HiscoreApply(void)
 {
 	if (!CheckHiscoreAllowed() || !HiscoresInUse) return;
 	
@@ -395,7 +391,7 @@ void HiscoreApply()
 	}
 }
 
-void HiscoreExit()
+void HiscoreExit(void)
 {
 	if (!CheckHiscoreAllowed() || !HiscoresInUse) {
 		return;

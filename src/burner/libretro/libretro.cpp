@@ -1,13 +1,14 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+#include <vector>
+#include <string>
+
 #include "libretro.h"
 #include "burner.h"
 #include "input/inp_keys.h"
 #include "state.h"
-#include <string.h>
-#include <stdio.h>
-
-#include <vector>
-#include <string>
-#include <ctype.h>
 
 static unsigned int BurnDrvGetIndexByName(const char* name);
 
@@ -81,14 +82,21 @@ unsigned ArcadeJoystick;
 
 int bDrvOkay;
 int bRunPause;
-bool bAlwaysProcessKeyboardInput;
+BOOL bAlwaysProcessKeyboardInput;
 
-bool bDoIpsPatch;
+BOOL bDoIpsPatch;
 void IpsApplyPatches(UINT8 *, char *) {}
 
 TCHAR szAppHiscorePath[MAX_PATH];
 TCHAR szAppSamplesPath[MAX_PATH];
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 TCHAR szAppBurnVer[16];
+#ifdef __cplusplus
+}
+#endif
 
 #ifdef WANT_NEOGEOCD
 CDEmuStatusValue CDEmuStatus;
@@ -2021,3 +2029,4 @@ size_t wcstombs(char *s, const wchar_t *pwcs, size_t n)
 }
 
 #endif
+}

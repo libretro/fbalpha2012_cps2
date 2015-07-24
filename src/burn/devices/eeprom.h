@@ -1,6 +1,8 @@
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-typedef struct _eeprom_interface eeprom_interface;
-struct _eeprom_interface
+struct eeprom_interface
 {
 	INT32 address_bits;	/* EEPROM has 2^address_bits cells */
 	INT32 data_bits;		/* every cell has this many bits (8 or 16) */
@@ -14,31 +16,17 @@ struct _eeprom_interface
 				/* before starting to return 1. */
 };
 
-// default for most in fba
-const eeprom_interface eeprom_interface_93C46 =
-{
-	6,		// address bits 6
-	16,		// data bits    16
-	"*110",		// read         1 10 aaaaaa
-	"*101",		// write        1 01 aaaaaa dddddddddddddddd
-	"*111",		// erase        1 11 aaaaaa
-	"*10000xxxx",	// lock         1 00 00xxxx
-	"*10011xxxx",	// unlock       1 00 11xxxx
-	1,
-	0
-};
-
 #define EEPROM_CLEAR_LINE	0
 #define EEPROM_ASSERT_LINE	1
 #define EEPROM_PULSE_LINE	2
 
-void EEPROMInit(const eeprom_interface *interface);
-void EEPROMReset();
-void EEPROMExit();
+void EEPROMInit(const struct eeprom_interface *interface);
+void EEPROMReset(void);
+void EEPROMExit(void);
 
-INT32 EEPROMAvailable(); // are we loading an eeprom file?
+INT32 EEPROMAvailable(void); // are we loading an eeprom file?
 
-INT32 EEPROMRead();
+INT32 EEPROMRead(void);
 
 // Write each individually
 void EEPROMWriteBit(INT32 bit);
@@ -54,3 +42,7 @@ void EEPROMSetClockLine(INT32 state);
 void EEPROMFill(const UINT8 *data, INT32 offset, INT32 length);
 
 void EEPROMScan(INT32 nAction, INT32* pnMin);
+
+#ifdef __cplusplus
+}
+#endif

@@ -307,7 +307,7 @@ INT32 Cps2LoadTilesGigaman2(UINT8 *Tile, UINT8 *pSrc)
 
 static UINT32 nGfxMaxSize;
 
-static INT32 CpsGetROMs(bool bLoad)
+static INT32 CpsGetROMs(BOOL bLoad)
 {
 	struct BurnRomInfo ri;
 
@@ -576,15 +576,13 @@ INT32 Cps2Init()
 {
 	Cps = 2;
 
-	if (CpsGetROMs(false)) {
+	if (CpsGetROMs(FALSE))
 		return 1;
-	}
 
 	CpsInit();
 
-	if (CpsGetROMs(true)) {
+	if (CpsGetROMs(TRUE))
 		return 1;
-	}
 
 	return CpsRunInit();
 }
