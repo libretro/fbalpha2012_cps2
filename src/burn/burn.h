@@ -229,7 +229,6 @@ INT32 BurnDrvExit();
 
 INT32 BurnDrvCartridgeSetup(enum BurnCartrigeCommand nCommand);
 
-INT32 BurnDrvFrame();
 INT32 BurnDrvRedraw();
 INT32 BurnRecalcPal();
 INT32 BurnDrvGetPaletteEntries();

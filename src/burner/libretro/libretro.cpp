@@ -370,6 +370,11 @@ void retro_deinit(void)
       free(g_fba_frame);
 }
 
+extern "C" {
+   void Cps2Frame(void);
+	void HiscoreApply(void);
+};
+
 void retro_reset(void)
 {
    struct GameInp* pgi = GameInp;
@@ -390,8 +395,8 @@ void retro_reset(void)
    nBurnSoundRate = AUDIO_SAMPLERATE;
    //nBurnSoundLen = AUDIO_SEGMENT_LENGTH;
    nCurrentFrame++;
-
-   BurnDrvFrame();
+	HiscoreApply();
+   Cps2Frame();
 }
 
 static bool first_init = true;
@@ -433,7 +438,8 @@ static void check_variables(void)
          //nBurnSoundLen = AUDIO_SEGMENT_LENGTH;
          nCurrentFrame++;
 
-         BurnDrvFrame();
+         HiscoreApply();
+         Cps2Frame();
       }
    }
    else if (first_init)
@@ -480,10 +486,7 @@ void retro_run(void)
    pBurnSoundOut = g_audio_buf;
    nBurnSoundRate = AUDIO_SAMPLERATE;
    //nBurnSoundLen = AUDIO_SEGMENT_LENGTH;
-   nCurrentFrame++;
 
-
-   BurnDrvFrame();
    unsigned drv_flags = BurnDrvGetFlags();
    uint32_t height_tmp = height;
    size_t pitch_size = sizeof(uint16_t);
@@ -500,6 +503,10 @@ void retro_run(void)
       default:
          nBurnPitch = width * pitch_size;
    }
+
+   nCurrentFrame++;
+   HiscoreApply();
+   Cps2Frame();
 
    video_cb(g_fba_frame, width, height, nBurnPitch);
    audio_batch_cb(g_audio_buf, nBurnSoundLen);
