@@ -34,8 +34,7 @@ const struct eeprom_interface eeprom_interface_93C46 =
 
 static INT32 eeprom_command_match(const char *buf, const char *cmd, INT32 len)
 {
-	if ( cmd == 0 )	return 0;
-	if ( len == 0 )	return 0;
+	if ( !cmd || !len )	return 0;
 
 	for (;len>0;)
 	{
@@ -98,16 +97,11 @@ void EEPROMInit(const struct eeprom_interface *interface)
 	else locked = 0;
 
 	char output[128];
-#ifdef __LIBRETRO__
-#ifdef _WIN32
-   char slash = '\\';
-#else
    char slash = '/';
+#ifdef _WIN32
+   slash = '\\';
 #endif
 	snprintf (output, sizeof(output), "%s%c%s.nv", g_rom_dir, slash, BurnDrvGetTextA(DRV_NAME));
-#else
-	snprintf (output, sizeof(output), "config/games/%s.nv", BurnDrvGetTextA(DRV_NAME));
-#endif
 
 	neeprom_available = 0;
 
@@ -124,16 +118,11 @@ void EEPROMInit(const struct eeprom_interface *interface)
 void EEPROMExit()
 {
 	char output[128];
-#ifdef __LIBRETRO__
-#ifdef _WIN32
-   char slash = '\\';
-#else
    char slash = '/';
+#ifdef _WIN32
+   slash = '\\';
 #endif
 	snprintf (output, sizeof(output), "%s%c%s.nv", g_rom_dir, slash, BurnDrvGetTextA(DRV_NAME));
-#else
-	snprintf (output, sizeof(output), "config/games/%s.nv", BurnDrvGetTextA(DRV_NAME));
-#endif
 
 	neeprom_available = 0;
 

@@ -20,29 +20,8 @@ INT32 CpsLayer3YOffs = 0;
 
 INT32 CpsDisableRowScroll = 0;
 
-static void Cps2Layers();
-
-typedef INT32  (*CpsObjDrawDoFn)(INT32,INT32);
-typedef INT32  (*CpsScrXDrawDoFn)(UINT8 *,INT32,INT32);
-typedef void (*CpsLayersDoFn)();
-typedef INT32  (*CpsrPrepareDoFn)();
-typedef INT32  (*CpsrRenderDoFn)();
-
-CpsObjDrawDoFn  CpsObjDrawDoX;
-CpsScrXDrawDoFn CpsScr1DrawDoX;
-CpsScrXDrawDoFn CpsScr3DrawDoX;
-CpsLayersDoFn   CpsLayersDoX;
-CpsrPrepareDoFn CpsrPrepareDoX;
-CpsrRenderDoFn  CpsrRenderDoX;
-
 void DrawFnInit(void)
 {
-   CpsLayersDoX   = Cps2Layers;
-   CpsScr1DrawDoX = Cps2Scr1Draw;
-   CpsScr3DrawDoX = Cps2Scr3Draw;
-   CpsObjDrawDoX  = Cps2ObjDraw;
-   CpsrPrepareDoX = Cps2rPrepare;
-   CpsrRenderDoX  = Cps2rRender;
 }
 
 static INT32 DrawScroll1(INT32 i)
@@ -68,7 +47,7 @@ static INT32 DrawScroll1(INT32 i)
    if (Find == NULL) {
       return 1;
    }
-   CpsScr1DrawDoX(Find, nScrX, nScrY);
+   Cps2Scr1Draw(Find, nScrX, nScrY);
    return 0;
 }
 
@@ -121,7 +100,7 @@ static INT32 DrawScroll2Init(INT32 i)
       nCpsrRowStart = nStart + 16;
    }
 
-   CpsrPrepareDoX();
+   Cps2rPrepare();
    return 0;
 }
 
@@ -138,7 +117,7 @@ inline static INT32 DrawScroll2Do()
 {
 	if (!CpsrBase)
 		return 1;
-	CpsrRenderDoX();
+	Cps2rRender();
 	return 0;
 }
 
@@ -168,7 +147,7 @@ static INT32 DrawScroll3(INT32 i)
    if (!Find)
       return 1;
 
-   CpsScr3DrawDoX(Find, nScrX, nScrY);
+   Cps2Scr3Draw(Find, nScrX, nScrY);
    return 0;
 }
 
@@ -278,7 +257,7 @@ static void Cps2Layers(void)
 
                // Render sprites between the previous layer and this one
                if ((nDrawMask[0] & 1) && (nPrevPrio < nCurrPrio)) {
-                  CpsObjDrawDoX(nPrevPrio + 1, nCurrPrio);
+                  Cps2ObjDraw(nPrevPrio + 1, nCurrPrio);
                   nPrevPrio = nCurrPrio;
                }
 
@@ -316,7 +295,7 @@ static void Cps2Layers(void)
 
    // Render highest priority sprites
    if ((nDrawMask[0] & 1) && (nPrevPrio < 7))
-      CpsObjDrawDoX(nPrevPrio + 1, 7);
+      Cps2ObjDraw(nPrevPrio + 1, 7);
 }
 
 void CpsClearScreen()
@@ -335,7 +314,7 @@ static void DoDraw(INT32 Recalc)
 	
    memset(pBurnDraw, 0, 384 * 224 * nBurnBpp);
 
-	CpsLayersDoX();
+	Cps2Layers();
 }
 
 INT32 CpsDraw(void)
