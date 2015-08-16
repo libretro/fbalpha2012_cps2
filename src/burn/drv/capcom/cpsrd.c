@@ -44,7 +44,8 @@ static void Cps2TileLine(INT32 y,INT32 sx)
 
       CpstSetPal(0x40 | (a&0x1f));
       nCpstX=sx+(x<<4); nCpstTile=t; nCpstFlip=(a>>5)&3;
-      if(CpstOneDoX[2]()) nKnowBlank=t;
+      if (Cps2tOne())
+         nKnowBlank=t;
    }
 }
 
@@ -97,7 +98,7 @@ static void Cps2TileLineRows(INT32 y,struct CpsrLineInfo *pli)
      CpstSetPal(0x40 | (a&0x1f));
 
      nCpstX=x<<4; nCpstTile=t; nCpstFlip=(a>>5)&3;
-     if(CpstOneDoX[2]())
+     if(Cps2tOne())
         nKnowBlank=t;
   }
 }

@@ -88,7 +88,7 @@ static INT32 Cps2Scr1Draw(UINT8 *Base, INT32 sx, INT32 sy)
          if (x < 0 || x >= 48 - 1 || nClipY)
             nCpstType |= CTT_CARE;
 
-         if (CpstOneDoX[2]())
+         if (Cps2tOne())
             nKnowBlank = t;
       }
    }
@@ -251,7 +251,7 @@ static INT32 Cps2Scr3Draw(UINT8 *Base, INT32 sx, INT32 sy)
          if (x < 0 || x >= 12 - 1 || nClipY)
             nCpstType |= CTT_CARE;
 
-         if (CpstOneDoX[2]())
+         if (Cps2tOne())
             nKnowBlank = t;
       }
    }

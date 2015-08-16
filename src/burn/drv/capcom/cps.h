@@ -330,8 +330,8 @@ typedef INT32 (*CpstOneDoFn)();
 extern CtvDoFn CtvDoX[0x20];
 extern CtvDoFn CtvDoXM[0x20];
 extern CtvDoFn CtvDoXB[0x20];
-extern CpstOneDoFn CpstOneDoX[3];
 extern CpstOneDoFn CpstOneObjDoX[2];
+INT32 Cps2tOne();
 INT32 CtvReady();
 
 // nCpstType constants
