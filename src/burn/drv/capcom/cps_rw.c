@@ -355,22 +355,6 @@ INT32 CpsRwGetInp(void)
    StopOpposite(&Inp000);
    StopOpposite(&Inp001);
 
-   // Ghouls uses a 4-way stick
-   if (Ghouls)
-   {
-      static UINT8 nPrevInp000, nPrevInp001;
-
-      if ((Inp000 & 0x03) && (Inp000 & 0x0C))
-         Inp000 ^= (nPrevInp000 & 0x0F);
-      else
-         nPrevInp000 = Inp000;
-
-      if ((Inp001 & 0x03) && (Inp001 & 0x0C))
-         Inp001 ^= (nPrevInp001 & 0x0F);
-      else
-         nPrevInp001 = Inp001;
-   }
-
    if (nMaxPlayers > 2)
    {
       StopOpposite(&Inp011);

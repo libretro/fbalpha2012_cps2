@@ -363,7 +363,6 @@ INT32  FcrashObjDraw(INT32 nLevelFrom,INT32 nLevelTo);
 // cps_scr.cpp
 #define SCROLL_2 0
 #define SCROLL_3 1
-extern INT32 Ghouls;
 extern INT32 Ssf2t;
 extern INT32 Xmcota;
 
