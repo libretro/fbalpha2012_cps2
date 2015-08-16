@@ -369,8 +369,6 @@ extern INT32 Xmcota;
 extern INT32 Scroll1TileMask;
 extern INT32 Scroll2TileMask;
 extern INT32 Scroll3TileMask;
-INT32 Cps2Scr1Draw(UINT8 *Base,INT32 sx,INT32 sy);
-INT32 Cps2Scr3Draw(UINT8 *Base,INT32 sx,INT32 sy);
 
 // cpsr.cpp
 extern UINT8 *CpsrBase;						// Tile data base
