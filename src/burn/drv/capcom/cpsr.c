@@ -5,7 +5,7 @@
 UINT8 *CpsrBase=NULL; // Tile data base
 INT32 nCpsrScrX=0,nCpsrScrY=0; // Basic scroll info
 UINT16 *CpsrRows=NULL; // Row scroll table, 0x400 words long
-int nCpsrRowStart=0; // Start of row scroll (can wrap?)
+INT32 nCpsrRowStart=0; // Start of row scroll (can wrap?)
 static INT32 nShiftY=0;
 static INT32 EndLineInfo=0;
 

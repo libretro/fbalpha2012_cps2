@@ -22,7 +22,7 @@ struct ROMFIND
 {
 	unsigned int nState;
 	int nArchive;
-	int nPos;
+	INT32 nPos;
    BurnRomInfo ri;
 };
 
@@ -208,9 +208,9 @@ char* TCHARToANSI(const TCHAR* pszInString, char* pszOutString, int /*nOutSize*/
    return (char*)pszInString;
 }
 
-int QuoteRead(char **, char **, char*) { return 1; }
-char *LabelCheck(char *, char *) { return 0; }
-const int nConfigMinVersion = 0x020921;
+INT32 QuoteRead(TCHAR **, TCHAR **, TCHAR*) { return 1; }
+char *LabelCheck(TCHAR *, TCHAR *) { return 0; }
+const INT32 nConfigMinVersion = 0x020921;
 
 static int find_rom_by_crc(uint32_t crc, const ZipEntry *list, unsigned elems)
 {
@@ -233,7 +233,7 @@ static void free_archive_list(ZipEntry *list, unsigned count)
    }
 }
 
-static int archive_load_rom(uint8_t *dest, int *wrote, int i)
+static INT32 archive_load_rom(UINT8 *dest, INT32 *wrote, INT32 i)
 {
    if (i < 0 || i >= g_rom_count)
       return 1;
@@ -304,7 +304,7 @@ static bool open_archive()
       }
 
       ZipEntry *list = NULL;
-      int count;
+      INT32 count;
       ZipGetList(&list, &count);
 
       // Try to map the ROMs FBA wants to ROMs we find inside our pretty archives ...
@@ -476,7 +476,7 @@ static void check_variables(void)
 
 void retro_run(void)
 {
-   int width, height;
+   INT32 width, height;
    BurnDrvGetVisibleSize(&width, &height);
    pBurnDraw = (uint8_t*)g_fba_frame;
 
@@ -520,21 +520,21 @@ static uint8_t *write_state_ptr;
 static const uint8_t *read_state_ptr;
 static unsigned state_size;
 
-static int burn_write_state_cb(BurnArea *pba)
+static INT32 burn_write_state_cb(BurnArea *pba)
 {
    memcpy(write_state_ptr, pba->Data, pba->nLen);
    write_state_ptr += pba->nLen;
    return 0;
 }
 
-static int burn_read_state_cb(BurnArea *pba)
+static INT32 burn_read_state_cb(BurnArea *pba)
 {
    memcpy(pba->Data, read_state_ptr, pba->nLen);
    read_state_ptr += pba->nLen;
    return 0;
 }
 
-static int burn_dummy_state_cb(BurnArea *pba)
+static INT32 burn_dummy_state_cb(BurnArea *pba)
 {
    state_size += pba->nLen;
    return 0;
@@ -579,7 +579,7 @@ void retro_cheat_set(unsigned, bool, const char*) {}
 
 void retro_get_system_av_info(struct retro_system_av_info *info)
 {
-   int width, height;
+   INT32 width, height;
    BurnDrvGetVisibleSize(&width, &height);
    int maximum = width > height ? width : height;
    struct retro_game_geometry geom = { width, height, maximum, maximum };
@@ -607,7 +607,7 @@ static bool fba_init(unsigned driver, const char *game_zip_name)
 
    BurnDrvInit();
 
-   int width, height;
+   INT32 width, height;
    BurnDrvGetVisibleSize(&width, &height);
    unsigned drv_flags = BurnDrvGetFlags();
    size_t pitch_size = nBurnBpp == 2 ? sizeof(uint16_t) : sizeof(uint32_t);
