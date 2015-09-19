@@ -14,12 +14,17 @@ extern "C" {
  #define EMU_A68K								// Use A68K Assembler 68000 emulator
 #endif
 
-#define EMU_M68K								// Use Musashi 68000 emulator
+//#define EMU_M68K								// Use Musashi 68000 emulator
+//#define EMU_C68K
 
 #define SEK_MAX	(4)								// Maximum number of CPUs supported
 
 #if defined EMU_M68K
- #include "m68k/m68k.h"
+#include "m68k/m68k.h"
+#endif
+
+#if defined EMU_C68K
+#include "c68k/c68k.h"
 #endif
 
 // Number of bits used for each page in the fast memory map
@@ -68,6 +73,14 @@ void __cdecl M68000_RESET(void);
  INT8* SekM68KContext[SEK_MAX];
  INT32 m68k_ICount;
 #endif
+
+
+#ifdef EMU_C68K
+ c68k_struc * SekC68KCurrentContext;
+ c68k_struc * SekC68KContext[SEK_MAX]; 
+#define c68k_ICount	(SekC68KCurrentContext->ICount)
+#endif
+
 
 typedef UINT8 (__fastcall *pSekReadByteHandler)(UINT32 a);
 typedef void (__fastcall *pSekWriteByteHandler)(UINT32 a, UINT8 d);
@@ -170,8 +183,10 @@ inline static INT32 SekSegmentCycles()
 	if (nSekActive == -1) bprintf(PRINT_ERROR, (TCHAR*)_T("SekSegmentCycles called when no CPU open\n"));
 #endif
 
-#ifdef EMU_M68K
+#if defined(EMU_M68K)
 	return nSekCyclesDone + nSekCyclesToDo - m68k_ICount;
+#elif defined(EMU_C68K)
+   return nSekCyclesDone + nSekCyclesToDo - c68k_ICount;
 #else
 	return nSekCyclesDone + nSekCyclesToDo;
 #endif
@@ -189,8 +204,10 @@ inline static INT32 SekTotalCycles()
 	if (nSekActive == -1) bprintf(PRINT_ERROR, (TCHAR*)_T("SekTotalCycles called when no CPU open\n"));
 #endif
 
-#ifdef EMU_M68K
+#if defined(EMU_M68K)
 	return nSekCyclesTotal + nSekCyclesToDo - m68k_ICount;
+#elif defined(EMU_C68K)
+   return nSekCyclesTotal + nSekCyclesToDo - c68k_ICount;
 #else
 	return nSekCyclesTotal + nSekCyclesToDo;
 #endif
@@ -233,7 +250,7 @@ INT32 SekSetIrqCallback(pSekIrqCallback pCallback);
 INT32 SekSetCmpCallback(pSekCmpCallback pCallback);
 
 // Get a CPU's PC
-INT32 SekGetPC(INT32 n);
+UINT32 SekGetPC(INT32 n);
 
 INT32 SekScan(INT32 nAction);
 
