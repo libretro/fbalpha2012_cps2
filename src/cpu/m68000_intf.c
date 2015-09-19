@@ -2119,10 +2119,6 @@ BOOL SekDbgSetRegister(enum SekRegister nRegister, UINT32 nValue)
 
 INT32 SekScan(INT32 nAction)
 {
-#if defined FBA_DEBUG
-	if (!DebugCPU_SekInitted) bprintf(PRINT_ERROR, _T("SekScan called without init\n"));
-#endif
-
 	// Scan the 68000 states
 	struct BurnArea ba;
 
@@ -2131,8 +2127,6 @@ INT32 SekScan(INT32 nAction)
 	}
 
 	memset(&ba, 0, sizeof(ba));
-
-	nSekActive = -1;
 
 	for (INT32 i = 0; i <= nSekCount; i++) {
 		char szName[] = "MC68000 #n";

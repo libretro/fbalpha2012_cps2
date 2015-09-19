@@ -164,12 +164,6 @@ INT32 SekRun(const INT32 nCycles);
 
 inline static INT32 SekIdle(INT32 nCycles)
 {
-#if defined FBA_DEBUG
-	extern UINT8 DebugCPU_SekInitted;
-	if (!DebugCPU_SekInitted) bprintf(PRINT_ERROR, (TCHAR*)_T("SekIdle called without init\n"));
-	if (nSekActive == -1) bprintf(PRINT_ERROR, (TCHAR*)_T("SekIdle called when no CPU open\n"));
-#endif
-
 	nSekCyclesTotal += nCycles;
 
 	return nCycles;
@@ -177,12 +171,6 @@ inline static INT32 SekIdle(INT32 nCycles)
 
 inline static INT32 SekSegmentCycles()
 {
-#if defined FBA_DEBUG
-	extern UINT8 DebugCPU_SekInitted;
-	if (!DebugCPU_SekInitted) bprintf(PRINT_ERROR, (TCHAR*)_T("SekSegmentCycles called without init\n"));
-	if (nSekActive == -1) bprintf(PRINT_ERROR, (TCHAR*)_T("SekSegmentCycles called when no CPU open\n"));
-#endif
-
 #if defined(EMU_M68K)
 	return nSekCyclesDone + nSekCyclesToDo - m68k_ICount;
 #elif defined(EMU_C68K)
@@ -198,12 +186,6 @@ static INT32 SekTotalCycles()
 inline static INT32 SekTotalCycles()
 #endif
 {
-#if defined FBA_DEBUG
-	extern UINT8 DebugCPU_SekInitted;
-	if (!DebugCPU_SekInitted) bprintf(PRINT_ERROR, (TCHAR*)_T("SekTotalCycles called without init\n"));
-	if (nSekActive == -1) bprintf(PRINT_ERROR, (TCHAR*)_T("SekTotalCycles called when no CPU open\n"));
-#endif
-
 #if defined(EMU_M68K)
 	return nSekCyclesTotal + nSekCyclesToDo - m68k_ICount;
 #elif defined(EMU_C68K)
