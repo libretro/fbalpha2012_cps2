@@ -66,6 +66,7 @@ void retro_set_environment(retro_environment_t cb)
 
    static const struct retro_variable vars[] = {
       { "cpu-speed-adjust", "CPU Speed Overclock; 100|110|120|130|140|150|160|170|180|190|200" },
+		{ "fba-controls", "Controls; gamepad|arcade|newgen" },
       { NULL, NULL },
    };
 
@@ -451,6 +452,19 @@ static void check_variables(void)
          nBurnCPUSpeedAdjust = 0x0190;
       else if (strcmp(var.value, "200") == 0)
          nBurnCPUSpeedAdjust = 0x0200;
+   }
+	if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var))
+   {
+      if (strcmp(var.value, "arcade") == 0) {
+         gamepad_controls = false;
+         newgen_controls = false;
+	  } else if (strcmp(var.value, "gamepad") == 0) {
+         gamepad_controls = true;
+         newgen_controls = false;
+      } else if (strcmp(var.value, "newgen") == 0) {
+         gamepad_controls = true;
+         newgen_controls = true;
+	  }
    }
 }
 
