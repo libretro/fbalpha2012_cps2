@@ -19,6 +19,12 @@ static unsigned int BurnDrvGetIndexByName(const char* name);
 #define STAT_SMALL	3
 #define STAT_LARGE	4
 
+#ifdef _WIN32
+   char slash = '\\';
+#else
+   char slash = '/';
+#endif
+
 struct ROMFIND
 {
 	unsigned int nState;
@@ -372,8 +378,13 @@ void retro_init()
 
 void retro_deinit(void)
 {
+	char output[128];
    if (driver_inited)
+	{
+		sprintf (output, "%s%c%s.fs", g_save_dir, slash, BurnDrvGetTextA(DRV_NAME));
+		BurnStateSave(output, 0);
       BurnDrvExit();
+	}
    driver_inited = false;
    BurnLibExit();
    if (g_fba_frame)
@@ -566,6 +577,7 @@ int VidRecalcPal()
 static bool fba_init(unsigned driver, const char *game_zip_name)
 {
    nBurnDrvActive = driver;
+	char input[128];
 
    if (!open_archive())
       return false;
@@ -575,6 +587,8 @@ static bool fba_init(unsigned driver, const char *game_zip_name)
    nInterpolation = 3;
 
    BurnDrvInit();
+	sprintf (input, "%s%c%s.fs", g_save_dir, slash, BurnDrvGetTextA(DRV_NAME));
+	BurnStateLoad(input, 0, NULL);
 
    INT32 width, height;
    BurnDrvGetVisibleSize(&width, &height);
