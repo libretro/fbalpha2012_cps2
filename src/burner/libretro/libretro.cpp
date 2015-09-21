@@ -67,6 +67,7 @@ void retro_set_environment(retro_environment_t cb)
 }
 
 char g_rom_dir[1024];
+char g_save_dir[1024];
 static bool driver_inited;
 
 void retro_get_system_info(struct retro_system_info *info)
@@ -682,6 +683,14 @@ bool retro_load_game(const struct retro_game_info *info)
    char basename[128];
    extract_basename(basename, info->path, sizeof(basename));
    extract_directory(g_rom_dir, info->path, sizeof(g_rom_dir));
+
+	//todo, add a fallback in case save_directory is not defined
+   const char *dir = NULL;
+   if (environ_cb(RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY, &dir) && dir)
+   {
+      snprintf(g_save_dir, sizeof(g_save_dir), "%s", dir);
+      log_cb(RETRO_LOG_ERROR, "Setting save dir to %s\n", g_save_dir);
+   }
 
    unsigned i = BurnDrvGetIndexByName(basename);
    if (i < nBurnDrvCount)
