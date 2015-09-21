@@ -101,7 +101,7 @@ void EEPROMInit(const struct eeprom_interface *interface)
 #ifdef _WIN32
    slash = '\\';
 #endif
-	snprintf (output, sizeof(output), "%s%c%s.nv", g_rom_dir, slash, BurnDrvGetTextA(DRV_NAME));
+	sprintf (output, "%s%c%s.nv", g_save_dir, slash, BurnDrvGetTextA(DRV_NAME));
 
 	neeprom_available = 0;
 
@@ -122,8 +122,7 @@ void EEPROMExit()
 #ifdef _WIN32
    slash = '\\';
 #endif
-	snprintf (output, sizeof(output), "%s%c%s.nv", g_rom_dir, slash, BurnDrvGetTextA(DRV_NAME));
-
+	sprintf (output, "%s%c%s.nv", g_save_dir, slash, BurnDrvGetTextA(DRV_NAME));
 	neeprom_available = 0;
 
 	INT32 len = ((1 << intf->address_bits) * (intf->data_bits >> 3)) & (MEMORY_SIZE-1);
