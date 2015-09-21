@@ -381,7 +381,7 @@ void retro_deinit(void)
 	char output[128];
    if (driver_inited)
 	{
-		sprintf (output, "%s%c%s.fs", g_save_dir, slash, BurnDrvGetTextA(DRV_NAME));
+		snprintf (output,sizeof(output), "%s%c%s.fs", g_save_dir, slash, BurnDrvGetTextA(DRV_NAME));
 		BurnStateSave(output, 0);
       BurnDrvExit();
 	}
@@ -587,7 +587,7 @@ static bool fba_init(unsigned driver, const char *game_zip_name)
    nInterpolation = 3;
 
    BurnDrvInit();
-	sprintf (input, "%s%c%s.fs", g_save_dir, slash, BurnDrvGetTextA(DRV_NAME));
+	snprintf (input, sizeof(input), "%s%c%s.fs", g_save_dir, slash, BurnDrvGetTextA(DRV_NAME));
 	BurnStateLoad(input, 0, NULL);
 
    INT32 width, height;
