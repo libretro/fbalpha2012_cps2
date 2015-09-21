@@ -13,11 +13,11 @@
 
 static unsigned int BurnDrvGetIndexByName(const char* name);
 
-#define STAT_NOFIND	0
-#define STAT_OK		1
-#define STAT_CRC	   2
-#define STAT_SMALL	3
-#define STAT_LARGE	4
+#define STAT_NOFIND   0
+#define STAT_OK      1
+#define STAT_CRC      2
+#define STAT_SMALL   3
+#define STAT_LARGE   4
 
 #ifdef _WIN32
    char slash = '\\';
@@ -27,9 +27,9 @@ static unsigned int BurnDrvGetIndexByName(const char* name);
 
 struct ROMFIND
 {
-	unsigned int nState;
-	int nArchive;
-	INT32 nPos;
+   unsigned int nState;
+   int nArchive;
+   INT32 nPos;
    BurnRomInfo ri;
 };
 
@@ -66,7 +66,7 @@ void retro_set_environment(retro_environment_t cb)
 
    static const struct retro_variable vars[] = {
       { "cpu-speed-adjust", "CPU Speed Overclock; 100|110|120|130|140|150|160|170|180|190|200" },
-		{ "fba-controls", "Controls; gamepad|arcade|newgen" },
+      { "fba-controls", "Controls; gamepad|arcade|newgen" },
       { NULL, NULL },
    };
 
@@ -147,23 +147,23 @@ static void InpDIPSWGetOffset (void)
 
 void InpDIPSWResetDIPs (void)
 {
-	int i = 0;
-	BurnDIPInfo bdi;
-	struct GameInp * pgi = NULL;
+   int i = 0;
+   BurnDIPInfo bdi;
+   struct GameInp * pgi = NULL;
 
-	InpDIPSWGetOffset();
+   InpDIPSWGetOffset();
 
-	while (BurnDrvGetDIPInfo(&bdi, i) == 0)
-	{
-		if (bdi.nFlags == 0xFF)
-		{
-			pgi = GameInp + bdi.nInput + nDIPOffset;
+   while (BurnDrvGetDIPInfo(&bdi, i) == 0)
+   {
+      if (bdi.nFlags == 0xFF)
+      {
+         pgi = GameInp + bdi.nInput + nDIPOffset;
 
-			if (pgi)
-				pgi->Input.Constant.nConst = (pgi->Input.Constant.nConst & ~bdi.nMask) | (bdi.nSetting & bdi.nMask);
-		}
-		i++;
-	}
+         if (pgi)
+            pgi->Input.Constant.nConst = (pgi->Input.Constant.nConst & ~bdi.nMask) | (bdi.nSetting & bdi.nMask);
+      }
+      i++;
+   }
 }
 
 static int InpDIPSWInit()
@@ -368,24 +368,24 @@ static bool open_archive()
 
 void retro_init()
 {
-	struct retro_log_callback log;
-	if (environ_cb(RETRO_ENVIRONMENT_GET_LOG_INTERFACE, &log))
-		log_cb = log.log;
-	else
-		log_cb = NULL;
+   struct retro_log_callback log;
+   if (environ_cb(RETRO_ENVIRONMENT_GET_LOG_INTERFACE, &log))
+      log_cb = log.log;
+   else
+      log_cb = NULL;
    BurnLibInit();
    g_fba_frame = (uint16_t*)malloc(384 * 224 * sizeof(uint16_t));
 }
 
 void retro_deinit(void)
 {
-	char output[128];
+   char output[128];
    if (driver_inited)
-	{
-		snprintf (output,sizeof(output), "%s%c%s.fs", g_save_dir, slash, BurnDrvGetTextA(DRV_NAME));
-		BurnStateSave(output, 0);
+   {
+      snprintf (output,sizeof(output), "%s%c%s.fs", g_save_dir, slash, BurnDrvGetTextA(DRV_NAME));
+      BurnStateSave(output, 0);
       BurnDrvExit();
-	}
+   }
    driver_inited = false;
    BurnLibExit();
    if (g_fba_frame)
@@ -394,7 +394,7 @@ void retro_deinit(void)
 
 extern "C" {
    void Cps2Frame(void);
-	void HiscoreApply(void);
+   void HiscoreApply(void);
 };
 
 void retro_reset(void)
@@ -417,7 +417,7 @@ void retro_reset(void)
    nBurnSoundRate = AUDIO_SAMPLERATE;
    //nBurnSoundLen = AUDIO_SEGMENT_LENGTH;
    nCurrentFrame++;
-	HiscoreApply();
+   HiscoreApply();
    Cps2Frame();
 }
 
@@ -453,18 +453,18 @@ static void check_variables(void)
       else if (strcmp(var.value, "200") == 0)
          nBurnCPUSpeedAdjust = 0x0200;
    }
-	if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var))
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var))
    {
       if (strcmp(var.value, "arcade") == 0) {
          gamepad_controls = false;
          newgen_controls = false;
-	  } else if (strcmp(var.value, "gamepad") == 0) {
+     } else if (strcmp(var.value, "gamepad") == 0) {
          gamepad_controls = true;
          newgen_controls = false;
       } else if (strcmp(var.value, "newgen") == 0) {
          gamepad_controls = true;
          newgen_controls = true;
-	  }
+     }
    }
 }
 
@@ -591,7 +591,7 @@ int VidRecalcPal()
 static bool fba_init(unsigned driver, const char *game_zip_name)
 {
    nBurnDrvActive = driver;
-	char input[128];
+   char input[128];
 
    if (!open_archive())
       return false;
@@ -601,8 +601,8 @@ static bool fba_init(unsigned driver, const char *game_zip_name)
    nInterpolation = 3;
 
    BurnDrvInit();
-	snprintf (input, sizeof(input), "%s%c%s.fs", g_save_dir, slash, BurnDrvGetTextA(DRV_NAME));
-	BurnStateLoad(input, 0, NULL);
+   snprintf (input, sizeof(input), "%s%c%s.fs", g_save_dir, slash, BurnDrvGetTextA(DRV_NAME));
+   BurnStateLoad(input, 0, NULL);
 
    INT32 width, height;
    BurnDrvGetVisibleSize(&width, &height);
@@ -712,7 +712,7 @@ bool retro_load_game(const struct retro_game_info *info)
    extract_basename(basename, info->path, sizeof(basename));
    extract_directory(g_rom_dir, info->path, sizeof(g_rom_dir));
 
-	//todo, add a fallback in case save_directory is not defined
+   //todo, add a fallback in case save_directory is not defined
    const char *dir = NULL;
    if (environ_cb(RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY, &dir) && dir)
    {
@@ -830,11 +830,11 @@ static bool init_input(void)
    }
 
    //needed for Neo Geo button mappings (and other drivers in future)
-   const char * parentrom	= BurnDrvGetTextA(DRV_PARENT);
-   const char * boardrom	= BurnDrvGetTextA(DRV_BOARDROM);
-   const char * drvname		= BurnDrvGetTextA(DRV_NAME);
-   INT32	genre		= BurnDrvGetGenreFlags();
-   INT32	hardware	= BurnDrvGetHardwareCode();
+   const char * parentrom   = BurnDrvGetTextA(DRV_PARENT);
+   const char * boardrom   = BurnDrvGetTextA(DRV_BOARDROM);
+   const char * drvname      = BurnDrvGetTextA(DRV_NAME);
+   INT32   genre      = BurnDrvGetGenreFlags();
+   INT32   hardware   = BurnDrvGetHardwareCode();
 
    if (log_cb)
    {
@@ -3341,7 +3341,7 @@ static void poll_input(void)
                }
                break;
             }
-         case GIT_KEYSLIDER:						// Keyboard slider
+         case GIT_KEYSLIDER:                  // Keyboard slider
             //fprintf(stderr, "GIT_JOYSLIDER\n");
             {
                int nAdd = 0;
@@ -3388,7 +3388,7 @@ static void poll_input(void)
 #endif
                break;
             }
-         case GIT_MOUSEAXIS:						// Mouse axis
+         case GIT_MOUSEAXIS:                  // Mouse axis
             pgi->Input.nVal = (UINT16)(CinpMouseAxis(pgi->Input.MouseAxis.nMouse, pgi->Input.MouseAxis.nAxis) * nAnalogSpeed);
 #ifdef MSB_FIRST
             *((int *)pgi->Input.pShortVal) = pgi->Input.nVal;
@@ -3397,7 +3397,7 @@ static void poll_input(void)
 #endif
             break;
          case GIT_JOYAXIS_FULL:
-            {				// Joystick axis
+            {            // Joystick axis
                INT32 nJoy = CinpJoyAxis(pgi->Input.JoyAxis.nJoy, pgi->Input.JoyAxis.nAxis);
 
                if (pgi->nType == BIT_ANALOG_REL) {
@@ -3433,7 +3433,7 @@ static void poll_input(void)
                break;
             }
          case GIT_JOYAXIS_NEG:
-            {				// Joystick axis Lo
+            {            // Joystick axis Lo
                INT32 nJoy = CinpJoyAxis(pgi->Input.JoyAxis.nJoy, pgi->Input.JoyAxis.nAxis);
                if (nJoy < 32767)
                {
@@ -3457,7 +3457,7 @@ static void poll_input(void)
                break;
             }
          case GIT_JOYAXIS_POS:
-            {				// Joystick axis Hi
+            {            // Joystick axis Hi
                INT32 nJoy = CinpJoyAxis(pgi->Input.JoyAxis.nJoy, pgi->Input.JoyAxis.nAxis);
                if (nJoy > 32767)
                {
