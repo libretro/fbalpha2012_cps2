@@ -1308,7 +1308,7 @@ static bool init_input(void)
    bind_map[PTR_INCR].nCode[0] = RETRO_DEVICE_ID_ANALOG_Y;
    bind_map[PTR_INCR].nCode[1] = 1;
 
-   /* Gamepad friendly mapping */
+   /* Arcade map */
    if (gamepad_controls == false)
    {
 
@@ -2190,7 +2190,7 @@ static bool init_input(void)
       bind_map[PTR_INCR].nCode[1] = 0;
 
    }
-   /* Arcade stick friendly mapping */
+   /* Gamepad map */
    else
    {
 
