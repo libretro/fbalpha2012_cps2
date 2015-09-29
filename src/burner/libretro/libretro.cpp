@@ -379,14 +379,6 @@ void retro_init()
 
 void retro_deinit(void)
 {
-   char output[128];
-   if (driver_inited)
-   {
-      snprintf (output,sizeof(output), "%s%c%s.fs", g_save_dir, slash, BurnDrvGetTextA(DRV_NAME));
-      BurnStateSave(output, 0);
-      BurnDrvExit();
-   }
-   driver_inited = false;
    BurnLibExit();
    if (g_fba_frame)
       free(g_fba_frame);
@@ -747,7 +739,16 @@ bool retro_load_game(const struct retro_game_info *info)
 
 bool retro_load_game_special(unsigned, const struct retro_game_info*, size_t) { return false; }
 
-void retro_unload_game(void) {}
+void retro_unload_game(void) {
+   char output[128];
+   if (driver_inited)
+   {
+      snprintf (output,sizeof(output), "%s%c%s.fs", g_save_dir, slash, BurnDrvGetTextA(DRV_NAME));
+      BurnStateSave(output, 0);
+      BurnDrvExit();
+   }
+   driver_inited = false;
+}
 
 unsigned retro_get_region() { return RETRO_REGION_NTSC; }
 
