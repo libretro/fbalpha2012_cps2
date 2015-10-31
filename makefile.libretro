@@ -54,6 +54,18 @@ else ifeq ($(platform), osx)
    TARGET := $(TARGET_NAME)_libretro.dylib
    fpic := -fPIC
    SHARED := -dynamiclib
+else ifneq (,$(findstring ios,$(platform)))
+   TARGET := $(TARGET_NAME)_libretro_ios.dylib
+   fpic := -fPIC
+   SHARED := -dynamiclib
+
+ifeq ($(IOSSDK),)
+   IOSSDK = $(shell xcodebuild -version -sdk iphoneos Path)
+endif
+
+   CC = cc -arch armv7 -isysroot $(IOSSDK)
+   LD = armv7-apple-darwin11-ld
+   CFLAGS += -DIOS
 else ifeq ($(platform), ps3)
    TARGET := $(TARGET_NAME)_libretro_ps3.a
    CC = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-gcc.exe
