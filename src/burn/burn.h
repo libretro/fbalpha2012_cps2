@@ -27,6 +27,12 @@
 #define FALSE 0
 #endif
 
+#ifdef _MSC_VER
+#define ALIGN_VAR(x)  __declspec(align(x))
+#else
+#define ALIGN_VAR(x)  __attribute__((aligned(x)))
+#endif
+
 #include <time.h>
 
 extern TCHAR szAppHiscorePath[MAX_PATH];
