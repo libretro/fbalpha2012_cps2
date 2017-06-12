@@ -1,7 +1,7 @@
 #ifndef _FBA_ENDIAN_H
 #define _FBA_ENDIAN_H
 
-#ifndef _XBOX
+#if defined(__CELLOS_LV2__) || defined(HW_RVL) || defined(GEKKO)
 #define NO_64BIT_BYTESWAP
 #endif
 
@@ -28,6 +28,15 @@ typedef union {
         __asm__ volatile ("stwbrx       %0,%1,%2" : : "r"(value), "b%"(index), "r"(base) : "memory")
 #endif
 
+/* Using GCC builtins on other platforms; unfortunately 16-bit is missing
+   Would use sthbrx, but this avoid memory access */
+#if !defined(_XBOX) && !defined(__CELLOS_LV2__) && !defined(HW_RVL) && !defined(GEKKO)
+#define __ppc_bswap16(x, t) \
+  __asm__ ("rlwinm	%[out], %[in], 24, 24, 31 \n" \
+           "rlwimi	%[out], %[in], 8, 16, 23" \
+           : [out]"=&r"(t) : [in]"r"(x))
+#endif
+
 /* Xbox 360 */
 #if defined(_XBOX)
 #define BURN_ENDIAN_SWAP_INT8(x)				(x^1)
@@ -41,10 +50,16 @@ typedef union {
 #define BURN_ENDIAN_SWAP_INT16(x)				({uint16_t t; __sthbrx(&t, x); t;})
 #define BURN_ENDIAN_SWAP_INT32(x)				({uint32_t t; __stwbrx(&t, x); t;})
 /* Wii */
-#elif defined(HW_RVL)
+#elif defined(HW_RVL) || defined(GEKKO)
 #define BURN_ENDIAN_SWAP_INT8(x)				(x^1)
 #define BURN_ENDIAN_SWAP_INT16(x)				({uint16_t t; __sthbrx(&t, 0, x); t;})
 #define BURN_ENDIAN_SWAP_INT32(x)				({uint32_t t; __stwbrx(&t, 0, x); t;})
+/* Other platforms */
+#else
+#define BURN_ENDIAN_SWAP_INT8(x)				(x^1)
+#define BURN_ENDIAN_SWAP_INT16(x)				({uint16_t t; __ppc_bswap16(x, t); t;})
+#define BURN_ENDIAN_SWAP_INT32(x)				(__builtin_bswap32(x))
+#define BURN_ENDIAN_SWAP_INT64(x)				(__builtin_bswap64(x))
 #endif
 
 #ifdef NO_64BIT_BYTESWAP
