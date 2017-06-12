@@ -47,10 +47,16 @@ ifeq ($(platform), unix)
    fpic := -fPIC
    SHARED := -shared -Wl,-no-undefined -Wl,--version-script=$(LIBRETRO_DIR)/link.T
 	PLATFORM_DEFINES := -DUSE_FILE32API
+   ifeq ($(shell uname -m),ppc)
+      ENDIANNESS_DEFINES := -DMSB_FIRST
+   endif
 else ifeq ($(platform), osx)
    TARGET := $(TARGET_NAME)_libretro.dylib
    fpic := -fPIC
    SHARED := -dynamiclib
+   ifeq ($(shell uname -p),powerpc)
+      ENDIANNESS_DEFINES := -DMSB_FIRST
+   endif
 else ifneq (,$(findstring ios,$(platform)))
    TARGET := $(TARGET_NAME)_libretro_ios.dylib
    fpic := -fPIC
