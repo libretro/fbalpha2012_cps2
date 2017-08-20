@@ -260,18 +260,8 @@ void QscWrite(INT32 a, INT32 d)
    }
 }
 
-INT32 QscUpdate(INT32 nEnd)
+static INT32 __attribute__((optimize("O0"))) QscUpdate_P1(INT32 nLen, INT32 nEnd)
 {
-   INT32 nLen;
-
-   if (nEnd > nBurnSoundLen)
-      nEnd = nBurnSoundLen;
-
-   nLen = nEnd - nPos;
-
-   if (nLen <= 0)
-      return 0;
-
    if (Tams < nLen)
    {
       BurnFree(Qs_s);
@@ -379,6 +369,21 @@ INT32 QscUpdate(INT32 nEnd)
          }
       }
    }
+}
+
+INT32 QscUpdate(INT32 nEnd)
+{
+   INT32 nLen;
+
+   if (nEnd > nBurnSoundLen)
+      nEnd = nBurnSoundLen;
+
+   nLen = nEnd - nPos;
+
+   if (nLen <= 0)
+      return 0;
+
+   QscUpdate_P1(nLen, nEnd);
 
    INT16 *pDest = pBurnSoundOut + (nPos << 1);
    INT32 *pSrc = Qs_s;
