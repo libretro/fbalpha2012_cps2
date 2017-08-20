@@ -260,7 +260,7 @@ void QscWrite(INT32 a, INT32 d)
    }
 }
 
-static INT32 __attribute__((optimize("Og"))) QscUpdate_Accum(INT32 p, INT32 c)
+static INT32 QscUpdate_Accum(INT32 p, INT32 c)
 {
    INT32 fp = (QChan[c].nPos) & ((1 << 12) - 1);
    INT32 sN = QChan[c].PlayBank[p + 0];
@@ -268,10 +268,10 @@ static INT32 __attribute__((optimize("Og"))) QscUpdate_Accum(INT32 p, INT32 c)
    INT32 s1 = QChan[c].PlayBank[p + 2];
    INT32 s2 = QChan[c].PlayBank[p + 3];
    INT32  v = 256;
-   INT32  s = sN * (INT32)Precalc[fp * 4 + 0];
-   s       += s0 * (INT32)Precalc[fp * 4 + 1];
-   s       += s1 * (INT32)Precalc[fp * 4 + 2];
-   s       += s2 * (INT32)Precalc[fp * 4 + 3];
+   INT32  s = sN * (INT32)*((volatile INT16*)(Precalc + (fp * 4 + 0)));
+   s       += s0 * (INT32)*((volatile INT16*)(Precalc + (fp * 4 + 1)));
+   s       += s1 * (INT32)*((volatile INT16*)(Precalc + (fp * 4 + 2)));
+   s       += s2 * (INT32)*((volatile INT16*)(Precalc + (fp * 4 + 3)));
    return s / v;
 }
 
