@@ -275,8 +275,20 @@ static INT32 __attribute__((optimize("Og"))) QscUpdate_Accum(INT32 p, INT32 c)
    return s / v;
 }
 
-static INT32 QscUpdate_P1(INT32 nLen, INT32 nEnd)
+INT32 QscUpdate(INT32 nEnd)
 {
+   INT32 nLen, c, i;
+   INT16 *pDest;
+   INT32 *pSrc;
+
+   if (nEnd > nBurnSoundLen)
+      nEnd = nBurnSoundLen;
+
+   nLen = nEnd - nPos;
+
+   if (nLen <= 0)
+      return 0;
+
    if (Tams < nLen)
    {
       BurnFree(Qs_s);
@@ -287,7 +299,7 @@ static INT32 QscUpdate_P1(INT32 nLen, INT32 nEnd)
    memset(Qs_s, 0, nLen * 2 * sizeof(INT32));
 
    // Go through all channels
-   for (INT32 c = 0; c < 16; c++)
+   for (c = 0; c < 16; c++)
    {
       // If the channel is playing, add the samples to the buffer
       if (QChan[c].bKey)
@@ -379,25 +391,11 @@ static INT32 QscUpdate_P1(INT32 nLen, INT32 nEnd)
          }
       }
    }
-}
 
-INT32 QscUpdate(INT32 nEnd)
-{
-   INT32 nLen;
+   pDest = pBurnSoundOut + (nPos << 1);
+   pSrc  = Qs_s;
 
-   if (nEnd > nBurnSoundLen)
-      nEnd = nBurnSoundLen;
-
-   nLen = nEnd - nPos;
-
-   if (nLen <= 0)
-      return 0;
-
-   QscUpdate_P1(nLen, nEnd);
-
-   INT16 *pDest = pBurnSoundOut + (nPos << 1);
-   INT32 *pSrc = Qs_s;
-   for (INT32 i = 0; i < nLen; i++)
+   for (i = 0; i < nLen; i++)
    {
       INT32 nLeftSample  = (INT32)((pSrc[(i << 1) + 0] >> 8) * QsndGain[BURN_SND_QSND_OUTPUT_1]);
       INT32 nRightSample = (INT32)((pSrc[(i << 1) + 1] >> 8) * QsndGain[BURN_SND_QSND_OUTPUT_2]);
