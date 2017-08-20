@@ -260,7 +260,7 @@ void QscWrite(INT32 a, INT32 d)
    }
 }
 
-static INT32 __attribute__((optimize("O0"))) QscUpdate_P1(INT32 nLen, INT32 nEnd)
+static INT32 __attribute__((optimize("Og"))) QscUpdate_P1(INT32 nLen, INT32 nEnd)
 {
    if (Tams < nLen)
    {
