@@ -304,10 +304,11 @@ INT32 QscUpdate(INT32 nEnd)
       // If the channel is playing, add the samples to the buffer
       if (QChan[c].bKey)
       {
-         INT32 VolL = (QChan[c].nMasterVolume * QChan[c].nVolume[0]) >> 11;
-         INT32 VolR = (QChan[c].nMasterVolume * QChan[c].nVolume[1]) >> 11;
+         INT32 VolL   = (QChan[c].nMasterVolume * QChan[c].nVolume[0]) >> 11;
+         INT32 VolR   = (QChan[c].nMasterVolume * QChan[c].nVolume[1]) >> 11;
          INT32* pTemp = Qs_s;
-         INT32 i = nLen;
+
+         i            = nLen;
 
          // handle 1st sample
          if (QChan[c].bKey & 2)
@@ -380,10 +381,10 @@ INT32 QscUpdate(INT32 nEnd)
             }
 
             // Add to the sound currently in the buffer
-            pTemp[0] += s * VolL;
-            pTemp[1] += s * VolR;
+            pTemp[0]      += s * VolL;
+            pTemp[1]      += s * VolR;
 
-            pTemp += 2;
+            pTemp         += 2;
 
             QChan[c].nPos += QChan[c].nAdvance;				// increment sample position based on pitch
 
@@ -397,8 +398,8 @@ INT32 QscUpdate(INT32 nEnd)
 
    for (i = 0; i < nLen; i++)
    {
-      INT32 nLeftSample  = (INT32)((pSrc[(i << 1) + 0] >> 8) * QsndGain[BURN_SND_QSND_OUTPUT_1]);
-      INT32 nRightSample = (INT32)((pSrc[(i << 1) + 1] >> 8) * QsndGain[BURN_SND_QSND_OUTPUT_2]);
+      INT32 nLeftSample   = (INT32)((pSrc[(i << 1) + 0] >> 8) * QsndGain[BURN_SND_QSND_OUTPUT_1]);
+      INT32 nRightSample  = (INT32)((pSrc[(i << 1) + 1] >> 8) * QsndGain[BURN_SND_QSND_OUTPUT_2]);
 
       pDest[(i << 1) + 0] = BURN_SND_CLIP(nLeftSample);
       pDest[(i << 1) + 1] = BURN_SND_CLIP(nRightSample);
