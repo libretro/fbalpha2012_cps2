@@ -26,8 +26,9 @@ struct ObjFrame {
 static INT32 nFrameCount = 0;
 static struct ObjFrame of[3];
 
-INT32 CpsObjInit()
+INT32 CpsObjInit(void)
 {
+   INT32 i;
    nMax = 0x400; /* CPS2 has 1024 sprites */
 	nFrameCount = 2;			// CPS2 sprites lagged by 1 frame and double buffered
 								// CPS1 sprites lagged by 1 frame
@@ -36,7 +37,7 @@ INT32 CpsObjInit()
 		return 1;
 
 	// Set up the frame buffers
-	for (INT32 i = 0; i < nFrameCount; i++)
+	for (i = 0; i < nFrameCount; i++)
    {
 		of[i].Obj = ObjMem + (nMax << 3) * i;
 		of[i].nCount = 0;
@@ -51,9 +52,10 @@ INT32 CpsObjInit()
 	return 0;
 }
 
-INT32 CpsObjExit()
+INT32 CpsObjExit(void)
 {
-	for (INT32 i = 0; i < nFrameCount; i++)
+   INT32 i;
+	for (i = 0; i < nFrameCount; i++)
    {
 		of[i].Obj = NULL;
 		of[i].nCount = 0;
@@ -68,7 +70,7 @@ INT32 CpsObjExit()
 }
 
 // Get CPS sprites into Obj
-INT32 CpsObjGet()
+INT32 CpsObjGet(void)
 {
 	INT32 i;
 	UINT8 *pg, *po;
@@ -118,7 +120,7 @@ INT32 CpsObjGet()
 	return 0;
 }
 
-void CpsObjDrawInit()
+void CpsObjDrawInit(void)
 {
 	nZOffset = nMaxZMask;
 

@@ -42,7 +42,7 @@ static INT32 StateInfo(INT32* pnLen, INT32* pnMinVer, INT32 bAll)
 INT32 BurnStateLoadEmbed(FILE* fp, INT32 nOffset, INT32 bAll, INT32 (*pLoadGame)())
 {
 	const char* szHeader = "FS1 ";						// Chunk identifier
-
+   INT32 nChunkData;
 	INT32 nLen = 0;
 	INT32 nMin = 0, nFileVer = 0, nFileMin = 0;
 	INT32 t1 = 0, t2 = 0;
@@ -65,16 +65,14 @@ INT32 BurnStateLoadEmbed(FILE* fp, INT32 nOffset, INT32 bAll, INT32 (*pLoadGame)
 
 	memset(ReadHeader, 0, 4);
 	fread(ReadHeader, 1, 4, fp);						// Read identifier
-	if (memcmp(ReadHeader, szHeader, 4)) {				// Not the right file type
+	if (memcmp(ReadHeader, szHeader, 4))				// Not the right file type
 		return -2;
-	}
 
 	fread(&nChunkSize, 1, 4, fp);
-	if (nChunkSize <= 0x40) {							// Not big enough
+	if (nChunkSize <= 0x40)							// Not big enough
 		return -1;
-	}
 
-	INT32 nChunkData = ftell(fp);
+	nChunkData = ftell(fp);
 
 	fread(&nFileVer, 1, 4, fp);							// Version of FB that this file was saved from
 
@@ -199,7 +197,7 @@ INT32 BurnStateLoad(TCHAR* szName, INT32 bAll, INT32 (*pLoadGame)())
 INT32 BurnStateSaveEmbed(FILE* fp, INT32 nOffset, INT32 bAll)
 {
 	const char* szHeader = "FS1 ";						// Chunk identifier
-
+   INT32 nSizeOffset;
 	INT32 nLen = 0;
 	INT32 nNvMin = 0, nAMin = 0;
 	INT32 nZero = 0;
@@ -208,32 +206,29 @@ INT32 BurnStateSaveEmbed(FILE* fp, INT32 nOffset, INT32 bAll)
 	INT32 nDefLen = 0;									// Deflated version
 	INT32 nRet = 0;
 
-	if (fp == NULL) {
+	if (fp == NULL)
 		return -1;
-	}
 
 	StateInfo(&nLen, &nNvMin, 0);						// Get minimum version for NV part
 	nAMin = nNvMin;
-	if (bAll) {											// Get minimum version for All data
+	if (bAll)											// Get minimum version for All data
 		StateInfo(&nLen, &nAMin, 1);
-	}
 
-	if (nLen <= 0) {									// No memory to save
+	if (nLen <= 0)									// No memory to save
 		return -1;
-	}
 
-	if (nOffset >= 0) {
+	if (nOffset >= 0)
 		fseek(fp, nOffset, SEEK_SET);
-	} else {
-		if (nOffset == -2) {
+   else
+   {
+		if (nOffset == -2)
 			fseek(fp, 0, SEEK_END);
-		} else {
+      else
 			fseek(fp, 0, SEEK_CUR);
-		}
 	}
 
 	fwrite(szHeader, 1, 4, fp);							// Chunk identifier
-	INT32 nSizeOffset = ftell(fp);						// Reserve space to write the size of this chunk
+	nSizeOffset = ftell(fp);						// Reserve space to write the size of this chunk
 	fwrite(&nZero, 1, 4, fp);							//
 
 	fwrite(&nBurnVer, 1, 4, fp);						// Version of FB this was saved from
@@ -253,23 +248,21 @@ INT32 BurnStateSaveEmbed(FILE* fp, INT32 nOffset, INT32 bAll)
 	fwrite(&nZero, 1, 4, fp);							//
 
 	nRet = BurnStateCompress(&Def, &nDefLen, bAll);		// Compress block from driver and return deflated buffer
-	if (Def == NULL) {
+	if (Def == NULL)
 		return -1;
-	}
 
 	nRet = fwrite(Def, 1, nDefLen, fp);					// Write block to disk
-	if (Def) {
+	if (Def)
+   {
 		free(Def);											// free deflated block and close file
 		Def = NULL;
 	}
 
-	if (nRet != nDefLen) {								// error writing block to disk
+	if (nRet != nDefLen)								// error writing block to disk
 		return -1;
-	}
 
-	if (nDefLen & 3) {									// Chunk size must be a multiple of 4
+	if (nDefLen & 3)									// Chunk size must be a multiple of 4
 		fwrite(&nZero, 1, 4 - (nDefLen & 3), fp);		// Pad chunk if needed
-	}
 
 	fseek(fp, nSizeOffset + 0x10, SEEK_SET);			// Write size of the compressed data
 	fwrite(&nDefLen, 1, 4, fp);							//
@@ -287,31 +280,28 @@ INT32 BurnStateSaveEmbed(FILE* fp, INT32 nOffset, INT32 bAll)
 // State save
 INT32 BurnStateSave(TCHAR* szName, INT32 bAll)
 {
+   FILE * fp;
 	const char szHeader[] = "FB1 ";						// File identifier
 	INT32 nLen = 0, nVer = 0;
 	INT32 nRet = 0;
 
-	if (bAll) {											// Get amount of data
+	if (bAll)											// Get amount of data
 		StateInfo(&nLen, &nVer, 1);
-	} else {
+   else
 		StateInfo(&nLen, &nVer, 0);
-	}
-	if (nLen <= 0) {									// No data, so exit without creating a savestate
+	if (nLen <= 0)									// No data, so exit without creating a savestate
 		return 0;										// Don't return an error code
-	}
 
-	FILE* fp = _tfopen(szName, _T("wb"));
-	if (fp == NULL) {
+	fp = _tfopen(szName, _T("wb"));
+	if (fp == NULL)
 		return 1;
-	}
 
 	fwrite(&szHeader, 1, 4, fp);
 	nRet = BurnStateSaveEmbed(fp, -1, bAll);
     fclose(fp);
 
-	if (nRet < 0) {
+	if (nRet < 0)
 		return 1;
-	} else {
-		return 0;
-	}
+
+   return 0;
 }

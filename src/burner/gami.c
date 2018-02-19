@@ -31,9 +31,8 @@ void GameInpCheckLeftAlt()
 
 	for (i = 0, pgi = GameInp; i < (nGameInpCount + nMacroCount); i++, pgi++) {
 
-		if (bLeftAltkeyMapped) {
+		if (bLeftAltkeyMapped)
 			break;
-		}
 
 		switch (pgi->nInput) {
 			case GIT_SWITCH:
@@ -150,11 +149,13 @@ INT32 GameInpBlank(INT32 bDipSwitch)
 	return 0;
 }
 
-static void GameInpInitMacros()
+static void GameInpInitMacros(void)
 {
+   UINT32 i;
 	struct GameInp* pgi;
 	struct BurnInputInfo bii;
 
+   INT32 nPlayer;
 	INT32 nPunchx3[4] = {0, 0, 0, 0};
 	INT32 nPunchInputs[4][3];
 	INT32 nKickx3[4] = {0, 0, 0, 0};
@@ -168,19 +169,20 @@ static void GameInpInitMacros()
 
 	nFireButtons = 0;
 
-	for (UINT32 i = 0; i < nGameInpCount; i++) {
+	for (i = 0; i < nGameInpCount; i++)
+   {
 		bii.szName = NULL;
 		BurnDrvGetInputInfo(&bii, i);
-		if (bii.szName == NULL) {
+		if (bii.szName == NULL)
 			bii.szName = "";
-		}
-		if (bii.szName[0] == 'P' && bii.szName[1] >= '1' && bii.szName[1] <= '4') {
-			INT32 nPlayer = bii.szName[1] - '1';
 
-			if (nPlayer == 0) {
-				if (strncmp(" fire", bii.szInfo + 2, 5) == 0) {
+		if (bii.szName[0] == 'P' && bii.szName[1] >= '1' && bii.szName[1] <= '4') {
+			nPlayer = bii.szName[1] - '1';
+
+			if (nPlayer == 0)
+         {
+				if (strncmp(" fire", bii.szInfo + 2, 5) == 0)
 					nFireButtons++;
-				}
 			}
 
 			if (_stricmp(" Weak Punch", bii.szName + 2) == 0) {
@@ -242,14 +244,19 @@ static void GameInpInitMacros()
 
 	pgi = GameInp + nGameInpCount;
 
-	for (INT32 nPlayer = 0; nPlayer < nMaxPlayers; nPlayer++) {
-		if (nPunchx3[nPlayer] == 7) {		// Create a 3x punch macro
+	for (nPlayer = 0; nPlayer < nMaxPlayers; nPlayer++) {
+		if (nPunchx3[nPlayer] == 7)
+      {
+         INT32 j;
+
+         // Create a 3x punch macro
 			pgi->nInput = GIT_MACRO_AUTO;
 			pgi->nType = BIT_DIGITAL;
 			pgi->Macro.nMode = 0;
 
 			sprintf(pgi->Macro.szName, "P%i 3× Punch", nPlayer + 1);
-			for (INT32 j = 0; j < 3; j++) {
+			for (j = 0; j < 3; j++)
+         {
 				BurnDrvGetInputInfo(&bii, nPunchInputs[nPlayer][j]);
 				pgi->Macro.pVal[j] = bii.pVal;
 				pgi->Macro.nVal[j] = 1;
@@ -259,13 +266,18 @@ static void GameInpInitMacros()
 			pgi++;
 		}
 
-		if (nKickx3[nPlayer] == 7) {		// Create a 3x kick macro
+		if (nKickx3[nPlayer] == 7)
+      {
+         // Create a 3x kick macro
+         INT32 j;
+
 			pgi->nInput = GIT_MACRO_AUTO;
 			pgi->nType = BIT_DIGITAL;
 			pgi->Macro.nMode = 0;
 
 			sprintf(pgi->Macro.szName, "P%i 3× Kick", nPlayer + 1);
-			for (INT32 j = 0; j < 3; j++) {
+			for (j = 0; j < 3; j++)
+         {
 				BurnDrvGetInputInfo(&bii, nKickInputs[nPlayer][j]);
 				pgi->Macro.pVal[j] = bii.pVal;
 				pgi->Macro.nVal[j] = 1;
@@ -275,7 +287,8 @@ static void GameInpInitMacros()
 			pgi++;
 		}
 
-		if (nFireButtons == 4 && (BurnDrvGetHardwareCode() & HARDWARE_PUBLIC_MASK) == HARDWARE_SNK_NEOGEO) {
+		if (nFireButtons == 4 && (BurnDrvGetHardwareCode() & HARDWARE_PUBLIC_MASK) == HARDWARE_SNK_NEOGEO)
+      {
 			pgi->nInput = GIT_MACRO_AUTO;
 			pgi->nType = BIT_DIGITAL;
 			pgi->Macro.nMode = 0;
@@ -438,7 +451,8 @@ static void GameInpInitMacros()
 			pgi++;
 		}
 		
-		if (nFireButtons == 4 && (BurnDrvGetHardwareCode() & HARDWARE_PUBLIC_MASK) == HARDWARE_IGS_PGM) {
+		if (nFireButtons == 4 && (BurnDrvGetHardwareCode() & HARDWARE_PUBLIC_MASK) == HARDWARE_IGS_PGM)
+      {
 			pgi->nInput = GIT_MACRO_AUTO;
 			pgi->nType = BIT_DIGITAL;
 			pgi->Macro.nMode = 0;
@@ -602,36 +616,40 @@ static void GameInpInitMacros()
 		}
 	}
 
-	if ((nPunchx3[0] == 7) && (nKickx3[0] == 7)) {
+	if ((nPunchx3[0] == 7) && (nKickx3[0] == 7))
 		bStreetFighterLayout = TRUE;
-	}
-	if (nFireButtons >= 5 && (BurnDrvGetHardwareCode() & HARDWARE_PUBLIC_MASK) == HARDWARE_CAPCOM_CPS2) {
+	if (nFireButtons >= 5 && (BurnDrvGetHardwareCode() & HARDWARE_PUBLIC_MASK) == HARDWARE_CAPCOM_CPS2)
 		bStreetFighterLayout = TRUE;
-	}
 }
 
-INT32 GameInpInit()
+INT32 GameInpInit(void)
 {
+   UINT32 i;
+   INT32 nSize;
 	INT32 nRet = 0;
 	// Count the number of inputs
 	nGameInpCount = 0;
 	nMacroCount = 0;
 	nMaxMacro = nMaxPlayers * 12;
 
-	for (UINT32 i = 0; i < 0x1000; i++) {
+	for (i = 0; i < 0x1000; i++)
+   {
 		nRet = BurnDrvGetInputInfo(NULL,i);
-		if (nRet) {														// end of input list
+		if (nRet)
+      {
+         // end of input list
 			nGameInpCount = i;
 			break;
 		}
 	}
 
 	// Allocate space for all the inputs
-	INT32 nSize = (nGameInpCount + nMaxMacro) * sizeof(struct GameInp);
+	nSize   = (nGameInpCount + nMaxMacro) * sizeof(struct GameInp);
 	GameInp = (struct GameInp*)malloc(nSize);
-	if (GameInp == NULL) {
+
+	if (GameInp == NULL)
 		return 1;
-	}
+
 	memset(GameInp, 0, nSize);
 
 	GameInpBlank(1);
@@ -904,17 +922,20 @@ static TCHAR* InpMacroToString(struct GameInp* pgi)
 		}
 	}
 
-	if (pgi->nInput == GIT_MACRO_CUSTOM) {
+	if (pgi->nInput == GIT_MACRO_CUSTOM)
+   {
+      INT32 i;
 		struct BurnInputInfo bii;
 
-		if (pgi->Macro.nMode) {
+		if (pgi->Macro.nMode)
 			_stprintf(szString, _T("switch 0x%.2X"), pgi->Macro.Switch.nCode);
-		} else {
+      else
 			_stprintf(szString, _T("undefined"));
-		}
 
-		for (INT32 i = 0; i < 4; i++) {
-			if (pgi->Macro.pVal[i]) {
+		for (i = 0; i < 4; i++)
+      {
+			if (pgi->Macro.pVal[i])
+         {
 				BurnDrvGetInputInfo(&bii, pgi->Macro.nInput[i]);
 				_stprintf(szString + _tcslen(szString), _T(" \"%hs\" 0x%02X"), bii.szName, pgi->Macro.nVal[i]);
 			}
@@ -1085,6 +1106,7 @@ static struct { INT32 nCode; TCHAR* szName; } KeyNames[] = {
 
 TCHAR* InputCodeDesc(INT32 c)
 {
+   INT32 i;
 	static TCHAR szString[64];
 	TCHAR* szName = _T("");
 
@@ -1133,20 +1155,20 @@ TCHAR* InputCodeDesc(INT32 c)
 		}
 	}
 
-	for (INT32 i = 0; KeyNames[i].nCode; i++) {
-		if (c == KeyNames[i].nCode) {
-			if (KeyNames[i].szName) {
+	for (i = 0; KeyNames[i].nCode; i++)
+   {
+		if (c == KeyNames[i].nCode)
+      {
+			if (KeyNames[i].szName)
 				szName = KeyNames[i].szName;
-			}
 			break;
 		}
 	}
 
-	if (szName[0]) {
+	if (szName[0])
 		_stprintf(szString, _T("%s"), szName);
-	} else {
+   else
 		_stprintf(szString, _T("code 0x%.2X"), c);
-	}
 
 	return szString;
 }
@@ -1155,29 +1177,37 @@ TCHAR* InpToDesc(struct GameInp* pgi)
 {
 	static TCHAR szInputName[64] = _T("");
 
-	if (pgi->nInput == 0) {
+	if (pgi->nInput == 0)
 		return _T("");
-	}
-	if (pgi->nInput == GIT_CONSTANT) {
-		if (pgi->nType & BIT_GROUP_CONSTANT) {
-			for (INT32 i = 0; i < 8; i++) {
-				szInputName[7 - i] = pgi->Input.Constant.nConst & (1 << i) ? _T('1') : _T('0');
-			}
+
+	if (pgi->nInput == GIT_CONSTANT)
+   {
+		if (pgi->nType & BIT_GROUP_CONSTANT)
+      {
+         INT32 i;
+
+			for (i = 0; i < 8; i++)
+         {
+            szInputName[7 - i] = pgi->Input.Constant.nConst & (1 << i) ? _T('1') : _T('0');
+         }
+
 			szInputName[8] = 0;
 
 			return szInputName;
 		}
 
-		if (pgi->Input.Constant.nConst == 0) {
+		if (pgi->Input.Constant.nConst == 0)
 			return _T("-");
-		}
 	}
-	if (pgi->nInput == GIT_SWITCH) {
+
+	if (pgi->nInput == GIT_SWITCH)
 		return InputCodeDesc(pgi->Input.Switch.nCode);
-	}
-	if (pgi->nInput == GIT_MOUSEAXIS) {
+
+	if (pgi->nInput == GIT_MOUSEAXIS)
+   {
 		TCHAR nAxis = _T('?');
-		switch (pgi->Input.MouseAxis.nAxis) {
+		switch (pgi->Input.MouseAxis.nAxis)
+      {
 			case 0:
 				nAxis = _T('X');
 				break;
@@ -1216,10 +1246,10 @@ TCHAR* InpToDesc(struct GameInp* pgi)
 
 TCHAR* InpMacroToDesc(struct GameInp* pgi)
 {
-	if (pgi->nInput & GIT_GROUP_MACRO) {
-		if (pgi->Macro.nMode) {
+	if (pgi->nInput & GIT_GROUP_MACRO)
+   {
+		if (pgi->Macro.nMode)
 			return InputCodeDesc(pgi->Macro.Switch.nCode);
-		}
 	}
 
 	return _T("");
@@ -1230,16 +1260,17 @@ TCHAR* InpMacroToDesc(struct GameInp* pgi)
 // Find the input number by info
 static UINT32 InputInfoToNum(TCHAR* szName)
 {
-	for (UINT32 i = 0; i < nGameInpCount; i++) {
+   UINT32 i;
+
+	for (i = 0; i < nGameInpCount; i++)
+   {
 		struct BurnInputInfo bii;
 		BurnDrvGetInputInfo(&bii, i);
-		if (bii.pVal == NULL) {
+		if (bii.pVal == NULL)
 			continue;
-		}
 
-		if (_tcsicmp(szName, ANSIToTCHAR(bii.szInfo, NULL, 0)) == 0) {
+		if (_tcsicmp(szName, ANSIToTCHAR(bii.szInfo, NULL, 0)) == 0)
 			return i;
-		}
 	}
 	return ~0U;
 }
@@ -1247,16 +1278,16 @@ static UINT32 InputInfoToNum(TCHAR* szName)
 // Find the input number by name
 static UINT32 InputNameToNum(TCHAR* szName)
 {
-	for (UINT32 i = 0; i < nGameInpCount; i++) {
+   UINT32 i;
+	for (i = 0; i < nGameInpCount; i++)
+   {
 		struct BurnInputInfo bii;
 		BurnDrvGetInputInfo(&bii, i);
-		if (bii.pVal == NULL) {
+		if (bii.pVal == NULL)
 			continue;
-		}
 
-		if (_tcsicmp(szName, ANSIToTCHAR(bii.szName, NULL, 0)) == 0) {
+		if (_tcsicmp(szName, ANSIToTCHAR(bii.szName, NULL, 0)) == 0)
 			return i;
-		}
 	}
 	return ~0U;
 }
@@ -1266,21 +1297,22 @@ static TCHAR* InputNumToName(UINT32 i)
 	struct BurnInputInfo bii;
 	bii.szName = NULL;
 	BurnDrvGetInputInfo(&bii, i);
-	if (bii.szName == NULL) {
+	if (bii.szName == NULL)
 		return _T("unknown");
-	}
 	return ANSIToTCHAR(bii.szName, NULL, 0);
 }
 
 static UINT32 MacroNameToNum(TCHAR* szName)
 {
+   UINT32 i;
 	struct GameInp* pgi = GameInp + nGameInpCount;
-	for (UINT32 i = 0; i < nMacroCount; i++, pgi++) {
-		if (pgi->nInput & GIT_GROUP_MACRO) {
-			if (_tcsicmp(szName, ANSIToTCHAR(pgi->Macro.szName, NULL, 0)) == 0) {
-				return i;
-			}
-		}
+	for (i = 0; i < nMacroCount; i++, pgi++)
+   {
+		if (pgi->nInput & GIT_GROUP_MACRO)
+      {
+         if (_tcsicmp(szName, ANSIToTCHAR(pgi->Macro.szName, NULL, 0)) == 0)
+            return i;
+      }
 	}
 	return ~0U;
 }
@@ -1289,147 +1321,157 @@ static UINT32 MacroNameToNum(TCHAR* szName)
 
 static INT32 GameInpAutoOne(struct GameInp* pgi, char* szi)
 {
-	for (INT32 i = 0; i < nMaxPlayers; i++) {
-		INT32 nSlide = nPlayerDefaultControls[i] >> 4;
-		switch (nPlayerDefaultControls[i] & 0x0F) {
-			case 0:										// Keyboard
-				GamcAnalogKey(pgi, szi, i, nSlide);
-				GamcPlayer(pgi, szi, i, -1);
-				GamcMisc(pgi, szi, i);
-				break;
-			case 1:										// Joystick 1
-				GamcAnalogJoy(pgi, szi, i, 0, nSlide);
-				GamcPlayer(pgi, szi, i, 0);
-				GamcMisc(pgi, szi, i);
-				break;
-			case 2:										// Joystick 2
-				GamcAnalogJoy(pgi, szi, i, 1, nSlide);
-				GamcPlayer(pgi, szi, i, 1);
-				GamcMisc(pgi, szi, i);
-				break;
-			case 3:										// Joystick 3
-				GamcAnalogJoy(pgi, szi, i, 2, nSlide);
-				GamcPlayer(pgi, szi, i, 2);
-				GamcMisc(pgi, szi, i);
-				break;
-			case 4:										// X-Arcade left side
-				GamcMisc(pgi, szi, i);
-				GamcPlayerHotRod(pgi, szi, i, 0x10, nSlide);
-				break;
-			case 5:										// X-Arcade right side
-				GamcMisc(pgi, szi, i);
-				GamcPlayerHotRod(pgi, szi, i, 0x11, nSlide);
-				break;
-			case 6:										// Hot Rod left side
-				GamcMisc(pgi, szi, i);
-				GamcPlayerHotRod(pgi, szi, i, 0x00, nSlide);
-				break;
-			case 7:										// Hot Rod right side
-				GamcMisc(pgi, szi, i);
-				GamcPlayerHotRod(pgi, szi, i, 0x01, nSlide);
-				break;
-			default:
-				GamcMisc(pgi, szi, i);
-		}
-	}
+   INT32 i;
+	for (i = 0; i < nMaxPlayers; i++)
+   {
+      INT32 nSlide = nPlayerDefaultControls[i] >> 4;
+      switch (nPlayerDefaultControls[i] & 0x0F) {
+         case 0:										// Keyboard
+            GamcAnalogKey(pgi, szi, i, nSlide);
+            GamcPlayer(pgi, szi, i, -1);
+            GamcMisc(pgi, szi, i);
+            break;
+         case 1:										// Joystick 1
+            GamcAnalogJoy(pgi, szi, i, 0, nSlide);
+            GamcPlayer(pgi, szi, i, 0);
+            GamcMisc(pgi, szi, i);
+            break;
+         case 2:										// Joystick 2
+            GamcAnalogJoy(pgi, szi, i, 1, nSlide);
+            GamcPlayer(pgi, szi, i, 1);
+            GamcMisc(pgi, szi, i);
+            break;
+         case 3:										// Joystick 3
+            GamcAnalogJoy(pgi, szi, i, 2, nSlide);
+            GamcPlayer(pgi, szi, i, 2);
+            GamcMisc(pgi, szi, i);
+            break;
+         case 4:										// X-Arcade left side
+            GamcMisc(pgi, szi, i);
+            GamcPlayerHotRod(pgi, szi, i, 0x10, nSlide);
+            break;
+         case 5:										// X-Arcade right side
+            GamcMisc(pgi, szi, i);
+            GamcPlayerHotRod(pgi, szi, i, 0x11, nSlide);
+            break;
+         case 6:										// Hot Rod left side
+            GamcMisc(pgi, szi, i);
+            GamcPlayerHotRod(pgi, szi, i, 0x00, nSlide);
+            break;
+         case 7:										// Hot Rod right side
+            GamcMisc(pgi, szi, i);
+            GamcPlayerHotRod(pgi, szi, i, 0x01, nSlide);
+            break;
+         default:
+            GamcMisc(pgi, szi, i);
+      }
+   }
 
 	return 0;
 }
 
 static INT32 AddCustomMacro(TCHAR* szValue, BOOL bOverWrite)
 {
-	TCHAR* szQuote = NULL;
-	TCHAR* szEnd = NULL;
-
-	if (QuoteRead(&szQuote, &szEnd, szValue)) {
-		return 1;
-	}
-
+   UINT32 j;
+	struct BurnInputInfo bii;
 	INT32 nMode = -1;
 	INT32 nInput = -1;
 	BOOL bCreateNew = FALSE;
-	struct BurnInputInfo bii;
+	TCHAR* szQuote = NULL;
+	TCHAR* szEnd   = NULL;
 
-	for (UINT32 j = nGameInpCount; j < nGameInpCount + nMacroCount; j++) {
-		if (GameInp[j].nInput == GIT_MACRO_CUSTOM) {
-			if (LabelCheck(szQuote, ANSIToTCHAR(GameInp[j].Macro.szName, NULL, 0))) {
-				nInput = j;
-				break;
-			}
-		}
+	if (QuoteRead(&szQuote, &szEnd, szValue))
+		return 1;
+
+	for (j = nGameInpCount; j < nGameInpCount + nMacroCount; j++)
+   {
+		if (GameInp[j].nInput == GIT_MACRO_CUSTOM)
+      {
+         if (LabelCheck(szQuote, ANSIToTCHAR(GameInp[j].Macro.szName, NULL, 0))) {
+            nInput = j;
+            break;
+         }
+      }
 	}
 
-	if (nInput == -1) {
-		if (nMacroCount + 1 == nMaxMacro) {
+	if (nInput == -1)
+   {
+		if (nMacroCount + 1 == nMaxMacro)
 			return 1;
-		}
 		nInput = nGameInpCount + nMacroCount;
 		bCreateNew = TRUE;
 	}
 
 	_tcscpy(szQuote, ANSIToTCHAR(GameInp[nInput].Macro.szName, NULL, 0));
 
-	if ((szValue = LabelCheck(szEnd, _T("undefined"))) != NULL) {
+	if ((szValue = LabelCheck(szEnd, _T("undefined"))) != NULL)
 		nMode = 0;
-	} else {
+   else
+   {
 		if ((szValue = LabelCheck(szEnd, _T("switch"))) != NULL) {
 
-			if (bOverWrite || GameInp[nInput].Macro.nMode == 0) {
+			if (bOverWrite || GameInp[nInput].Macro.nMode == 0)
 				GameInp[nInput].Macro.Switch.nCode = (UINT16)_tcstol(szValue, &szValue, 0);
-			}
 
 			nMode = 1;
 		}
 	}
 
-	if (nMode >= 0) {
-		INT32 nFound = 0;
+	if (nMode >= 0)
+   {
+      INT32 i;
+      INT32 nFound = 0;
 
-		for (INT32 i = 0; i < 4; i++) {
-			GameInp[nInput].Macro.pVal[i] = NULL;
-			GameInp[nInput].Macro.nVal[i] = 0;
-			GameInp[nInput].Macro.nInput[i] = 0;
+      for (i = 0; i < 4; i++)
+      {
+         UINT32 j;
 
-			if (szValue == NULL) {
-				break;
-			}
+         GameInp[nInput].Macro.pVal[i] = NULL;
+         GameInp[nInput].Macro.nVal[i] = 0;
+         GameInp[nInput].Macro.nInput[i] = 0;
 
-			if (QuoteRead(&szQuote, &szEnd, szValue)) {
-				break;
-			}
+         if (szValue == NULL)
+            break;
 
-			for (UINT32 j = 0; j < nGameInpCount; j++) {
-				bii.szName = NULL;
-				BurnDrvGetInputInfo(&bii, j);
-				if (bii.pVal == NULL) {
-					continue;
-				}
+         if (QuoteRead(&szQuote, &szEnd, szValue))
+            break;
 
-				TCHAR* szString = LabelCheck(szQuote, ANSIToTCHAR(bii.szName, NULL, 0));
-				if (szString && szEnd) {
-					GameInp[nInput].Macro.pVal[i] = bii.pVal;
-					GameInp[nInput].Macro.nInput[i] = j;
+         for (j = 0; j < nGameInpCount; j++)
+         {
+            TCHAR *szString = NULL;
 
-					GameInp[nInput].Macro.nVal[i] = (UINT8)_tcstol(szEnd, &szValue, 0);
+            bii.szName = NULL;
+            BurnDrvGetInputInfo(&bii, j);
+            if (bii.pVal == NULL)
+               continue;
 
-					nFound++;
+            szString = LabelCheck(szQuote, ANSIToTCHAR(bii.szName, NULL, 0));
+            if (szString && szEnd)
+            {
+               GameInp[nInput].Macro.pVal[i] = bii.pVal;
+               GameInp[nInput].Macro.nInput[i] = j;
 
-					break;
-				}
-			}
-		}
+               GameInp[nInput].Macro.nVal[i] = (UINT8)_tcstol(szEnd, &szValue, 0);
 
-		if (nFound) {
-			if (GameInp[nInput].Macro.pVal[nFound - 1]) {
-				GameInp[nInput].nInput = GIT_MACRO_CUSTOM;
-				GameInp[nInput].Macro.nMode = nMode;
-				if (bCreateNew) {
-					nMacroCount++;
-				}
-				return 0;
-			}
-		}
-	}
+               nFound++;
+
+               break;
+            }
+         }
+      }
+
+      if (nFound)
+      {
+         if (GameInp[nInput].Macro.pVal[nFound - 1])
+         {
+            GameInp[nInput].nInput = GIT_MACRO_CUSTOM;
+            GameInp[nInput].Macro.nMode = nMode;
+            if (bCreateNew)
+               nMacroCount++;
+            return 0;
+         }
+      }
+   }
 
 	return 1;
 }
@@ -1438,91 +1480,91 @@ INT32 GameInputAutoIni(INT32 nPlayer, TCHAR* lpszFile, BOOL bOverWrite)
 {
 	TCHAR szLine[1024];
 	INT32 nFileVersion = 0;
+   FILE *h;
 	UINT32 i;
 
 	nAnalogSpeed = 0x0100;
 	
-	FILE* h = _tfopen(lpszFile, _T("rt"));
-	if (h == NULL) {
+	h = _tfopen(lpszFile, _T("rt"));
+	if (h == NULL)
 		return 1;
-	}
 
 	// Go through each line of the config file and process inputs
-	while (_fgetts(szLine, sizeof(szLine), h)) {
-		TCHAR* szValue;
-		INT32 nLen = _tcslen(szLine);
+	while (_fgetts(szLine, sizeof(szLine), h))
+   {
+      TCHAR* szValue;
+      INT32 nLen = _tcslen(szLine);
 
-		// Get rid of the linefeed at the end
-		if (szLine[nLen - 1] == 10) {
-			szLine[nLen - 1] = 0;
-			nLen--;
-		}
+      // Get rid of the linefeed at the end
+      if (szLine[nLen - 1] == 10) {
+         szLine[nLen - 1] = 0;
+         nLen--;
+      }
 
-		szValue = LabelCheck(szLine, _T("version"));
-		if (szValue) {
-			nFileVersion = _tcstol(szValue, NULL, 0);
-		}
-		szValue = LabelCheck(szLine, _T("analog"));
-		if (szValue) {
-			nAnalogSpeed = _tcstol(szValue, NULL, 0);
-		}
+      szValue = LabelCheck(szLine, _T("version"));
+      if (szValue)
+         nFileVersion = _tcstol(szValue, NULL, 0);
+      szValue = LabelCheck(szLine, _T("analog"));
+      if (szValue)
+         nAnalogSpeed = _tcstol(szValue, NULL, 0);
 
-		if (nConfigMinVersion <= nFileVersion && nFileVersion <= nBurnVer) {
-			szValue = LabelCheck(szLine, _T("input"));
-			if (szValue) {
-				TCHAR* szQuote = NULL;
-				TCHAR* szEnd = NULL;
-				if (QuoteRead(&szQuote, &szEnd, szValue)) {
-					continue;
-				}
+      if (nConfigMinVersion <= nFileVersion && nFileVersion <= nBurnVer)
+      {
+         szValue = LabelCheck(szLine, _T("input"));
+         if (szValue)
+         {
+            TCHAR* szQuote = NULL;
+            TCHAR* szEnd = NULL;
+            if (QuoteRead(&szQuote, &szEnd, szValue))
+               continue;
 
-				if ((szQuote[0] == _T('p') || szQuote[0] == _T('P')) && szQuote[1] >= _T('1') && szQuote[1] <= _T('0') + nMaxPlayers && szQuote[2] == _T(' ')) {
-					if (szQuote[1] != _T('1') + nPlayer) {
-						continue;
-					}
-				} else {
-					if (nPlayer != 0) {
-						continue;
-					}
-				}
+            if ((szQuote[0] == _T('p') || szQuote[0] == _T('P')) && szQuote[1] >= _T('1') && szQuote[1] <= _T('0') + nMaxPlayers && szQuote[2] == _T(' ')) {
+               if (szQuote[1] != _T('1') + nPlayer) {
+                  continue;
+               }
+            } else {
+               if (nPlayer != 0) {
+                  continue;
+               }
+            }
 
-				// Find which input number this refers to
-				i = InputNameToNum(szQuote);
-				if (i == ~0U) {
-					i = InputInfoToNum(szQuote);
-					if (i == ~0U) {
-						continue;
-					}
-				}
+            // Find which input number this refers to
+            i = InputNameToNum(szQuote);
+            if (i == ~0U) {
+               i = InputInfoToNum(szQuote);
+               if (i == ~0U) {
+                  continue;
+               }
+            }
 
-				if (GameInp[i].nInput == 0 || bOverWrite) {				// Undefined - assign mapping
-					StringToInp(GameInp + i, szEnd);
-				}
-			}
+            if (GameInp[i].nInput == 0 || bOverWrite) {				// Undefined - assign mapping
+               StringToInp(GameInp + i, szEnd);
+            }
+         }
 
-			szValue = LabelCheck(szLine, _T("macro"));
-			if (szValue) {
-				TCHAR* szQuote = NULL;
-				TCHAR* szEnd = NULL;
-				if (QuoteRead(&szQuote, &szEnd, szValue)) {
-					continue;
-				}
+         szValue = LabelCheck(szLine, _T("macro"));
+         if (szValue) {
+            TCHAR* szQuote = NULL;
+            TCHAR* szEnd = NULL;
+            if (QuoteRead(&szQuote, &szEnd, szValue)) {
+               continue;
+            }
 
-				i = MacroNameToNum(szQuote);
-				if (i != ~0U) {
-					i += nGameInpCount;
-					if (GameInp[i].Macro.nMode == 0 || bOverWrite) {	// Undefined - assign mapping
-						StringToMacro(GameInp + i, szEnd);
-					}
-				}
-			}
+            i = MacroNameToNum(szQuote);
+            if (i != ~0U) {
+               i += nGameInpCount;
+               if (GameInp[i].Macro.nMode == 0 || bOverWrite) {	// Undefined - assign mapping
+                  StringToMacro(GameInp + i, szEnd);
+               }
+            }
+         }
 
-			szValue = LabelCheck(szLine, _T("custom"));
-			if (szValue) {
-				AddCustomMacro(szValue, bOverWrite);
-			}
-		}
-	}
+         szValue = LabelCheck(szLine, _T("custom"));
+         if (szValue) {
+            AddCustomMacro(szValue, bOverWrite);
+         }
+      }
+   }
 
 	fclose(h);
 
@@ -1554,49 +1596,49 @@ INT32 ConfigGameLoadHardwareDefaults()
 		nApplyHardwareDefaults = 1;
 	}
 	
-	if (nApplyHardwareDefaults) {
-		for (INT32 nPlayer = 0; nPlayer < nMaxPlayers; nPlayer++) {
+	if (nApplyHardwareDefaults)
+   {
+      INT32 nPlayer;
+		for (nPlayer = 0; nPlayer < nMaxPlayers; nPlayer++)
 			GameInputAutoIni(nPlayer, szFileName, TRUE);
-		}
 	}
 
 	return 0;
 }
 
 // Auto-configure any undefined inputs to defaults
-INT32 GameInpDefault()
+INT32 GameInpDefault(void)
 {
+   INT32 nPlayer;
 	struct GameInp* pgi;
 	struct BurnInputInfo bii;
 	UINT32 i;
 
-	for (INT32 nPlayer = 0; nPlayer < nMaxPlayers; nPlayer++) {
-
-		if ((nPlayerDefaultControls[nPlayer] & 0x0F) != 0x0F) {
+	for (nPlayer = 0; nPlayer < nMaxPlayers; nPlayer++)
+   {
+		if ((nPlayerDefaultControls[nPlayer] & 0x0F) != 0x0F)
 			continue;
-		}
 
 		GameInputAutoIni(nPlayer, szPlayerDefaultIni[nPlayer], FALSE);
 	}
 
 	// Fill all inputs still undefined
-	for (i = 0, pgi = GameInp; i < nGameInpCount; i++, pgi++) {
-		if (pgi->nInput) {											// Already defined - leave it alone
+	for (i = 0, pgi = GameInp; i < nGameInpCount; i++, pgi++)
+   {
+		if (pgi->nInput) // Already defined - leave it alone
 			continue;
-		}
 
 		// Get the extra info about the input
 		bii.szInfo = NULL;
 		BurnDrvGetInputInfo(&bii, i);
-		if (bii.pVal == NULL) {
+		if (bii.pVal == NULL)
 			continue;
-		}
-		if (bii.szInfo == NULL) {
+		if (bii.szInfo == NULL)
 			bii.szInfo = "";
-		}
 
 		// Dip switches - set to constant
-		if (bii.nType & BIT_GROUP_CONSTANT) {
+		if (bii.nType & BIT_GROUP_CONSTANT)
+      {
 			pgi->nInput = GIT_CONSTANT;
 			continue;
 		}
@@ -1605,10 +1647,10 @@ INT32 GameInpDefault()
 	}
 
 	// Fill in macros still undefined
-	for (i = 0; i < nMacroCount; i++, pgi++) {
-		if (pgi->nInput != GIT_MACRO_AUTO || pgi->Macro.nMode) {	// Already defined - leave it alone
+	for (i = 0; i < nMacroCount; i++, pgi++)
+   {
+		if (pgi->nInput != GIT_MACRO_AUTO || pgi->Macro.nMode)	// Already defined - leave it alone
 			continue;
-		}
 
 		GameInpAutoOne(pgi, pgi->Macro.szName);
 	}
@@ -1621,44 +1663,51 @@ INT32 GameInpDefault()
 
 INT32 GameInpWrite(FILE* h)
 {
+   struct GameInp* pgi;
+   UINT32 i;
 	// Write input types
-	for (UINT32 i = 0; i < nGameInpCount; i++) {
-		TCHAR* szName = NULL;
-		INT32 nPad = 0;
-		szName = InputNumToName(i);
-		_ftprintf(h, _T("input  \"%s\" "), szName);
-		nPad = 16 - _tcslen(szName);
-		for (INT32 j = 0; j < nPad; j++) {
-			_ftprintf(h, _T(" "));
-		}
-		_ftprintf(h, _T("%s\n"), InpToString(GameInp + i));
-	}
+	for (i = 0; i < nGameInpCount; i++)
+   {
+      INT32 j;
+      TCHAR* szName = NULL;
+      INT32 nPad = 0;
+      szName = InputNumToName(i);
+      _ftprintf(h, _T("input  \"%s\" "), szName);
+      nPad = 16 - _tcslen(szName);
+      for (j = 0; j < nPad; j++)
+         _ftprintf(h, _T(" "));
+      _ftprintf(h, _T("%s\n"), InpToString(GameInp + i));
+   }
 
 	_ftprintf(h, _T("\n"));
 
-	struct GameInp* pgi = GameInp + nGameInpCount;
-	for (UINT32 i = 0; i < nMacroCount; i++, pgi++) {
-		INT32 nPad = 0;
+	pgi = GameInp + nGameInpCount;
+	for (i = 0; i < nMacroCount; i++, pgi++)
+   {
+      INT32 nPad = 0;
 
-		if (pgi->nInput & GIT_GROUP_MACRO) {
-			switch (pgi->nInput) {
-				case GIT_MACRO_AUTO:									// Auto-assigned macros
-					_ftprintf(h, _T("macro  \"%hs\" "), pgi->Macro.szName);
-					break;
-				case GIT_MACRO_CUSTOM:									// Custom macros
-					_ftprintf(h, _T("custom \"%hs\" "), pgi->Macro.szName);
-					break;
-				default:												// Unknown -- ignore
-					continue;
-			}
+      if (pgi->nInput & GIT_GROUP_MACRO)
+      {
+         INT32 j;
 
-			nPad = 16 - strlen(pgi->Macro.szName);
-			for (INT32 j = 0; j < nPad; j++) {
-				_ftprintf(h, _T(" "));
-			}
-			_ftprintf(h, _T("%s\n"), InpMacroToString(pgi));
-		}
-	}
+         switch (pgi->nInput)
+         {
+            case GIT_MACRO_AUTO:									// Auto-assigned macros
+               _ftprintf(h, _T("macro  \"%hs\" "), pgi->Macro.szName);
+               break;
+            case GIT_MACRO_CUSTOM:									// Custom macros
+               _ftprintf(h, _T("custom \"%hs\" "), pgi->Macro.szName);
+               break;
+            default:												// Unknown -- ignore
+               continue;
+         }
+
+         nPad = 16 - strlen(pgi->Macro.szName);
+         for (j = 0; j < nPad; j++)
+            _ftprintf(h, _T(" "));
+         _ftprintf(h, _T("%s\n"), InpMacroToString(pgi));
+      }
+   }
 
 	return 0;
 }
@@ -1674,20 +1723,17 @@ INT32 GameInpRead(TCHAR* szVal, BOOL bOverWrite)
 	UINT32 i = 0;
 
 	nRet = QuoteRead(&szQuote, &szEnd, szVal);
-	if (nRet) {
+	if (nRet)
 		return 1;
-	}
 
 	// Find which input number this refers to
 	i = InputNameToNum(szQuote);
-	if (i == ~0U) {
+	if (i == ~0U)
 		return 1;
-	}
 
-	if (bOverWrite || GameInp[i].nInput == 0) {
-		// Parse the input description into the GameInp structure
+   // Parse the input description into the GameInp structure
+	if (bOverWrite || GameInp[i].nInput == 0)
 		StringToInp(GameInp + i, szEnd);
-	}
 
 	return 0;
 }
@@ -1700,17 +1746,16 @@ INT32 GameInpMacroRead(TCHAR* szVal, BOOL bOverWrite)
 	UINT32 i = 0;
 
 	nRet = QuoteRead(&szQuote, &szEnd, szVal);
-	if (nRet) {
+	if (nRet)
 		return 1;
-	}
 
 	i = MacroNameToNum(szQuote);
-	if (i != ~0U) {
-		i += nGameInpCount;
-		if (GameInp[i].Macro.nMode == 0 || bOverWrite) {
-			StringToMacro(GameInp + i, szEnd);
-		}
-	}
+	if (i != ~0U)
+   {
+      i += nGameInpCount;
+      if (GameInp[i].Macro.nMode == 0 || bOverWrite)
+         StringToMacro(GameInp + i, szEnd);
+   }
 
 	return 0;
 }

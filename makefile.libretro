@@ -31,6 +31,7 @@ FBA_BURN_DIR := $(MAIN_FBA_DIR)/burn
 FBA_BURN_DRIVERS_DIR := $(MAIN_FBA_DIR)/burn/drv
 FBA_BURNER_DIR := $(MAIN_FBA_DIR)/burner
 LIBRETRO_DIR := $(FBA_BURNER_DIR)/libretro
+LIBRETRO_COMM_DIR  = $(LIBRETRO_DIR)/libretro-common
 FBA_CPU_DIR := $(MAIN_FBA_DIR)/cpu
 FBA_LIB_DIR := $(MAIN_FBA_DIR)/dep/libs
 FBA_INTERFACE_DIR := $(MAIN_FBA_DIR)/intf
@@ -41,6 +42,15 @@ GRIFFIN_DIR = griffin-libretro
 EXTERNAL_ZLIB = 0
 
 TARGET_NAME := fbalpha2012_cps2
+
+SPACE :=
+SPACE := $(SPACE) $(SPACE)
+BACKSLASH :=
+BACKSLASH := \$(BACKSLASH)
+filter_out1 = $(filter-out $(firstword $1),$1)
+filter_out2 = $(call filter_out1,$(call filter_out1,$1))
+unixpath = $(subst \,/,$1)
+unixcygpath = /$(subst :,,$(call unixpath,$1))
 
 ifeq ($(platform), unix)
    TARGET := $(TARGET_NAME)_libretro.so
@@ -196,6 +206,41 @@ else ifeq ($(platform), gcw0)
    CFLAGS += -ffast-math -march=mips32 -mtune=mips32r2 -mhard-float
    CXXFLAGS += -ffast-math -march=mips32 -mtune=mips32r2 -mhard-float
 
+# Windows MSVC 2003 Xbox 1
+else ifeq ($(platform), xbox1_msvc2003)
+TARGET := $(TARGET_NAME)_libretro_xdk1.lib
+CC  = CL.exe
+CXX  = CL.exe
+LD   = lib.exe
+
+export INCLUDE := $(XDK)/xbox/include
+export LIB := $(XDK)/xbox/lib
+PATH := $(call unixcygpath,$(XDK)/xbox/bin/vc71):$(PATH)
+PSS_STYLE :=2
+CFLAGS   += -D_XBOX -D_XBOX1
+CXXFLAGS += -D_XBOX -D_XBOX1
+STATIC_LINKING=1
+
+# Windows MSVC 2003 x86
+else ifeq ($(platform), windows_msvc2003_x86)
+	CC  = cl.exe
+	CXX = cl.exe
+
+PATH := $(shell IFS=$$'\n'; cygpath "$(VS71COMNTOOLS)../../Vc7/bin"):$(PATH)
+PATH := $(PATH):$(shell IFS=$$'\n'; cygpath "$(VS71COMNTOOLS)../IDE")
+INCLUDE := $(shell IFS=$$'\n'; cygpath "$(VS71COMNTOOLS)../../Vc7/include")
+LIB := $(shell IFS=$$'\n'; cygpath -w "$(VS71COMNTOOLS)../../Vc7/lib")
+BIN := $(shell IFS=$$'\n'; cygpath "$(VS71COMNTOOLS)../../Vc7/bin")
+
+WindowsSdkDir := $(INETSDK)
+
+export INCLUDE := $(INCLUDE);$(INETSDK)/Include;libretro-common/include/compat/msvc
+export LIB := $(LIB);$(WindowsSdkDir);$(INETSDK)/Lib
+TARGET := $(TARGET_NAME)_libretro.dll
+PSS_STYLE :=2
+LDFLAGS += -DLL
+CFLAGS += -D_CRT_SECURE_NO_DEPRECATE
+
 else
    TARGET := $(TARGET_NAME)_libretro.dll
    CC = gcc
@@ -347,7 +392,6 @@ FBA_DEFINES += -DFBACORES_CPS \
 	-D__LIBRETRO_OPTIMIZATIONS__ \
 	$(ENDIANNESS_DEFINES) \
 	$(PLATFORM_DEFINES) \
-	-DINLINE="static inline" \
 	-DSH2_INLINE="static inline"
 
 INCDIRS := -I$(FBA_BURNER_DIR)/win32 \
@@ -373,7 +417,12 @@ INCDIRS := -I$(FBA_BURNER_DIR)/win32 \
 	-I$(FBA_BURN_DIR)/drv/toaplan \
 	-I$(FBA_BURN_DIR)/drv/taito \
 	-I$(FBA_GENERATED_DIR) \
+	-I$(LIBRETRO_COMM_DIR)/include \
 	-I$(FBA_LIB_DIR)
+
+ifneq (,$(findstring msvc2003,$(platform)))
+INCDIRS += -I$(LIBRETRO_COMM_DIR)/include/compat/msvc
+endif
 
 ifeq ($(LIBRETRO_OPTIMIZATIONS), 1)
 FBA_DEFINES += -D__LIBRETRO_OPTIMIZATIONS__ 
@@ -383,11 +432,13 @@ ifeq ($(DEBUG), 1)
 CFLAGS += -O0 -g
 CXXFLAGS += -O0 -g
 else
-CFLAGS += -O3 -DNDEBUG
-CXXFLAGS += -O3 -DNDEBUG
+CFLAGS += -O2 -DNDEBUG
+CXXFLAGS += -O2 -DNDEBUG
 endif
 
 ifeq ($(platform), sncps3)
+WARNINGS_DEFINES =
+else ifneq (,$(findstring msvc,$(platform)))
 WARNINGS_DEFINES =
 else
 WARNINGS_DEFINES = -Wno-write-strings

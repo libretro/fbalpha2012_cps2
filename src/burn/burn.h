@@ -7,6 +7,8 @@
  extern "C" {
 #endif
 
+#include <retro_inline.h>
+
 #if !defined (_WIN32)
  #define __cdecl
 #endif
@@ -115,11 +117,13 @@ extern INT32 (__cdecl *BurnExtCartridgeSetupCallback)(enum BurnCartrigeCommand n
 
 extern UINT32 nCurrentFrame;
 
-inline static INT32 GetCurrentFrame() {
+static INLINE INT32 GetCurrentFrame(void)
+{
 	return nCurrentFrame;
 }
 
-inline static void SetCurrentFrame(const UINT32 n) {
+static INLINE void SetCurrentFrame(const UINT32 n)
+{
 	nCurrentFrame = n;
 }
 

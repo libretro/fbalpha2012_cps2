@@ -2,6 +2,7 @@
 #include "burnint.h"
 #include "m68000_intf.h"
 #include "m68000_debug.h"
+#include <retro_inline.h>
 
 #ifdef EMU_M68K
 INT32 nSekM68KContextSize[SEK_MAX];
@@ -78,7 +79,7 @@ static UINT32 GetA68KUSP()
 
 #if defined (FBA_DEBUG)
 
-inline static void CheckBreakpoint_R(UINT32 a, const UINT32 m)
+static INLINE void CheckBreakpoint_R(UINT32 a, const UINT32 m)
 {
 	a &= m;
 
@@ -95,7 +96,7 @@ inline static void CheckBreakpoint_R(UINT32 a, const UINT32 m)
 	}
 }
 
-inline static void CheckBreakpoint_W(UINT32 a, const UINT32 m)
+static INLINE void CheckBreakpoint_W(UINT32 a, const UINT32 m)
 {
 	a &= m;
 
@@ -112,7 +113,7 @@ inline static void CheckBreakpoint_W(UINT32 a, const UINT32 m)
 	}
 }
 
-inline static void CheckBreakpoint_PC()
+static INLINE void CheckBreakpoint_PC()
 {
 	for (INT32 i = 0; BreakpointFetch[i].address; i++) {
 		if (BreakpointFetch[i].address == (UINT32)SekGetPC(-1)) {
@@ -127,7 +128,7 @@ inline static void CheckBreakpoint_PC()
 	}
 }
 
-inline static void SingleStep_PC()
+static INLINE void SingleStep_PC()
 {
 #ifdef EMU_A68K
 	UpdateA68KContext();
@@ -210,7 +211,7 @@ DEFLONGHANDLERS(0)
 #define FIND_F(x) pSekExt->MemMap[(x >> SEK_SHIFT) + SEK_WADD * 2]
 
 // Normal memory access functions
-inline static UINT8 ReadByte(UINT32 a)
+static INLINE UINT8 ReadByte(UINT32 a)
 {
 	UINT8* pr;
 
@@ -226,7 +227,7 @@ inline static UINT8 ReadByte(UINT32 a)
 	return pSekExt->ReadByte[(uintptr_t)pr](a);
 }
 
-inline static UINT8 FetchByte(UINT32 a)
+static INLINE UINT8 FetchByte(UINT32 a)
 {
 	UINT8* pr;
 
@@ -242,7 +243,7 @@ inline static UINT8 FetchByte(UINT32 a)
 	return pSekExt->ReadByte[(uintptr_t)pr](a);
 }
 
-inline static void WriteByte(UINT32 a, UINT8 d)
+static INLINE void WriteByte(UINT32 a, UINT8 d)
 {
 	UINT8* pr;
 
@@ -259,7 +260,7 @@ inline static void WriteByte(UINT32 a, UINT8 d)
 	pSekExt->WriteByte[(uintptr_t)pr](a, d);
 }
 
-inline static void WriteByteROM(UINT32 a, UINT8 d)
+static INLINE void WriteByteROM(UINT32 a, UINT8 d)
 {
 	UINT8* pr;
 
@@ -274,7 +275,7 @@ inline static void WriteByteROM(UINT32 a, UINT8 d)
 	pSekExt->WriteByte[(uintptr_t)pr](a, d);
 }
 
-inline static UINT16 ReadWord(UINT32 a)
+static INLINE UINT16 ReadWord(UINT32 a)
 {
 	UINT8* pr;
 
@@ -289,7 +290,7 @@ inline static UINT16 ReadWord(UINT32 a)
 	return pSekExt->ReadWord[(uintptr_t)pr](a);
 }
 
-inline static UINT16 FetchWord(UINT32 a)
+static INLINE UINT16 FetchWord(UINT32 a)
 {
 	UINT8* pr;
 
@@ -304,7 +305,7 @@ inline static UINT16 FetchWord(UINT32 a)
 	return pSekExt->ReadWord[(uintptr_t)pr](a);
 }
 
-inline static void WriteWord(UINT32 a, UINT16 d)
+static INLINE void WriteWord(UINT32 a, UINT16 d)
 {
 	UINT8* pr;
 
@@ -320,7 +321,7 @@ inline static void WriteWord(UINT32 a, UINT16 d)
 	pSekExt->WriteWord[(uintptr_t)pr](a, d);
 }
 
-inline static void WriteWordROM(UINT32 a, UINT16 d)
+static INLINE void WriteWordROM(UINT32 a, UINT16 d)
 {
 	UINT8* pr;
 
@@ -334,7 +335,7 @@ inline static void WriteWordROM(UINT32 a, UINT16 d)
 	pSekExt->WriteWord[(uintptr_t)pr](a, d);
 }
 
-inline static UINT32 ReadLong(UINT32 a)
+static INLINE UINT32 ReadLong(UINT32 a)
 {
 	UINT8* pr;
 
@@ -351,7 +352,7 @@ inline static UINT32 ReadLong(UINT32 a)
 	return pSekExt->ReadLong[(uintptr_t)pr](a);
 }
 
-inline static UINT32 FetchLong(UINT32 a)
+static INLINE UINT32 FetchLong(UINT32 a)
 {
 	UINT8* pr;
 
@@ -368,7 +369,7 @@ inline static UINT32 FetchLong(UINT32 a)
 	return pSekExt->ReadLong[(uintptr_t)pr](a);
 }
 
-inline static void WriteLong(UINT32 a, UINT32 d)
+static INLINE void WriteLong(UINT32 a, UINT32 d)
 {
 	UINT8* pr;
 
@@ -385,7 +386,7 @@ inline static void WriteLong(UINT32 a, UINT32 d)
 	pSekExt->WriteLong[(uintptr_t)pr](a, d);
 }
 
-inline static void WriteLongROM(UINT32 a, UINT32 d)
+static INLINE void WriteLongROM(UINT32 a, UINT32 d)
 {
 	UINT8* pr;
 
@@ -890,7 +891,8 @@ static INT32 SekInitCPUC68K(INT32 nCount, INT32 nCPUType)
 
 void SekNewFrame()
 {
-	for (INT32 i = 0; i <= nSekCount; i++)
+   INT32 i;
+	for (i = 0; i <= nSekCount; i++)
 		nSekCycles[i] = 0;
 
 	nSekCyclesTotal = 0;
@@ -924,6 +926,7 @@ static struct cpu_core_config SekCheatCpuConfig =
 
 INT32 SekInit(INT32 nCount, INT32 nCPUType)
 {
+   INT32 j;
 	struct SekExt* ps = NULL;
 
 #if !defined BUILD_A68K
@@ -950,7 +953,8 @@ INT32 SekInit(INT32 nCount, INT32 nCPUType)
 	// Put in default memory handlers
 	ps = SekExt[nCount];
 
-	for (INT32 j = 0; j < SEK_MAXHANDLER; j++) {
+	for (j = 0; j < SEK_MAXHANDLER; j++)
+   {
 		ps->ReadByte[j]  = DefReadByte;
 		ps->WriteByte[j] = DefWriteByte;
 	}
@@ -1024,7 +1028,8 @@ INT32 SekInit(INT32 nCount, INT32 nCPUType)
 #endif
 
 #if SEK_MAXHANDLER >= 11
-	for (int j = 10; j < SEK_MAXHANDLER; j++) {
+	for (j = 10; j < SEK_MAXHANDLER; j++)
+   {
 		ps->ReadWord[j]  = DefReadWord0;
 		ps->WriteWord[j] = DefWriteWord0;
 		ps->ReadLong[j]  = DefReadLong0;
@@ -1036,8 +1041,10 @@ INT32 SekInit(INT32 nCount, INT32 nCPUType)
 	SekDbgDisableBreakpoints();
 
 #ifdef EMU_A68K
-	if (bBurnUseASMCPUEmulation && nCPUType == 0x68000) {
-		if (SekInitCPUA68K(nCount, nCPUType)) {
+	if (bBurnUseASMCPUEmulation && nCPUType == 0x68000)
+   {
+		if (SekInitCPUA68K(nCount, nCPUType))
+      {
 			SekExit();
 			return 1;
 		}
@@ -1105,10 +1112,12 @@ static void SekCPUExitC68K(INT32 i)
 }
 #endif
 
-INT32 SekExit()
+INT32 SekExit(void)
 {
+   INT32 i;
 	// Deallocate cpu extenal data (memory map etc)
-	for (INT32 i = 0; i <= nSekCount; i++) {
+	for (i = 0; i <= nSekCount; i++)
+   {
 
 #ifdef EMU_A68K
 		SekCPUExitA68K(i);
@@ -1580,17 +1589,21 @@ INT32 SekDbgSetBreakpointFetch(UINT32 nAddress, INT32 nIdentifier)
 // Note - each page is 1 << SEK_BITS.
 INT32 SekMapMemory(UINT8* pMemory, UINT32 nStart, UINT32 nEnd, INT32 nType)
 {
+   UINT32 i;
+   UINT8 *Ptr;
+   UINT8 **pMemMap;
 #if defined FBA_DEBUG
 	if (!DebugCPU_SekInitted) bprintf(PRINT_ERROR, _T("SekMapMemory called without init\n"));
 	if (nSekActive == -1) bprintf(PRINT_ERROR, _T("SekMapMemory called when no CPU open\n"));
 #endif
 
-	UINT8* Ptr = pMemory - nStart;
-	UINT8** pMemMap = pSekExt->MemMap + (nStart >> SEK_SHIFT);
+	Ptr     = pMemory - nStart;
+	pMemMap = pSekExt->MemMap + (nStart >> SEK_SHIFT);
 
 	// Special case for ROM banks
-	if (nType == SM_ROM) {
-		for (UINT32 i = (nStart & ~SEK_PAGEM); i <= nEnd; i += SEK_PAGE_SIZE, pMemMap++) {
+	if (nType == SM_ROM)
+   {
+		for (i = (nStart & ~SEK_PAGEM); i <= nEnd; i += SEK_PAGE_SIZE, pMemMap++) {
 			pMemMap[0]			  = Ptr + i;
 			pMemMap[SEK_WADD * 2] = Ptr + i;
 		}
@@ -1598,17 +1611,14 @@ INT32 SekMapMemory(UINT8* pMemory, UINT32 nStart, UINT32 nEnd, INT32 nType)
 		return 0;
 	}
 
-	for (UINT32 i = (nStart & ~SEK_PAGEM); i <= nEnd; i += SEK_PAGE_SIZE, pMemMap++) {
+	for (i = (nStart & ~SEK_PAGEM); i <= nEnd; i += SEK_PAGE_SIZE, pMemMap++) {
 
-		if (nType & SM_READ) {					// Read
+		if (nType & SM_READ)					// Read
 			pMemMap[0]			  = Ptr + i;
-		}
-		if (nType & SM_WRITE) {					// Write
+		if (nType & SM_WRITE)					// Write
 			pMemMap[SEK_WADD]	  = Ptr + i;
-		}
-		if (nType & SM_FETCH) {					// Fetch
+		if (nType & SM_FETCH)					// Fetch
 			pMemMap[SEK_WADD * 2] = Ptr + i;
-		}
 	}
 
 	return 0;
@@ -1616,25 +1626,24 @@ INT32 SekMapMemory(UINT8* pMemory, UINT32 nStart, UINT32 nEnd, INT32 nType)
 
 INT32 SekMapHandler(uintptr_t nHandler, UINT32 nStart, UINT32 nEnd, INT32 nType)
 {
+   UINT32 i;
+   UINT8 **pMemMap;
 #if defined FBA_DEBUG
 	if (!DebugCPU_SekInitted) bprintf(PRINT_ERROR, _T("SekMapHander called without init\n"));
 	if (nSekActive == -1) bprintf(PRINT_ERROR, _T("SekMapHandler called when no CPU open\n"));
 #endif
 
-	UINT8** pMemMap = pSekExt->MemMap + (nStart >> SEK_SHIFT);
+	pMemMap = pSekExt->MemMap + (nStart >> SEK_SHIFT);
 
 	// Add to memory map
-	for (UINT32 i = (nStart & ~SEK_PAGEM); i <= nEnd; i += SEK_PAGE_SIZE, pMemMap++) {
+	for (i = (nStart & ~SEK_PAGEM); i <= nEnd; i += SEK_PAGE_SIZE, pMemMap++) {
 
-		if (nType & SM_READ) {					// Read
+		if (nType & SM_READ)					// Read
 			pMemMap[0]			  = (UINT8*)nHandler;
-		}
-		if (nType & SM_WRITE) {					// Write
+		if (nType & SM_WRITE)					// Write
 			pMemMap[SEK_WADD]	  = (UINT8*)nHandler;
-		}
-		if (nType & SM_FETCH) {					// Fetch
+		if (nType & SM_FETCH) 				// Fetch
 			pMemMap[SEK_WADD * 2] = (UINT8*)nHandler;
-		}
 	}
 
 	return 0;
@@ -1697,9 +1706,8 @@ INT32 SekSetReadByteHandler(INT32 i, pSekReadByteHandler pHandler)
 	if (nSekActive == -1) bprintf(PRINT_ERROR, _T("SekSetReadByteHandler called when no CPU open\n"));
 #endif
 
-	if (i >= SEK_MAXHANDLER) {
+	if (i >= SEK_MAXHANDLER)
 		return 1;
-	}
 
 	pSekExt->ReadByte[i] = pHandler;
 
@@ -1713,9 +1721,8 @@ INT32 SekSetWriteByteHandler(INT32 i, pSekWriteByteHandler pHandler)
 	if (nSekActive == -1) bprintf(PRINT_ERROR, _T("SekSetWriteByteHandler called when no CPU open\n"));
 #endif
 
-	if (i >= SEK_MAXHANDLER) {
+	if (i >= SEK_MAXHANDLER)
 		return 1;
-	}
 
 	pSekExt->WriteByte[i] = pHandler;
 
@@ -1729,9 +1736,8 @@ INT32 SekSetReadWordHandler(INT32 i, pSekReadWordHandler pHandler)
 	if (nSekActive == -1) bprintf(PRINT_ERROR, _T("SekSetReadWordHandler called when no CPU open\n"));
 #endif
 
-	if (i >= SEK_MAXHANDLER) {
+	if (i >= SEK_MAXHANDLER)
 		return 1;
-	}
 
 	pSekExt->ReadWord[i] = pHandler;
 
@@ -1745,9 +1751,8 @@ INT32 SekSetWriteWordHandler(INT32 i, pSekWriteWordHandler pHandler)
 	if (nSekActive == -1) bprintf(PRINT_ERROR, _T("SekSetWriteWordHandler called when no CPU open\n"));
 #endif
 
-	if (i >= SEK_MAXHANDLER) {
+	if (i >= SEK_MAXHANDLER)
 		return 1;
-	}
 
 	pSekExt->WriteWord[i] = pHandler;
 
@@ -1761,9 +1766,8 @@ INT32 SekSetReadLongHandler(INT32 i, pSekReadLongHandler pHandler)
 	if (nSekActive == -1) bprintf(PRINT_ERROR, _T("SekSetReadLongHandler called when no CPU open\n"));
 #endif
 
-	if (i >= SEK_MAXHANDLER) {
+	if (i >= SEK_MAXHANDLER)
 		return 1;
-	}
 
 	pSekExt->ReadLong[i] = pHandler;
 
@@ -1777,9 +1781,8 @@ INT32 SekSetWriteLongHandler(INT32 i, pSekWriteLongHandler pHandler)
 	if (nSekActive == -1) bprintf(PRINT_ERROR, _T("SekSetWriteLongHandler called when no CPU open\n"));
 #endif
 
-	if (i >= SEK_MAXHANDLER) {
+	if (i >= SEK_MAXHANDLER)
 		return 1;
-	}
 
 	pSekExt->WriteLong[i] = pHandler;
 
@@ -2119,16 +2122,17 @@ BOOL SekDbgSetRegister(enum SekRegister nRegister, UINT32 nValue)
 
 INT32 SekScan(INT32 nAction)
 {
+   INT32 i;
 	// Scan the 68000 states
 	struct BurnArea ba;
 
-	if ((nAction & ACB_DRIVER_DATA) == 0) {
+	if ((nAction & ACB_DRIVER_DATA) == 0)
 		return 1;
-	}
 
 	memset(&ba, 0, sizeof(ba));
 
-	for (INT32 i = 0; i <= nSekCount; i++) {
+	for (i = 0; i <= nSekCount; i++)
+   {
 		char szName[] = "MC68000 #n";
 #if defined EMU_A68K && defined EMU_M68K
 		INT32 nType = nSekCPUType[i];
@@ -2141,21 +2145,22 @@ INT32 SekScan(INT32 nAction)
 
 #if defined EMU_A68K && defined EMU_M68K
 		// Switch to another core if needed
-		if ((nAction & ACB_WRITE) && nType != nSekCPUType[i]) {
-			if (nType != 0 && nType != 0x68000 && nSekCPUType[i] != 0 && nSekCPUType[i] != 0x68000) {
+		if ((nAction & ACB_WRITE) && nType != nSekCPUType[i])
+      {
+			if (nType != 0 && nType != 0x68000 && nSekCPUType[i] != 0 && nSekCPUType[i] != 0x68000)
 				continue;
-			}
 
-			if (nSekCPUType[i] == 0x68000) {
+			if (nSekCPUType[i] == 0x68000)
+         {
 				SekCPUExitA68K(i);
-				if (SekInitCPUM68K(i, 0x68000)) {
+				if (SekInitCPUM68K(i, 0x68000))
 					return 1;
-				}
-			} else {
+			}
+         else
+         {
 				SekCPUExitM68K(i);
-				if (SekInitCPUA68K(i, 0x68000)) {
+				if (SekInitCPUA68K(i, 0x68000))
 					return 1;
-				}
 			}
 		}
 #endif

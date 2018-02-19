@@ -546,13 +546,11 @@ INT32 GamcPlayer(struct GameInp* pgi, char* szi, INT32 nPlayer, INT32 nDevice)
 
 INT32 GamcPlayerHotRod(struct GameInp* pgi, char* szi, INT32 nPlayer, INT32 nFlags, INT32 nSlide)
 {
-	char *szSearch = NULL;
-	szSearch = szPlay[nPlayer & 3];
+	char *szSearch = szPlay[nPlayer & 3];
 	INT32 k0 = 0, k1 = 0;
 
-	if (_strnicmp(szSearch, szi, 3) != 0) {				// Not our player
+	if (_strnicmp(szSearch, szi, 3) != 0) // Not our player
 		return 1;
-	}
 	szi += 3;
 
 	if ((nFlags & 1) == 0) {

@@ -22,9 +22,10 @@ static void GetRowsRange(INT32 *pnStart,INT32 *pnWidth,INT32 nRowFrom,INT32 nRow
 
    for (i=nRowFrom;i<nRowTo;i++)
    {
+      INT32 nDiff;
       INT32 nViz = BURN_ENDIAN_SWAP_INT16(CpsrRows[i&0x3ff]); nViz&=0x3ff;
       /* Work out if this is on the left or the right of our start point. */
-      INT32 nDiff = nViz - nStart;
+      nDiff = nViz - nStart;
       /* clip to 10-bit signed */
       nDiff=((nDiff+0x200)&0x3ff)-0x200;
       if (nDiff>=0)

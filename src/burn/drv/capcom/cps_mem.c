@@ -21,6 +21,7 @@ CpsMemScanCallback CpsMemScanCallbackFunction = NULL;
 // and then to set up all the pointers.
 static INT32 CpsMemIndex(void)
 {
+   INT32 i;
    UINT8*  Next; Next =  CpsMem;
 
    CpsRam90	  = Next; Next += 0x030000;							// Video Ram
@@ -44,7 +45,8 @@ static INT32 CpsMemIndex(void)
    CpsSaveRegData = Next; Next += 0x0100 * (MAX_RASTER + 1);	// Draw Copy of registers
    CpsSaveFrgData = Next; Next += 0x0010 * (MAX_RASTER + 1);	// Draw Copy of 'Four' Registers
 
-   for (INT32 i = 0; i < MAX_RASTER + 1; i++) {
+   for (i = 0; i < MAX_RASTER + 1; i++)
+   {
       CpsSaveReg[i] = CpsSaveRegData + i * 0x0100;
       CpsSaveFrg[i] = CpsSaveFrgData + i * 0x0010;
    }

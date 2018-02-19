@@ -1,4 +1,5 @@
 #include "cps.h"
+#include <retro_inline.h>
 // CPS - Read/Write
 
 // Input bits
@@ -299,7 +300,7 @@ INT32 CpsRwExit()
 	return 0;
 }
 
-inline static void StopOpposite(UINT8* pInput)
+static INLINE void StopOpposite(UINT8* pInput)
 {
    if ((*pInput & 0x03) == 0x03)
       *pInput &= ~0x03;

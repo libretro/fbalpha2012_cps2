@@ -233,17 +233,19 @@ void CheatExit()
 		struct CheatInfo* pNextCheat;
 		struct CheatInfo* pCurrentCheat = pCheatInfo;
 
-		do {
-			pNextCheat = pCurrentCheat->pNext;
-			for (INT32 i = 0; i < CHEAT_MAX_OPTIONS; i++) {
-				if (pCurrentCheat->pOption[i]) {
-					free(pCurrentCheat->pOption[i]);
-				}
-			}
-			if (pCurrentCheat) {
-				free(pCurrentCheat);
-			}
-		} while ((pCurrentCheat = pNextCheat) != 0);
+		do
+      {
+         INT32 i;
+
+         pNextCheat = pCurrentCheat->pNext;
+         for (i = 0; i < CHEAT_MAX_OPTIONS; i++)
+         {
+            if (pCurrentCheat->pOption[i])
+               free(pCurrentCheat->pOption[i]);
+         }
+         if (pCurrentCheat)
+            free(pCurrentCheat);
+      } while ((pCurrentCheat = pNextCheat) != 0);
 	}
 
 	memset (cpus, 0, sizeof(struct cheat_core));
@@ -474,9 +476,9 @@ void CheatSearchDumptoFile()
 
 void CheatSearchExcludeAddressRange(UINT32 nStart, UINT32 nEnd)
 {
-	for (UINT32 nAddress = nStart; nAddress <= nEnd; nAddress++) {
+   UINT32 nAddress;
+	for (nAddress = nStart; nAddress <= nEnd; nAddress++)
 		MemoryStatus[nAddress] = NOT_IN_RESULTS;
-	}
 }
 
 #undef NOT_IN_RESULTS

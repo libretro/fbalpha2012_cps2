@@ -1,6 +1,8 @@
 #include "burnint.h"
 #include "burn_led.h"
 
+#include <retro_inline.h>
+
 #define MAX_LED		8
 
 static INT32 led_status[MAX_LED];
@@ -21,7 +23,7 @@ static INT32 nScreenWidth, nScreenHeight;
 static INT32 screen_flipped;
 static INT32 flipscreen = -1;
 
-static inline UINT32 alpha_blend32(UINT32 d)
+static INLINE UINT32 alpha_blend32(UINT32 d)
 {
 	return (((((led_color & 0xff00ff) * led_alpha_level) + ((d & 0xff00ff) * led_alpha_level2)) & 0xff00ff00) |
 		((((led_color & 0x00ff00) * led_alpha_level) + ((d & 0x00ff00) * led_alpha_level2)) & 0x00ff0000)) >> 8;
@@ -191,8 +193,9 @@ void BurnLEDExit()
 	Debug_BurnLedInitted = 0;
 }
 
-void BurnLEDRender()
+void BurnLEDRender(void)
 {
+   INT32 i;
 #if defined FBA_DEBUG
 	if (!Debug_BurnLedInitted) bprintf(PRINT_ERROR, _T("BurnLEDRender called without init\n"));
 #endif
@@ -201,22 +204,23 @@ void BurnLEDRender()
 	INT32 ypos = led_ypos;
 	int color = BurnHighCol((led_color >> 16) & 0xff, (led_color >> 8) & 0xff, (led_color >> 0) & 0xff, 0);
 
-	for (INT32 i = 0; i < led_count; i++)
+	for (i = 0; i < led_count; i++)
 	{
-		if (xpos < 0 || xpos > (nScreenWidth - led_size)) break;
+		if (xpos < 0 || xpos > (nScreenWidth - led_size))
+         break;
 
 		if (led_status[i]) 
 		{
-			for (INT32 y = 0; y < led_size; y++)
+         INT32 y;
+			for (y = 0; y < led_size; y++)
 			{
+            INT32 x;
 				UINT8 *ptr = pBurnDraw + (((ypos + y) * nScreenWidth) + xpos) * nBurnBpp;
 
-				for (INT32 x = 0; x < led_size; x++)
+				for (x = 0; x < led_size; x++)
 				{
 					if (nBurnBpp >= 4)
-					{
 						*((UINT32*)ptr) = alpha_blend32(*((UINT32*)ptr));
-					}
 					else if (nBurnBpp == 3)
 					{
 						UINT32 t = alpha_blend32((ptr[2] << 16) | (ptr[1] << 8) | ptr[0]);
@@ -226,9 +230,7 @@ void BurnLEDRender()
 						ptr[0] = t >> 0;
 					}
 					else if (nBurnBpp == 2) // alpha blend not supported for 16-bit
-					{
 						*((UINT16*)ptr) =  color;
-					}
 
 					ptr += nBurnBpp;
 				}
@@ -242,17 +244,16 @@ void BurnLEDRender()
 
 INT32 BurnLEDScan(INT32 nAction, INT32 *pnMin)
 {
+   struct BurnArea ba;
 #if defined FBA_DEBUG
 	if (!Debug_BurnLedInitted) bprintf(PRINT_ERROR, _T("BurnLEDScan called without init\n"));
 #endif
 
-	struct BurnArea ba;
-
-	if (pnMin != NULL) {
+	if (pnMin != NULL)
 		*pnMin = 0x029707;
-	}
 
-	if (nAction & ACB_DRIVER_DATA) {
+	if (nAction & ACB_DRIVER_DATA)
+   {
 		ba.Data		= &led_status;
 		ba.nLen		= led_count * sizeof(INT32);
 		ba.nAddress	= 0;

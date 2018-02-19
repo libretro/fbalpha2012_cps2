@@ -1,4 +1,5 @@
 #include "cps.h"
+#include <retro_inline.h>
 // CPS (general)
 
 INT32 Cps = 0;							// 1 = CPS1, 2 = CPS2, 3 = CPS Changer
@@ -19,7 +20,7 @@ UINT32 nCpsGfxScroll[4]={0,0,0,0}; // Offset to Scroll tiles
 UINT32 nCpsGfxMask=0;	  // Address mask
 
 // Separate out the bits of a byte
-inline static UINT32 Separate(UINT32 b)
+static INLINE UINT32 Separate(UINT32 b)
 {
 	UINT32 a = b;									// 00000000 00000000 00000000 11111111
 	a  =((a & 0x000000F0) << 12) | (a & 0x0000000F);	// 00000000 00001111 00000000 00001111
@@ -34,14 +35,13 @@ static UINT32 SepTable[256];
 
 static INT32 SepTableCalc()
 {
+   INT32 i;
 	static INT32 bDone = 0;
-	if (bDone) {
+	if (bDone)
 		return 0;										// Already done it
-	}
 
-	for (INT32 i = 0; i < 256; i++) {
+	for (i = 0; i < 256; i++)
 		SepTable[i] = Separate(255 - i);
-	}
 
 	bDone = 1;											// done it
 	return 0;
@@ -55,17 +55,16 @@ static INT32 LoadUp(UINT8** pRom, INT32* pnRomLen, INT32 nNum)
 
 	ri.nLen = 0;
 	BurnDrvGetRomInfo(&ri, nNum);	// Find out how big the rom is
-	if (ri.nLen <= 0) {
+	if (ri.nLen <= 0)
 		return 1;
-	}
 
 	// Load the rom
 	Rom = (UINT8*)BurnMalloc(ri.nLen);
-	if (Rom == NULL) {
+	if (Rom == NULL)
 		return 1;
-	}
 
-	if (BurnLoadRom(Rom,nNum,1)) {
+	if (BurnLoadRom(Rom,nNum,1))
+   {
 		BurnFree(Rom);
 		return 1;
 	}
@@ -75,31 +74,35 @@ static INT32 LoadUp(UINT8** pRom, INT32* pnRomLen, INT32 nNum)
 	return 0;
 }
 
-static INT32 LoadUpSplit(UINT8** pRom, INT32* pnRomLen, INT32 nNum, INT32 nNumRomsGroup)
+static INT32 LoadUpSplit(UINT8** pRom,
+      INT32* pnRomLen, INT32 nNum, INT32 nNumRomsGroup)
 {
 	UINT8 *Rom;
 	struct BurnRomInfo ri;
 	UINT32 nRomSize[8], nTotalRomSize = 0;
 	INT32 i;
+   INT32 Offset = 0;
 
 	ri.nLen = 0;
-	for (i = 0; i < nNumRomsGroup; i++) {
+	for (i = 0; i < nNumRomsGroup; i++)
+   {
 		BurnDrvGetRomInfo(&ri, nNum + i);
 		nRomSize[i] = ri.nLen;
 	}
 	
-	for (i = 0; i < nNumRomsGroup; i++) {
+	for (i = 0; i < nNumRomsGroup; i++)
 		nTotalRomSize += nRomSize[i];
-	}
 	if (!nTotalRomSize) return 1;
 
 	Rom = (UINT8*)BurnMalloc(nTotalRomSize);
 	if (Rom == NULL) return 1;
 	
-	INT32 Offset = 0;
-	for (i = 0; i < nNumRomsGroup; i++) {
-		if (i > 0) Offset += nRomSize[i - 1];
-		if (BurnLoadRom(Rom + Offset, nNum + i, 1)) {
+	for (i = 0; i < nNumRomsGroup; i++)
+   {
+		if (i > 0)
+         Offset += nRomSize[i - 1];
+		if (BurnLoadRom(Rom + Offset, nNum + i, 1))
+      {
 			BurnFree(Rom);
 			return 1;
 		}
@@ -122,7 +125,7 @@ static INT32 LoadUpSplit(UINT8** pRom, INT32* pnRomLen, INT32 nNum, INT32 nNumRo
 // i = ABCD nnnn nnnn nnnn nnnn n000
 // s = 00AB Cnnn nnnn nnnn nnnn nnD0
 
-inline static void Cps2Load100000(UINT8* Tile, UINT8* Sect, INT32 nShift)
+static INLINE void Cps2Load100000(UINT8* Tile, UINT8* Sect, INT32 nShift)
 {
 	UINT8 *pt, *pEnd, *ps;
 	pt = Tile; pEnd = Tile + 0x100000; ps = Sect;
@@ -141,6 +144,7 @@ inline static void Cps2Load100000(UINT8* Tile, UINT8* Sect, INT32 nShift)
 
 static INT32 Cps2LoadOne(UINT8* Tile, INT32 nNum, INT32 nWord, INT32 nShift)
 {
+   INT32 b;
 	UINT8 *Rom = NULL; INT32 nRomLen = 0;
 	UINT8 *pt, *pr;
 
@@ -149,7 +153,9 @@ static INT32 Cps2LoadOne(UINT8* Tile, INT32 nNum, INT32 nWord, INT32 nShift)
 		return 1;
 	}
 
-	if (nWord == 0) {
+	if (nWord == 0)
+   {
+      INT32 i;
 		UINT8*Rom2 = NULL; INT32 nRomLen2 = 0;
 		UINT8*Rom3 = Rom;
 
@@ -166,7 +172,8 @@ static INT32 Cps2LoadOne(UINT8* Tile, INT32 nNum, INT32 nWord, INT32 nShift)
 			return 1;
 		}
 
-		for (INT32 i = 0; i < nRomLen2; i++) {
+		for (i = 0; i < nRomLen2; i++)
+      {
 			Rom[(i << 1) + 0] = Rom3[i];
 			Rom[(i << 1) + 1] = Rom2[i];
 		}
@@ -177,7 +184,8 @@ static INT32 Cps2LoadOne(UINT8* Tile, INT32 nNum, INT32 nWord, INT32 nShift)
 
 	// Go through each section
 	pt = Tile; pr = Rom;
-	for (INT32 b = 0; b < nRomLen >> 19; b++) {
+	for (b = 0; b < nRomLen >> 19; b++)
+   {
 		Cps2Load100000(pt, pr,     nShift); pt += 0x100000;
 		Cps2Load100000(pt, pr + 2, nShift); pt += 0x100000;
 		pr += 0x80000;
@@ -190,17 +198,18 @@ static INT32 Cps2LoadOne(UINT8* Tile, INT32 nNum, INT32 nWord, INT32 nShift)
 
 static INT32 Cps2LoadSplit(UINT8* Tile, INT32 nNum, INT32 nShift, INT32 nNumRomsGroup)
 {
+   INT32 b;
 	UINT8 *Rom = NULL; INT32 nRomLen = 0;
 	UINT8 *pt, *pr;
 
 	LoadUpSplit(&Rom, &nRomLen, nNum, nNumRomsGroup);
-	if (Rom == NULL) {
+	if (Rom == NULL)
 		return 1;
-	}
 	
 	// Go through each section
 	pt = Tile; pr = Rom;
-	for (INT32 b = 0; b < nRomLen >> 19; b++) {
+	for (b = 0; b < nRomLen >> 19; b++)
+   {
 		Cps2Load100000(pt, pr,     nShift); pt += 0x100000;
 		Cps2Load100000(pt, pr + 2, nShift); pt += 0x100000;
 		pr += 0x80000;
@@ -259,9 +268,10 @@ INT32 Cps2LoadTilesSIM(UINT8* Tile, INT32 nStart)
 
 INT32 Cps2LoadTilesGigaman2(UINT8 *Tile, UINT8 *pSrc)
 {
+   INT32 b;
 	UINT8 *pt = Tile;
 	UINT8 *pr = pSrc;
-	for (INT32 b = 0; b < 0x200000 >> 19; b++) {
+	for (b = 0; b < 0x200000 >> 19; b++) {
 		Cps2Load100000(pt, pr,     0); pt += 0x100000;
 		Cps2Load100000(pt, pr + 2, 0); pt += 0x100000;
 		pr += 0x80000;
@@ -269,7 +279,8 @@ INT32 Cps2LoadTilesGigaman2(UINT8 *Tile, UINT8 *pSrc)
 	
 	pt = Tile;
 	pr = pSrc + 0x200000;
-	for (INT32 b = 0; b < 0x200000 >> 19; b++) {
+	for (b = 0; b < 0x200000 >> 19; b++)
+   {
 		Cps2Load100000(pt, pr,     2); pt += 0x100000;
 		Cps2Load100000(pt, pr + 2, 2); pt += 0x100000;
 		pr += 0x80000;
@@ -277,7 +288,7 @@ INT32 Cps2LoadTilesGigaman2(UINT8 *Tile, UINT8 *pSrc)
 	
 	pt = Tile + 4;
 	pr = pSrc + 0x400000;
-	for (INT32 b = 0; b < 0x200000 >> 19; b++) {
+	for (b = 0; b < 0x200000 >> 19; b++) {
 		Cps2Load100000(pt, pr,     0); pt += 0x100000;
 		Cps2Load100000(pt, pr + 2, 0); pt += 0x100000;
 		pr += 0x80000;
@@ -285,7 +296,7 @@ INT32 Cps2LoadTilesGigaman2(UINT8 *Tile, UINT8 *pSrc)
 	
 	pt = Tile + 4;
 	pr = pSrc + 0x600000;
-	for (INT32 b = 0; b < 0x200000 >> 19; b++) {
+	for (b = 0; b < 0x200000 >> 19; b++) {
 		Cps2Load100000(pt, pr,     2); pt += 0x100000;
 		Cps2Load100000(pt, pr + 2, 2); pt += 0x100000;
 		pr += 0x80000;
@@ -309,6 +320,7 @@ static UINT32 nGfxMaxSize;
 
 static INT32 CpsGetROMs(BOOL bLoad)
 {
+   INT32 i = 0;
 	struct BurnRomInfo ri;
 
 	UINT8* CpsCodeLoad = CpsCode;
@@ -332,7 +344,6 @@ static INT32 CpsGetROMs(BOOL bLoad)
 		}
 	}
 
-	INT32 i = 0;
 	do {
 		ri.nLen = 0;
 		ri.nType = 0;

@@ -211,15 +211,21 @@ static INT32 CheckHiscoreAllowed(void)
 
 void HiscoreInit(void)
 {
-	if (!CheckHiscoreAllowed()) return;
+   FILE *fp;
+   INT32 Offset = 0;
+	TCHAR szFilename[MAX_PATH];
+	TCHAR szDatFilename[MAX_PATH];
+	if (!CheckHiscoreAllowed())
+      return;
 	
 	HiscoresInUse = 0;
 	
-	TCHAR szDatFilename[MAX_PATH];
 	_stprintf(szDatFilename, _T("%shiscore.dat"), szAppHiscorePath);
 
-	FILE *fp = _tfopen(szDatFilename, _T("r"));
-	if (fp) {
+	fp = _tfopen(szDatFilename, _T("r"));
+
+	if (fp)
+   {
 		char buffer[MAX_CONFIG_LINE_SIZE];
 		enum { FIND_NAME, FIND_DATA, FETCH_DATA } mode;
 		mode = FIND_NAME;
@@ -266,28 +272,30 @@ void HiscoreInit(void)
 	
 	if (nHiscoreNumRanges) HiscoresInUse = 1;
 	
-	TCHAR szFilename[MAX_PATH];
 	_stprintf(szFilename, _T("%s%s.hi"), szAppHiscorePath, BurnDrvGetText(DRV_NAME));
 
 	fp = _tfopen(szFilename, _T("r"));
-	INT32 Offset = 0;
-	if (fp) {
+	if (fp)
+   {
+      UINT8 *Buffer;
+      UINT32 i, j;
 		UINT32 nSize = 0;
 		
-		while (!feof(fp)) {
+		while (!feof(fp))
+      {
 			fgetc(fp);
 			nSize++;
 		}
 		
-		UINT8 *Buffer = (UINT8*)malloc(nSize);
+		Buffer = (UINT8*)malloc(nSize);
 		rewind(fp);
 		
 		fgets((char*)Buffer, nSize, fp);
 		
-		for (UINT32 i = 0; i < nHiscoreNumRanges; i++) {
-			for (UINT32 j = 0; j < HiscoreMemRange[i].NumBytes; j++) {
+		for (i = 0; i < nHiscoreNumRanges; i++)
+      {
+			for (j = 0; j < HiscoreMemRange[i].NumBytes; j++)
 				HiscoreMemRange[i].Data[j] = Buffer[j + Offset];
-			}
 			Offset += HiscoreMemRange[i].NumBytes;
 			
 			HiscoreMemRange[i].Loaded = 1;
@@ -297,7 +305,8 @@ void HiscoreInit(void)
 #endif
 		}
 		
-		if (Buffer) {
+		if (Buffer)
+      {
 			free(Buffer);
 			Buffer = NULL;
 		}
@@ -310,115 +319,134 @@ void HiscoreInit(void)
 
 void HiscoreReset(void)
 {
-	if (!CheckHiscoreAllowed() || !HiscoresInUse) return;
+   UINT32 i;
+	if (!CheckHiscoreAllowed() || !HiscoresInUse)
+      return;
 	
-	if (nCpuType == -1) set_cpu_type();
+	if (nCpuType == -1)
+      set_cpu_type();
 	
-	for (UINT32 i = 0; i < nHiscoreNumRanges; i++) {
-		HiscoreMemRange[i].ApplyNextFrame = 0;
-		HiscoreMemRange[i].Applied = APPLIED_STATE_NONE;
-		
-		if (HiscoreMemRange[i].Loaded) {
-			cpu_open(HiscoreMemRange[i].nCpu);
-			cpu_write_byte(HiscoreMemRange[i].Address, (UINT8)~HiscoreMemRange[i].StartValue);
-			if (HiscoreMemRange[i].NumBytes > 1) cpu_write_byte(HiscoreMemRange[i].Address + HiscoreMemRange[i].NumBytes - 1, (UINT8)~HiscoreMemRange[i].EndValue);
-			cpu_close();
-			
+	for (i = 0; i < nHiscoreNumRanges; i++)
+   {
+      HiscoreMemRange[i].ApplyNextFrame = 0;
+      HiscoreMemRange[i].Applied = APPLIED_STATE_NONE;
+
+      if (HiscoreMemRange[i].Loaded)
+      {
+         cpu_open(HiscoreMemRange[i].nCpu);
+         cpu_write_byte(HiscoreMemRange[i].Address, (UINT8)~HiscoreMemRange[i].StartValue);
+         if (HiscoreMemRange[i].NumBytes > 1) cpu_write_byte(HiscoreMemRange[i].Address + HiscoreMemRange[i].NumBytes - 1, (UINT8)~HiscoreMemRange[i].EndValue);
+         cpu_close();
+
 #if 1 && defined FBA_DEBUG
-			bprintf(PRINT_IMPORTANT, _T("Hi Score Memory Range %i Initted\n"), i);
+         bprintf(PRINT_IMPORTANT, _T("Hi Score Memory Range %i Initted\n"), i);
 #endif
-		}
-	}
+      }
+   }
 }
 
 void HiscoreApply(void)
 {
-	if (!CheckHiscoreAllowed() || !HiscoresInUse) return;
+   UINT32 i;
+	if (!CheckHiscoreAllowed() || !HiscoresInUse)
+      return;
 	
 	if (nCpuType == -1) set_cpu_type();
 	
-	for (UINT32 i = 0; i < nHiscoreNumRanges; i++) {
-		if (HiscoreMemRange[i].Loaded && HiscoreMemRange[i].Applied == APPLIED_STATE_ATTEMPTED) {
-			INT32 Confirmed = 1;
-			cpu_open(HiscoreMemRange[i].nCpu);
-			for (UINT32 j = 0; j < HiscoreMemRange[i].NumBytes; j++) {
-				if (cpu_read_byte(HiscoreMemRange[i].Address + j) != HiscoreMemRange[i].Data[j]) {
-					Confirmed = 0;
-				}
-			}
-			cpu_close();
-			
-			if (Confirmed == 1) {
-				HiscoreMemRange[i].Applied = APPLIED_STATE_CONFIRMED;
+	for (i = 0; i < nHiscoreNumRanges; i++)
+   {
+      if (HiscoreMemRange[i].Loaded && HiscoreMemRange[i].Applied == APPLIED_STATE_ATTEMPTED)
+      {
+         UINT32 j;
+         INT32 Confirmed = 1;
+         cpu_open(HiscoreMemRange[i].nCpu);
+         for (j = 0; j < HiscoreMemRange[i].NumBytes; j++)
+         {
+            if (cpu_read_byte(HiscoreMemRange[i].Address + j) != HiscoreMemRange[i].Data[j])
+               Confirmed = 0;
+         }
+         cpu_close();
+
+         if (Confirmed == 1)
+         {
+            HiscoreMemRange[i].Applied = APPLIED_STATE_CONFIRMED;
 #if 1 && defined FBA_DEBUG
-				bprintf(PRINT_IMPORTANT, _T("Applied Hi Score Memory Range %i on frame number %i\n"), i, GetCurrentFrame());
+            bprintf(PRINT_IMPORTANT, _T("Applied Hi Score Memory Range %i on frame number %i\n"), i, GetCurrentFrame());
 #endif
-			} else {
-				HiscoreMemRange[i].Applied = APPLIED_STATE_NONE;
-				HiscoreMemRange[i].ApplyNextFrame = 1;
+         }
+         else
+         {
+            HiscoreMemRange[i].Applied = APPLIED_STATE_NONE;
+            HiscoreMemRange[i].ApplyNextFrame = 1;
 #if 1 && defined FBA_DEBUG
-				bprintf(PRINT_IMPORTANT, _T("Failed attempt to apply Hi Score Memory Range %i on frame number %i\n"), i, GetCurrentFrame());
+            bprintf(PRINT_IMPORTANT, _T("Failed attempt to apply Hi Score Memory Range %i on frame number %i\n"), i, GetCurrentFrame());
 #endif
-			}
-		}
-		
-		if (HiscoreMemRange[i].Loaded && HiscoreMemRange[i].Applied == APPLIED_STATE_NONE && HiscoreMemRange[i].ApplyNextFrame) {			
-			cpu_open(HiscoreMemRange[i].nCpu);
-			for (UINT32 j = 0; j < HiscoreMemRange[i].NumBytes; j++) {
-				cpu_write_byte(HiscoreMemRange[i].Address + j, HiscoreMemRange[i].Data[j]);				
-			}
-			cpu_close();
-			
-			HiscoreMemRange[i].Applied = APPLIED_STATE_ATTEMPTED;
-			HiscoreMemRange[i].ApplyNextFrame = 0;
-		}
-		
-		if (HiscoreMemRange[i].Loaded && HiscoreMemRange[i].Applied == APPLIED_STATE_NONE) {
-			cpu_open(HiscoreMemRange[i].nCpu);
-			if (cpu_read_byte(HiscoreMemRange[i].Address) == HiscoreMemRange[i].StartValue && cpu_read_byte(HiscoreMemRange[i].Address + HiscoreMemRange[i].NumBytes - 1) == HiscoreMemRange[i].EndValue) {
-				HiscoreMemRange[i].ApplyNextFrame = 1;
-			}
-			cpu_close();
-		}
-	}
+         }
+      }
+
+      if (HiscoreMemRange[i].Loaded && HiscoreMemRange[i].Applied == APPLIED_STATE_NONE && HiscoreMemRange[i].ApplyNextFrame)
+      {
+         UINT32 j;
+         cpu_open(HiscoreMemRange[i].nCpu);
+         for (j = 0; j < HiscoreMemRange[i].NumBytes; j++)
+            cpu_write_byte(HiscoreMemRange[i].Address + j, HiscoreMemRange[i].Data[j]);				
+         cpu_close();
+
+         HiscoreMemRange[i].Applied = APPLIED_STATE_ATTEMPTED;
+         HiscoreMemRange[i].ApplyNextFrame = 0;
+      }
+
+      if (HiscoreMemRange[i].Loaded && HiscoreMemRange[i].Applied == APPLIED_STATE_NONE) {
+         cpu_open(HiscoreMemRange[i].nCpu);
+         if (cpu_read_byte(HiscoreMemRange[i].Address) == HiscoreMemRange[i].StartValue && cpu_read_byte(HiscoreMemRange[i].Address + HiscoreMemRange[i].NumBytes - 1) == HiscoreMemRange[i].EndValue)
+            HiscoreMemRange[i].ApplyNextFrame = 1;
+         cpu_close();
+      }
+   }
 }
 
 void HiscoreExit(void)
 {
-	if (!CheckHiscoreAllowed() || !HiscoresInUse) {
+   UINT32 i;
+   FILE *fp;
+   TCHAR szFilename[MAX_PATH];
+	if (!CheckHiscoreAllowed() || !HiscoresInUse)
 		return;
-	}
 	
-	if (nCpuType == -1) set_cpu_type();
+	if (nCpuType == -1)
+      set_cpu_type();
 	
-	TCHAR szFilename[MAX_PATH];
 	_stprintf(szFilename, _T("%s%s.hi"), szAppHiscorePath, BurnDrvGetText(DRV_NAME));
 
-	FILE *fp = _tfopen(szFilename, _T("w"));
-	if (fp) {
-		for (UINT32 i = 0; i < nHiscoreNumRanges; i++) {
-			UINT8 *Buffer = (UINT8*)malloc(HiscoreMemRange[i].NumBytes);
-			
-			cpu_open(HiscoreMemRange[i].nCpu);
-			for (UINT32 j = 0; j < HiscoreMemRange[i].NumBytes; j++) {
-				Buffer[j] = cpu_read_byte(HiscoreMemRange[i].Address + j);
-			}
-			cpu_close();
-			
-			fwrite(Buffer, 1, HiscoreMemRange[i].NumBytes, fp);
-			
-			if (Buffer) {
-				free(Buffer);
-				Buffer = NULL;
-			}
-		}
+	fp = _tfopen(szFilename, _T("w"));
+	if (fp)
+   {
+      UINT32 i;
+		for (i = 0; i < nHiscoreNumRanges; i++)
+      {
+         UINT32 j;
+         UINT8 *Buffer = (UINT8*)malloc(HiscoreMemRange[i].NumBytes);
+
+         cpu_open(HiscoreMemRange[i].nCpu);
+         for (j = 0; j < HiscoreMemRange[i].NumBytes; j++)
+            Buffer[j] = cpu_read_byte(HiscoreMemRange[i].Address + j);
+         cpu_close();
+
+         fwrite(Buffer, 1, HiscoreMemRange[i].NumBytes, fp);
+
+         if (Buffer)
+         {
+            free(Buffer);
+            Buffer = NULL;
+         }
+      }
 	}
 	fclose(fp);
 	
 	nCpuType = -1;
 	nHiscoreNumRanges = 0;
 	
-	for (UINT32 i = 0; i < HISCORE_MAX_RANGES; i++) {
+	for (i = 0; i < HISCORE_MAX_RANGES; i++) {
 		HiscoreMemRange[i].Loaded = 0;
 		HiscoreMemRange[i].nCpu = 0;
 		HiscoreMemRange[i].Address = 0;

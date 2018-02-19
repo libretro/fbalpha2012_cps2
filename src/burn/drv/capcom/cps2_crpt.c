@@ -640,24 +640,16 @@ static void optimise_sboxes(struct optimised_sbox* out, const struct sbox* in)
 
 static void cps2_decrypt(const UINT32 *master_key, UINT32 upper_limit)
 {
-#if 0
-	UINT16 *rom = (UINT16 *)memory_region(REGION_CPU1);
-	INT32 length = memory_region_length(REGION_CPU1);
-	UINT16 *dec = auto_malloc(length);
-	INT32 i;
-#endif
-
-#if 1
-	UINT16 *rom = (UINT16 *)CpsRom;
-	UINT32 length = upper_limit;
-	CpsCode = (UINT8*)BurnMalloc(length);
-	UINT16 *dec = (UINT16*)CpsCode;
-	UINT32 i;
-#endif
-
+   UINT32 i;
+   UINT16 *dec;
 	UINT32 key1[4];
 	struct optimised_sbox sboxes1[4*4];
 	struct optimised_sbox sboxes2[4*4];
+	UINT16 *rom     = (UINT16 *)CpsRom;
+	UINT32 length   = upper_limit;
+
+	CpsCode         = (UINT8*)BurnMalloc(length);
+	dec             = (UINT16*)CpsCode;
 
 	optimise_sboxes(&sboxes1[0*4], fn1_r1_boxes);
 	optimise_sboxes(&sboxes1[1*4], fn1_r2_boxes);
@@ -683,14 +675,7 @@ static void cps2_decrypt(const UINT32 *master_key, UINT32 upper_limit)
 	
 	for (i = 0; i < 0x10000; ++i)
 	{
-#if 0
-		INT32 a;
-#endif
-
-#if 1
 		UINT32 a;
-#endif
-
 		UINT16 seed;
 		UINT32 subkey[2];
 		UINT32 key2[4];

@@ -1,4 +1,5 @@
 #include "cps.h"
+#include <retro_inline.h>
 // CPS - Draw
 
 UINT8 CpsRecalcPal = 0;			// Flag - If it is 1, recalc the whole palette
@@ -174,7 +175,7 @@ static INT32 DrawScroll2Init(INT32 i)
    return 0;
 }
 
-inline static INT32 DrawScroll2Exit()
+static INLINE INT32 DrawScroll2Exit(void)
 {
 	CpsrBase = NULL;
 	nCpsrScrX = 0;
@@ -183,7 +184,7 @@ inline static INT32 DrawScroll2Exit()
 	return 0;
 }
 
-inline static INT32 DrawScroll2Do()
+static INLINE INT32 DrawScroll2Do()
 {
 	if (!CpsrBase)
 		return 1;
@@ -319,12 +320,18 @@ static void Cps2Layers(void)
    INT32 Draw[MAX_RASTER][4];
    INT32 Prio[MAX_RASTER][4];
    INT32 nDrawMask[MAX_RASTER];
+   INT32 nCurrPrio;
+   INT32 nSlice = 0;
+   INT32 nPrevPrio = -1;
 
    CpsObjDrawInit();
 
-   INT32 nSlice = 0;
    do
    {
+      INT32 i;
+      INT32 nLayPri;
+      INT32 nHighPrio;
+
       LayerCont = BURN_ENDIAN_SWAP_INT16(*((UINT16 *)(CpsSaveReg[nSlice] + nCpsLcReg)));
 
       // Determine which layers are enabled
@@ -341,7 +348,7 @@ static void Cps2Layers(void)
       Draw[nSlice][0] = (LayerCont >> 6) & 3;				// bottom layer (most covered up)
 
       // Determine layer-sprite priority (layer >= sprites -> layer on top)
-      INT32 nLayPri = (CpsSaveFrg[nSlice][4] << 8) | CpsSaveFrg[nSlice][5];	// Layer priority register at word (400004)
+      nLayPri = (CpsSaveFrg[nSlice][4] << 8) | CpsSaveFrg[nSlice][5];	// Layer priority register at word (400004)
       Prio[nSlice][3] = (nLayPri >> 12) & 7;
       Prio[nSlice][2] = (nLayPri >> 8) & 7;
       Prio[nSlice][1] = (nLayPri >> 4) & 7;
@@ -355,61 +362,49 @@ static void Cps2Layers(void)
          // Pre-process priorities
          // Higher priority layers must have higher layer-sprite priorities
          // N.B. If this is not the case, masking effects may occur (not emulated)
-#if 0
-         // Raise sprite priorities of top layers if needed
-         INT32 nHighPrio = 0;
-      for (INT32 i = 0; i < 4; i++) {
-         if (Draw[nSlice][i] > 0) {
-            if (Prio[nSlice][Draw[nSlice][i]] < nHighPrio) {
-               Prio[nSlice][Draw[nSlice][i]] = nHighPrio;
-            } else {
-               nHighPrio = Prio[nSlice][Draw[nSlice][i]];
-            }
-         }
-      }
-#else
       // Lower sprite priorities of bottom layers if needed
-      INT32 nHighPrio = 9999;
-      for (INT32 i = 3; i >= 0; i--) {
-         if (Draw[nSlice][i] > 0) {
-            if (Prio[nSlice][Draw[nSlice][i]] > nHighPrio) {
+      nHighPrio = 9999;
+      for (i = 3; i >= 0; i--)
+      {
+         if (Draw[nSlice][i] > 0)
+         {
+            if (Prio[nSlice][Draw[nSlice][i]] > nHighPrio)
                Prio[nSlice][Draw[nSlice][i]] = nHighPrio;
-            } else {
+            else
                nHighPrio = Prio[nSlice][Draw[nSlice][i]];
-            }
          }
       }
-#endif
       nSlice++;
    } while (nSlice < MAX_RASTER && nRasterline[nSlice]);
 
-   INT32 nPrevPrio = -1;
-   for (INT32 nCurrPrio = 0; nCurrPrio < 8; nCurrPrio++) {
-
+   for (nCurrPrio = 0; nCurrPrio < 8; nCurrPrio++)
+   {
       nSlice = 0;
-      do {
-         for (INT32 i = 0; i < 4; i++) {
-
-            if (Prio[nSlice][Draw[nSlice][i]] == nCurrPrio) {
-
+      do
+      {
+         INT32 i;
+         for (i = 0; i < 4; i++)
+         {
+            if (Prio[nSlice][Draw[nSlice][i]] == nCurrPrio)
+            {
                // Render sprites between the previous layer and this one
-               if ((nDrawMask[0] & 1) && (nPrevPrio < nCurrPrio)) {
+               if ((nDrawMask[0] & 1) && (nPrevPrio < nCurrPrio))
+               {
                   Cps2ObjDraw(nPrevPrio + 1, nCurrPrio);
                   nPrevPrio = nCurrPrio;
                }
 
                nStartline = nRasterline[nSlice];
                nEndline = nRasterline[nSlice + 1];
-               if (!nEndline) {
+               if (!nEndline)
                   nEndline = 224;
-               }
 
                // Render layer
-               switch (Draw[nSlice][i]) {
+               switch (Draw[nSlice][i])
+               {
                   case 1:
-                     if (nDrawMask[nSlice] & 2) {
+                     if (nDrawMask[nSlice] & 2)
                         DrawScroll1(nSlice);
-                     }
                      break;
                   case 2:
                      if (nDrawMask[nSlice] & 4) {
@@ -419,9 +414,8 @@ static void Cps2Layers(void)
                      }
                      break;
                   case 3:
-                     if (nDrawMask[nSlice] & 8) {
+                     if (nDrawMask[nSlice] & 8)
                         DrawScroll3(nSlice);
-                     }
                      break;
                }
             }
@@ -435,7 +429,7 @@ static void Cps2Layers(void)
       Cps2ObjDraw(nPrevPrio + 1, 7);
 }
 
-void CpsClearScreen()
+void CpsClearScreen(void)
 {
    memset(pBurnDraw, 0, 384 * 224 * nBurnBpp);
 }

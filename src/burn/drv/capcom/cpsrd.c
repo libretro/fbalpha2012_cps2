@@ -1,11 +1,12 @@
 #include "cps.h"
+#include <retro_inline.h>
 
 // CPS Scroll2 with Row scroll - Draw
 static INT32 nKnowBlank=-1;	// The tile we know is blank
 static INT32 nFirstY, nLastY;
 static INT32 bVCare;
 
-static inline UINT16 *FindTile(INT32 fx,INT32 fy)
+static INLINE UINT16 *FindTile(INT32 fx,INT32 fy)
 {
    INT32 p=((fy&0x30)<<8) | ((fx&0x3f)<<6) | ((fy&0x0f)<<2);
    return (UINT16 *)(CpsrBase + p);
@@ -13,10 +14,13 @@ static inline UINT16 *FindTile(INT32 fx,INT32 fy)
 
 static void Cps2TileLine(INT32 y,INT32 sx)
 {
-   INT32 x;
-   INT32 ix=(sx>>4)+1; sx&=15; sx=16-sx;
-   INT32 sy=16-(nCpsrScrY&15);
-   INT32 iy=(nCpsrScrY>>4)+1;
+   INT32 x, ix, sy, iy;
+
+   ix=(sx>>4)+1;
+   sx&=15;
+   sx=16-sx;
+   sy=16-(nCpsrScrY&15);
+   iy=(nCpsrScrY>>4)+1;
 
    nCpstY=sy+(y<<4);
 

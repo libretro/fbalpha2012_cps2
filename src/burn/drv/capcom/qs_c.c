@@ -62,12 +62,14 @@ static void UpdateEndBuffer(struct QChan* pc)
       // prepare a buffer to correctly interpolate the last 4 samples
       if (nInterpolation >= 3)
       {
-         for (INT32 i = 0; i < 4; i++)
+         INT32 i;
+         for (i = 0; i < 4; i++)
             pc->nEndBuffer[i] = pc->PlayBank[(pc->nEnd >> 12) - 4 + i];
 
          if (pc->nLoop)
          {
-            for (INT32 i = 0, j = 0; i < 4; i++, j++)
+            INT32 i, j;
+            for (i = 0, j = 0; i < 4; i++, j++)
             {
                if (j >= (pc->nLoop >> 12))
                   j = 0;
@@ -76,7 +78,8 @@ static void UpdateEndBuffer(struct QChan* pc)
          }
          else
          {
-            for (INT32 i = 0; i < 4; i++)
+            INT32 i;
+            for (i = 0; i < 4; i++)
                pc->nEndBuffer[i + 4] = pc->nEndBuffer[3];
          }
       }
@@ -91,12 +94,12 @@ static void CalcAdvance(struct QChan* pc)
 
 void QscReset()
 {
+   INT32 i;
 	memset(QChan, 0, sizeof(QChan));
 
 	// Point all to bank 0
-	for (INT32 i = 0; i < 16; i++) {
+	for (i = 0; i < 16; i++)
 		QChan[i].PlayBank = (INT8*)CpsQSam;
-	}
 }
 
 void QscExit()
@@ -109,9 +112,10 @@ void QscExit()
 
 INT32 QscInit(INT32 nRate)
 {
+   INT32 i;
 	nQscRate = nRate;
 
-	for (INT32 i = 0; i < 33; i++)
+	for (i = 0; i < 33; i++)
 		PanningVolumes[i] = (INT32)((256.0 / sqrt(32.0)) * sqrt((double)i));
 	
 	QsndGain[BURN_SND_QSND_OUTPUT_1] = 1.00;
@@ -134,9 +138,12 @@ INT32 QscScan(INT32 nAction)
 {
 	SCAN_VAR(QChan);
 
-	if (nAction & ACB_WRITE) {
+	if (nAction & ACB_WRITE)
+   {
+      INT32 i;
 		// Update bank pointers with new banks, and recalc nAdvance
-		for (INT32 i = 0; i < 16; i++) {
+		for (i = 0; i < 16; i++)
+      {
 			MapBank(QChan + i);
 			CalcAdvance(QChan + i);
 		}
@@ -150,7 +157,7 @@ void QscNewFrame(void)
 	nPos = 0;
 }
 
-static inline void QscSyncQsnd(void)
+static INLINE void QscSyncQsnd(void)
 {
 	if (pBurnSoundOut)
       QscUpdate(ZetTotalCycles() * nBurnSoundLen / nCpsZ80Cycles);

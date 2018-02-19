@@ -6,7 +6,9 @@
 static INT32 LoadRom(UINT8 *Dest, INT32 i, INT32 nGap, INT32 bXor)
 {
   INT32 nRet = 0, nLen = 0;
-  if (BurnExtLoadRom == NULL) return 1; // Load function was not defined by the application
+  char* RomName = ""; //add by emufan
+  if (BurnExtLoadRom == NULL)
+     return 1; // Load function was not defined by the application
 
   // Find the length of the rom (as given by the current driver)
   {
@@ -18,7 +20,6 @@ static INT32 LoadRom(UINT8 *Dest, INT32 i, INT32 nGap, INT32 bXor)
     nLen=ri.nLen;
   }
   
-  char* RomName = ""; //add by emufan
   BurnDrvGetRomName(&RomName, i, 0);
 
   if (nLen<=0) return 1;

@@ -414,9 +414,11 @@ void ppi8255_w(INT32 which, INT32 offset, UINT8 data)
 
 void ppi8255_init(INT32 num)
 {
+   INT32 i;
 	DebugDev_8255PPIInitted = 1;
 	
-	for (INT32 i = 0; i < num; i++) {
+	for (i = 0; i < num; i++)
+   {
 		ppi8255 *chip = &chips[i];
 	
 		memset(chip, 0, sizeof(*chip));
@@ -429,11 +431,13 @@ void ppi8255_init(INT32 num)
 
 void ppi8255_exit()
 {
+   INT32 i;
 #if defined FBA_DEBUG
 	if (!DebugDev_8255PPIInitted) bprintf(PRINT_ERROR, _T("ppi8255_exit called without init\n"));
 #endif
 
-	for (INT32 i = 0; i < MAX_PPIS; i++) {
+	for (i = 0; i < MAX_PPIS; i++)
+   {
 		ppi8255 *chip = &chips[i];
 	
 		memset(chip, 0, sizeof(*chip));

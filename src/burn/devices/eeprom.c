@@ -79,12 +79,14 @@ INT32 EEPROMAvailable()
 
 void EEPROMInit(const struct eeprom_interface *interface)
 {
+   INT32 len;
+	char output[128];
+   char slash = '/';
+   FILE *fz;
 	intf = interface;
 
 	if ((1 << intf->address_bits) * intf->data_bits / 8 > MEMORY_SIZE)
-	{
 		bprintf(0, _T("EEPROM larger than eeprom allows"));
-	}
 
 	memset(eeprom_data,0xff,(1 << intf->address_bits) * intf->data_bits / 8);
 	serial_count = 0;
@@ -96,8 +98,6 @@ void EEPROMInit(const struct eeprom_interface *interface)
 	if (intf->cmd_unlock) locked = 1;
 	else locked = 0;
 
-	char output[128];
-   char slash = '/';
 #ifdef _WIN32
    slash = '\\';
 #endif
@@ -105,18 +105,21 @@ void EEPROMInit(const struct eeprom_interface *interface)
 
 	neeprom_available = 0;
 
-	INT32 len = ((1 << intf->address_bits) * (intf->data_bits >> 3)) & (MEMORY_SIZE-1);
+	len = ((1 << intf->address_bits) * (intf->data_bits >> 3)) & (MEMORY_SIZE-1);
 
-	FILE *fz = fopen(output, "rb");
-	if (fz != NULL) {
+	fz = fopen(output, "rb");
+	if (fz != NULL)
+   {
 		neeprom_available = 1;
 		fread (eeprom_data, len, 1, fz);
 		fclose (fz);
 	}
 }
 
-void EEPROMExit()
+void EEPROMExit(void)
 {
+   INT32 len;
+   FILE *fz;
 	char output[128];
    char slash = '/';
 #ifdef _WIN32
@@ -125,10 +128,12 @@ void EEPROMExit()
 	sprintf (output, "%s%c%s.nv", g_save_dir, slash, BurnDrvGetTextA(DRV_NAME));
 	neeprom_available = 0;
 
-	INT32 len = ((1 << intf->address_bits) * (intf->data_bits >> 3)) & (MEMORY_SIZE-1);
+	len = ((1 << intf->address_bits) * (intf->data_bits >> 3)) & (MEMORY_SIZE-1);
 
-	FILE *fz = fopen(output, "wb");
-	if (fz) {
+	fz = fopen(output, "wb");
+
+	if (fz)
+   {
 		fwrite (eeprom_data, len, 1, fz);
 		fclose (fz);
 	}
@@ -148,9 +153,9 @@ static void eeprom_write(INT32 bit)
 	if ( (serial_count > intf->address_bits) &&
 	      eeprom_command_match((char*)serial_buffer,intf->cmd_read,strlen((char*)serial_buffer)-intf->address_bits) )
 	{
-		INT32 i,address;
+		INT32 i;
+		INT32 address = 0;
 
-		address = 0;
 		for (i = serial_count-intf->address_bits;i < serial_count;i++)
 		{
 			address <<= 1;
@@ -168,9 +173,8 @@ static void eeprom_write(INT32 bit)
 	else if ( (serial_count > intf->address_bits) &&
 	           eeprom_command_match((char*)serial_buffer,intf->cmd_erase,strlen((char*)serial_buffer)-intf->address_bits) )
 	{
-		INT32 i,address;
-
-		address = 0;
+		INT32 i;
+		INT32 address = 0;
 		for (i = serial_count-intf->address_bits;i < serial_count;i++)
 		{
 			address <<= 1;

@@ -5,6 +5,8 @@
 #include "burn_sound.h"
 #include "driverlist.h"
 
+#include <retro_inline.h>
+
 // filler function, used if the application is not printing debug messages
 static INT32 __cdecl BurnbprintfFiller(INT32 a, TCHAR *b, ...) { return 0; }
 // pointer to burner printing function
@@ -636,13 +638,12 @@ INT32 BurnDrvInit(void)
 // Exit game emulation
 INT32 BurnDrvExit(void)
 {
+   INT32 nRet;
 #if defined (FBA_DEBUG)
-	if (starttime) {
-		clock_t endtime;
-		clock_t nElapsedSecs;
-
-		endtime = clock();
-		nElapsedSecs = (endtime - starttime);
+	if (starttime)
+   {
+		clock_t endtime      = clock();
+		clock_t nElapsedSecs = (endtime - starttime);
 		bprintf(PRINT_IMPORTANT, _T(" ** Emulation ended (running for %.2f seconds).\n"), (float)nElapsedSecs / CLOCKS_PER_SEC);
 		bprintf(PRINT_IMPORTANT, _T("    %.2f%% of frames rendered (%d out of a total %d).\n"), (float)nFramesRendered / nFramesEmulated * 100, nFramesRendered, nFramesEmulated);
 		bprintf(PRINT_IMPORTANT, _T("    %.2f frames per second (average).\n"), (float)nFramesRendered / nFramesEmulated * nBurnFPS / 100);
@@ -659,7 +660,7 @@ INT32 BurnDrvExit(void)
 	
 	pBurnDrvPalette = NULL;	
 	
-	INT32 nRet = pDriver[nBurnDrvActive]->Exit();			// Forward to drivers function
+	nRet = pDriver[nBurnDrvActive]->Exit();			// Forward to drivers function
 	
 	BurnExitMemoryManager();
 #if defined FBA_DEBUG
@@ -673,17 +674,14 @@ INT32 (__cdecl* BurnExtCartridgeSetupCallback)(enum BurnCartrigeCommand nCommand
 
 INT32 BurnDrvCartridgeSetup(enum BurnCartrigeCommand nCommand)
 {
-	if (nBurnDrvActive >= nBurnDrvCount || BurnExtCartridgeSetupCallback == NULL) {
+	if (nBurnDrvActive >= nBurnDrvCount || BurnExtCartridgeSetupCallback == NULL)
 		return 1;
-	}
 
-	if (nCommand == CART_EXIT) {
+	if (nCommand == CART_EXIT)
 		return pDriver[nBurnDrvActive]->Exit();
-	}
 
-	if (nCommand != CART_INIT_END && nCommand != CART_INIT_START) {
+	if (nCommand != CART_INIT_END && nCommand != CART_INIT_START)
 		return 1;
-	}
 
 	BurnExtCartridgeSetupCallback(CART_INIT_END);
 
@@ -691,13 +689,11 @@ INT32 BurnDrvCartridgeSetup(enum BurnCartrigeCommand nCommand)
 		bprintf(PRINT_NORMAL, _T("  * Loading"));
 #endif
 
-	if (BurnExtCartridgeSetupCallback(CART_INIT_START)) {
+	if (BurnExtCartridgeSetupCallback(CART_INIT_START))
 		return 1;
-	}
 
-	if (nCommand == CART_INIT_START) {
+	if (nCommand == CART_INIT_START)
 		return pDriver[nBurnDrvActive]->Init();
-	}
 
 	return 0;
 }
@@ -714,9 +710,11 @@ INT32 BurnDrvRedraw(void)
 // Refresh Palette
 INT32 BurnRecalcPal(void)
 {
-	if (nBurnDrvActive < nBurnDrvCount) {
+	if (nBurnDrvActive < nBurnDrvCount)
+   {
 		UINT8* pr = pDriver[nBurnDrvActive]->pRecalcPal;
-		if (pr == NULL) return 1;
+		if (pr == NULL)
+         return 1;
 		*pr = 1;									// Signal for the driver to refresh it's palette
 	}
 
@@ -735,18 +733,16 @@ INT32 (__cdecl *BurnExtProgressUpdateCallback)(double fProgress, const TCHAR* ps
 
 INT32 BurnSetProgressRange(double fProgressRange)
 {
-	if (BurnExtProgressRangeCallback) {
+	if (BurnExtProgressRangeCallback)
 		return BurnExtProgressRangeCallback(fProgressRange);
-	}
 
 	return 1;
 }
 
 INT32 BurnUpdateProgress(double fProgress, const TCHAR* pszText, BOOL bAbs)
 {
-	if (BurnExtProgressUpdateCallback) {
+	if (BurnExtProgressUpdateCallback)
 		return BurnExtProgressUpdateCallback(fProgress, pszText, bAbs);
-	}
 
 	return 1;
 }
@@ -755,14 +751,13 @@ INT32 BurnUpdateProgress(double fProgress, const TCHAR* pszText, BOOL bAbs)
 
 INT32 BurnSetRefreshRate(double dFrameRate)
 {
-	if (!bForce60Hz) {
+	if (!bForce60Hz)
 		nBurnFPS = (INT32)(100.0 * dFrameRate);
-	}
 
 	return 0;
 }
 
-inline static INT32 BurnClearSize(INT32 w, INT32 h)
+static INLINE INT32 BurnClearSize(INT32 w, INT32 h)
 {
 	UINT8 *pl;
 	INT32 y;
@@ -770,22 +765,20 @@ inline static INT32 BurnClearSize(INT32 w, INT32 h)
 	w *= nBurnBpp;
 
 	// clear the screen to zero
-	for (pl = pBurnDraw, y = 0; y < h; pl += nBurnPitch, y++) {
+	for (pl = pBurnDraw, y = 0; y < h; pl += nBurnPitch, y++)
 		memset(pl, 0x00, w);
-	}
 
 	return 0;
 }
 
-INT32 BurnClearScreen()
+INT32 BurnClearScreen(void)
 {
 	struct BurnDriver* pbd = pDriver[nBurnDrvActive];
 
-	if (pbd->Flags & BDF_ORIENTATION_VERTICAL) {
+	if (pbd->Flags & BDF_ORIENTATION_VERTICAL)
 		BurnClearSize(pbd->nHeight, pbd->nWidth);
-	} else {
+   else
 		BurnClearSize(pbd->nWidth, pbd->nHeight);
-	}
 
 	return 0;
 }
@@ -793,8 +786,10 @@ INT32 BurnClearScreen()
 // Byteswaps an area of memory
 INT32 BurnByteswap(UINT8* pMem, INT32 nLen)
 {
+   INT32 i;
 	nLen >>= 1;
-	for (INT32 i = 0; i < nLen; i++, pMem += 2) {
+	for (i = 0; i < nLen; i++, pMem += 2)
+   {
 		UINT8 t = pMem[0];
 		pMem[0] = pMem[1];
 		pMem[1] = t;
@@ -813,30 +808,33 @@ UINT16* pTransDraw = NULL;
 
 static INT32 nTransWidth, nTransHeight;
 
-void BurnTransferClear()
+void BurnTransferClear(void)
 {
 	memset((void*)pTransDraw, 0, nTransWidth * nTransHeight * sizeof(UINT16));
 }
 
 INT32 BurnTransferCopy(UINT32* pPalette)
 {
+   INT32 y;
 	UINT16* pSrc = pTransDraw;
 	UINT8* pDest = pBurnDraw;
 	
 	pBurnDrvPalette = pPalette;
 
-   for (INT32 y = 0; y < nTransHeight; y++, pSrc += nTransWidth, pDest += nBurnPitch)
+   for (y = 0; y < nTransHeight; y++, pSrc += nTransWidth, pDest += nBurnPitch)
    {
-      for (INT32 x = 0; x < nTransWidth; x ++)
+      INT32 x;
+      for (x = 0; x < nTransWidth; x ++)
          ((UINT16*)pDest)[x] = pPalette[pSrc[x]];
    }
 
 	return 0;
 }
 
-void BurnTransferExit()
+void BurnTransferExit(void)
 {
-	if (pTransDraw) {
+	if (pTransDraw)
+   {
 		free(pTransDraw);
 		pTransDraw = NULL;
 	}
@@ -844,16 +842,14 @@ void BurnTransferExit()
 
 INT32 BurnTransferInit()
 {
-	if (BurnDrvGetFlags() & BDF_ORIENTATION_VERTICAL) {
+	if (BurnDrvGetFlags() & BDF_ORIENTATION_VERTICAL)
 		BurnDrvGetVisibleSize(&nTransHeight, &nTransWidth);
-	} else {
+   else
 		BurnDrvGetVisibleSize(&nTransWidth, &nTransHeight);
-	}
 
 	pTransDraw = (UINT16*)malloc(nTransWidth * nTransHeight * sizeof(UINT16));
-	if (pTransDraw == NULL) {
+	if (pTransDraw == NULL)
 		return 1;
-	}
 
 	BurnTransferClear();
 
@@ -875,14 +871,12 @@ INT32 BurnAreaScan(INT32 nAction, INT32* pnMin)
 	INT32 nRet = 0;
 
 	// Handle any MAME-style variables
-	if (nAction & ACB_DRIVER_DATA) {
+	if (nAction & ACB_DRIVER_DATA)
 		nRet = BurnStateMAMEScan(nAction, pnMin);
-	}
 
 	// Forward to the driver
-	if (pDriver[nBurnDrvActive]->AreaScan) {
+	if (pDriver[nBurnDrvActive]->AreaScan)
 		nRet |= pDriver[nBurnDrvActive]->AreaScan(nAction, pnMin);
-	}
 
 	return nRet;
 }
@@ -933,17 +927,15 @@ static void BurnStateRegister(const char* module, INT32 instance, const char* na
 {
 	// Allocate new node
 	struct BurnStateEntry* pNewEntry = (struct BurnStateEntry*)malloc(sizeof(struct BurnStateEntry));
-	if (pNewEntry == NULL) {
+	if (pNewEntry == NULL)
 		return;
-	}
 
 	memset(pNewEntry, 0, sizeof(struct BurnStateEntry));
 
 	// Link the new node
 	pNewEntry->pNext = pStateEntryAnchor;
-	if (pStateEntryAnchor) {
+	if (pStateEntryAnchor)
 		pStateEntryAnchor->pPrev = pNewEntry;
-	}
 	pStateEntryAnchor = pNewEntry;
 
 	sprintf(pNewEntry->szName, "%s:%s %i", module, name, instance);
@@ -954,6 +946,7 @@ static void BurnStateRegister(const char* module, INT32 instance, const char* na
 
 void BurnStateExit()
 {
+   INT32 i;
 	if (pStateEntryAnchor)
    {
       struct BurnStateEntry* pNextEntry;
@@ -968,9 +961,8 @@ void BurnStateExit()
 
 	pStateEntryAnchor = NULL;
 
-	for (INT32 i = 0; i < 8; i++) {
+	for (i = 0; i < 8; i++)
 		BurnPostload[i] = NULL;
-	}
 }
 
 INT32 BurnStateInit()
@@ -1002,11 +994,13 @@ INT32 BurnStateMAMEScan(INT32 nAction, INT32* pnMin)
          } while ((pCurrentEntry = pCurrentEntry->pNext) != 0);
       }
 
-      if (nAction & ACB_WRITE) {
-         for (INT32 i = 0; i < 8; i++) {
-            if (BurnPostload[i]) {
+      if (nAction & ACB_WRITE)
+      {
+         INT32 i;
+         for (i = 0; i < 8; i++)
+         {
+            if (BurnPostload[i])
                BurnPostload[i]();
-            }
          }
       }
    }
@@ -1018,8 +1012,11 @@ INT32 BurnStateMAMEScan(INT32 nAction, INT32* pnMin)
 
 void state_save_register_func_postload(void (*pFunction)(void))
 {
-	for (INT32 i = 0; i < 8; i++) {
-		if (BurnPostload[i] == NULL) {
+   INT32 i;
+	for (i = 0; i < 8; i++)
+   {
+		if (BurnPostload[i] == NULL)
+      {
 			BurnPostload[i] = pFunction;
 			break;
 		}

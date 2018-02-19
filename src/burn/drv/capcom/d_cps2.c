@@ -11442,6 +11442,12 @@ static UINT8 *Gigaman2DummyQsndRam = NULL;
 
 static INT32 Gigaman2Init()
 {
+   UINT8 *pTemp;
+   UINT16 *pTemp16;
+   UINT16 *CpsGfx16;
+   INT32 i;
+	INT32 nRet = 0;
+
 	Cps = 2;
 	Cps2DisableQSnd = 1;
 	
@@ -11460,10 +11466,8 @@ static INT32 Gigaman2Init()
 	
 	CpsInit();
 	
-	INT32 nRet = 0;
-	
 	// Load program rom (seperate data and code)
-	UINT8 *pTemp = (UINT8*)BurnMalloc(0x400000);
+	pTemp = (UINT8*)BurnMalloc(0x400000);
 	if (!pTemp) return 1;
 	nRet = BurnLoadRom(pTemp, 0, 1); if (nRet) return 1;
 	memcpy(CpsRom , pTemp + 0x000000, 0x180000);
@@ -11480,16 +11484,16 @@ static INT32 Gigaman2Init()
 	// copy to CpsGfx as a temp buffer and descramble
 	memcpy(CpsGfx, pTemp, nCpsGfxLen);
 	memset(pTemp, 0, 0xc00000);
-	UINT16 *pTemp16 = (UINT16*)pTemp;
-	UINT16 *CpsGfx16 = (UINT16*)CpsGfx;
-	for (INT32 i = 0; i < 0x800000 >> 1; i++) {
+	pTemp16 = (UINT16*)pTemp;
+	CpsGfx16 = (UINT16*)CpsGfx;
+	for (i = 0; i < 0x800000 >> 1; i++) {
 		pTemp16[i] = CpsGfx16[((i & ~7) >> 2) | ((i & 4) << 18) | ((i & 2) >> 1) | ((i & 1) << 21)];
 	}
 	
 	// copy back to CpsGfx as a temp buffer and put into a format easier to decode
 	memcpy(CpsGfx, pTemp, nCpsGfxLen);
 	memset(pTemp, 0, 0xc00000);
-	for (INT32 i = 0; i < 0x100000; i++) {
+	for (i = 0; i < 0x100000; i++) {
 		pTemp16[i + 0x000000] = CpsGfx16[(i * 4) + 0];
 		pTemp16[i + 0x100000] = CpsGfx16[(i * 4) + 1];
 		pTemp16[i + 0x200000] = CpsGfx16[(i * 4) + 2];
@@ -11515,7 +11519,7 @@ static INT32 Gigaman2Init()
 	return nRet;
 }
 
-static INT32 Gigaman2Exit()
+static INT32 Gigaman2Exit(void)
 {
 	BurnFree(Gigaman2DummyQsndRam);
 	

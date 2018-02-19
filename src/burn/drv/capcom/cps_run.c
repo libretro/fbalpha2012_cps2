@@ -1,5 +1,6 @@
 // CPS - Run
 #include "cps.h"
+#include <retro_inline.h>
 
 // Inputs:
 UINT8 CpsReset = 0;
@@ -176,18 +177,18 @@ INT32 CpsRunExit()
 	return 0;
 }
 
-inline static void CopyCpsReg(INT32 i)
+static INLINE void CopyCpsReg(INT32 i)
 {
 	memcpy(CpsSaveReg[i], CpsReg, 0x0100);
 }
 
-inline static void CopyCpsFrg(INT32 i)
+static INLINE void CopyCpsFrg(INT32 i)
 {
 	memcpy(CpsSaveFrg[i], CpsFrg, 0x0010);
 }
 
 // Schedule a beam-synchronized interrupt
-static void ScheduleIRQ()
+static void ScheduleIRQ(void)
 {
 	INT32 nLine = nCpsNumScanlines;
 

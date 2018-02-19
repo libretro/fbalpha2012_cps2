@@ -6,6 +6,8 @@
 #include "eeprom.h"
 #include "timer.h"
 
+#include <retro_inline.h>
+
 // Maximum number of beam-synchronized interrupts to check
 #define MAX_RASTER 10
 
@@ -190,14 +192,15 @@ extern CpsRunFrameMiddleCallback CpsRunFrameMiddleCallbackFunction;
 typedef void (*CpsRunFrameEndCallback)();
 extern CpsRunFrameEndCallback CpsRunFrameEndCallbackFunction;
 
-inline static UINT8* CpsFindGfxRam(INT32 nAddr,INT32 nLen)
+static INLINE UINT8* CpsFindGfxRam(INT32 nAddr,INT32 nLen)
 {
   nAddr&=0xffffff; // 24-bit bus
-  if (nAddr>=0x900000 && nAddr+nLen<=0x930000) return CpsRam90+nAddr-0x900000;
+  if (nAddr>=0x900000 && nAddr+nLen<=0x930000)
+     return CpsRam90+nAddr-0x900000;
   return NULL;
 }
 
-inline static void GetPalette(INT32 nStart, INT32 nCount)
+static INLINE void GetPalette(INT32 nStart, INT32 nCount)
 {
 	// Update Palette (Ghouls points to the wrong place on boot up I think)
 	INT32 nPal = (BURN_ENDIAN_SWAP_INT16(*((UINT16*)(CpsReg + 0x0A))) << 8) & 0xFFFC00;
@@ -309,7 +312,7 @@ extern UINT32 nCpstTile; extern INT32 nCpstFlip;
 extern short* CpstRowShift;
 extern UINT32 CpstPmsk; // Pixel mask
 
-inline static void CpstSetPal(INT32 nPal)
+static INLINE void CpstSetPal(INT32 nPal)
 {
 	nPal <<= 4;
 	nPal &= 0x7F0;

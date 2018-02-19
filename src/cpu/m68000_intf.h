@@ -1,5 +1,6 @@
 // 68000 (Sixty Eight K) Interface - header file
 #include <stdint.h>
+#include <retro_inline.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -53,8 +54,8 @@ void __cdecl M68000_RESET(void);
 	UINT32 isp, srh, ccr, xc, pc, irq, sr;
 	INT32 (*IrqCallback) (INT32 nIrq);
 	UINT32 ppc;
-	INT32 (*ResetCallback)();
-	INT32 (*RTECallback)();
+	INT32 (*ResetCallback)(void);
+	INT32 (*RTECallback)(void);
 	INT32 (*CmpCallback)(UINT32 val, INT32 reg);
 	UINT32 sfc, dfc, usp, vbr;
 	UINT32 nAsmBank, nCpuVersion;
@@ -89,8 +90,8 @@ typedef void (__fastcall *pSekWriteWordHandler)(UINT32 a, UINT16 d);
 typedef UINT32 (__fastcall *pSekReadLongHandler)(UINT32 a);
 typedef void (__fastcall *pSekWriteLongHandler)(UINT32 a, UINT32 d);
 
-typedef INT32 (__fastcall *pSekResetCallback)();
-typedef INT32 (__fastcall *pSekRTECallback)();
+typedef INT32 (__fastcall *pSekResetCallback)(void);
+typedef INT32 (__fastcall *pSekRTECallback)(void);
 typedef INT32 (__fastcall *pSekIrqCallback)(INT32 irq);
 typedef INT32 (__fastcall *pSekCmpCallback)(UINT32 val, INT32 reg);
 
@@ -142,34 +143,34 @@ void SekWriteWordROM(UINT32 a, UINT16 d);
 void SekWriteLongROM(UINT32 a, UINT32 d);
 
 INT32 SekInit(INT32 nCount, INT32 nCPUType);
-INT32 SekExit();
+INT32 SekExit(void);
 
-void SekNewFrame();
+void SekNewFrame(void);
 void SekSetCyclesScanline(INT32 nCycles);
 
-void SekClose();
+void SekClose(void);
 void SekOpen(const INT32 i);
-INT32 SekGetActive();
+INT32 SekGetActive(void);
 
 #define SEK_IRQSTATUS_NONE (0x0000)
 #define SEK_IRQSTATUS_AUTO (0x2000)
 #define SEK_IRQSTATUS_ACK  (0x1000)
 
 void SekSetIRQLine(const INT32 line, const INT32 status);
-void SekReset();
+void SekReset(void);
 
-void SekRunEnd();
+void SekRunEnd(void);
 void SekRunAdjust(const INT32 nCycles);
 INT32 SekRun(const INT32 nCycles);
 
-inline static INT32 SekIdle(INT32 nCycles)
+static INLINE INT32 SekIdle(INT32 nCycles)
 {
-	nSekCyclesTotal += nCycles;
+   nSekCyclesTotal += nCycles;
 
-	return nCycles;
+   return nCycles;
 }
 
-inline static INT32 SekSegmentCycles()
+static INLINE INT32 SekSegmentCycles(void)
 {
 #if defined(EMU_M68K)
 	return nSekCyclesDone + nSekCyclesToDo - m68k_ICount;
@@ -181,9 +182,9 @@ inline static INT32 SekSegmentCycles()
 }
 
 #if defined FBA_DEBUG
-static INT32 SekTotalCycles()
+static INT32 SekTotalCycles(void)
 #else
-inline static INT32 SekTotalCycles()
+static INLINE INT32 SekTotalCycles(void)
 #endif
 {
 #if defined(EMU_M68K)
@@ -195,7 +196,7 @@ inline static INT32 SekTotalCycles()
 #endif
 }
 
-inline static INT32 SekCurrentScanline()
+static INLINE INT32 SekCurrentScanline(void)
 {
 #if defined FBA_DEBUG
 	extern UINT8 DebugCPU_SekInitted;

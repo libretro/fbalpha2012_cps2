@@ -28,14 +28,16 @@ INT32 CpsPalExit()
 // Update CpsPal with the new palette at pNewPal (length 0xc00 bytes)
 INT32 CpsPalUpdate(UINT8* pNewPal)
 {
+   INT32 nPage;
 	INT32 nCtrl = CpsReg[nCpsPalCtrlReg];
 	UINT16 *PaletteRAM = (UINT16*)pNewPal;
 	
-	for (INT32 nPage = 0; nPage < 6; nPage++)
+	for (nPage = 0; nPage < 6; nPage++)
    {
 		if (BIT(nCtrl, nPage))
       {
-			for (INT32 Offset = 0; Offset < 0x200; ++Offset)
+         INT32 Offset;
+			for (Offset = 0; Offset < 0x200; ++Offset)
          {
 				INT32 Palette = BURN_ENDIAN_SWAP_INT16(*(PaletteRAM++));
 				INT32 Bright = 0x0f + ((Palette >> 12) << 1);
