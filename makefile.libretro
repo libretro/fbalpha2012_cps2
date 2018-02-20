@@ -52,6 +52,21 @@ filter_out2 = $(call filter_out1,$(call filter_out1,$1))
 unixpath = $(subst \,/,$1)
 unixcygpath = /$(subst :,,$(call unixpath,$1))
 
+ifneq (,$(findstring msvc,$(platform)))
+	OBJOUT = -Fo
+	LINKOUT = -out:
+ifeq ($(STATIC_LINKING),1)
+	LD ?= lib.exe
+	STATIC_LINKING=0
+else
+	LD = link.exe
+endif
+else
+	OBJOUT   = -o
+	LINKOUT  = -o 
+	LD = $(CXX)
+endif
+
 ifeq ($(platform), unix)
    TARGET := $(TARGET_NAME)_libretro.so
    fpic := -fPIC
@@ -497,16 +512,16 @@ $(TARGET): $(OBJS)
 ifeq ($(STATIC_LINKING), 1)
 	@$(AR) rcs $@ $(OBJS)
 else
-	@$(CXX) -o $@ $(SHARED) $(OBJS) $(LDFLAGS)
+	@$(LD) $(LINKOUT)$@ $(SHARED) $(OBJS) $(LDFLAGS)
 endif
 
 %.o: %.cpp
 	@echo "CXX $<"
-	@$(CXX) -c -o $@ $< $(CXXFLAGS) $(INCDIRS)
+	@$(CXX) -c $(OBJOUT)$@ $< $(CXXFLAGS) $(INCDIRS)
 
 %.o: %.c
 	@echo "CC $<"
-	@$(CC) -c -o $@ $< $(CFLAGS) $(INCDIRS)
+	@$(CC) -c $(OBJOUT)$@ $< $(CFLAGS) $(INCDIRS)
 
 clean-objs:
 	rm -f $(OBJS)
@@ -517,3 +532,6 @@ clean:
 	rm -f $(M68KMAKE_EXE)
 	rm -f $(PGM_SPRITE_CREATE_EXE)
 	rm -f $(CTVMAKE_EXE)
+
+print-%:
+	@echo '$*=$($*)'
