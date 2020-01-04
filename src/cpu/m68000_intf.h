@@ -70,15 +70,15 @@ void __cdecl M68000_RESET(void);
 #endif
 
 #ifdef EMU_M68K
- INT32 nSekM68KContextSize[SEK_MAX];
- INT8* SekM68KContext[SEK_MAX];
- INT32 m68k_ICount;
+ extern INT32 nSekM68KContextSize[SEK_MAX];
+ extern INT8* SekM68KContext[SEK_MAX];
+ extern INT32 m68k_ICount;
 #endif
 
 
 #ifdef EMU_C68K
- c68k_struc * SekC68KCurrentContext;
- c68k_struc * SekC68KContext[SEK_MAX]; 
+ extern c68k_struc * SekC68KCurrentContext;
+ extern c68k_struc * SekC68KContext[SEK_MAX];
 #define c68k_ICount	(SekC68KCurrentContext->ICount)
 #endif
 
