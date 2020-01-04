@@ -385,7 +385,7 @@ void retro_deinit(void)
 }
 
 extern "C" {
-   void Cps2Frame(void);
+   INT32 Cps2Frame(void);
    void HiscoreApply(void);
 };
 

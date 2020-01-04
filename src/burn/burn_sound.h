@@ -11,7 +11,7 @@ extern INT32 cmc_4p_Precalc();
  #define Precalc _Precalc
 #endif
 
-INT16 Precalc[];
+extern INT16 Precalc[];
 
 #define INTERPOLATE4PS_8BIT(fp, sN, s0, s1, s2)      (((INT32)((sN) * Precalc[(INT32)(fp) * 4 + 0]) + (INT32)((s0) * Precalc[(INT32)(fp) * 4 + 1]) + (INT32)((s1) * Precalc[(INT32)(fp) * 4 + 2]) + (INT32)((s2) * Precalc[(INT32)(fp) * 4 + 3])) / 64)
 #define INTERPOLATE4PS_16BIT(fp, sN, s0, s1, s2)     (((INT32)((sN) * Precalc[(INT32)(fp) * 4 + 0]) + (INT32)((s0) * Precalc[(INT32)(fp) * 4 + 1]) + (INT32)((s1) * Precalc[(INT32)(fp) * 4 + 2]) + (INT32)((s2) * Precalc[(INT32)(fp) * 4 + 3])) / 16384)
