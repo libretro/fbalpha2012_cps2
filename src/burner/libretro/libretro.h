@@ -141,15 +141,24 @@ extern "C" {
  * The placement of these is equivalent to placements on the 
  * Super Nintendo controller.
  * L2/R2/L3/R3 buttons correspond to the PS1 DualShock. */
+#if defined(HW_RVL) && defined(GEKKO)
+#define RETRO_DEVICE_ID_JOYPAD_B        8
+#define RETRO_DEVICE_ID_JOYPAD_Y        0
+#else
 #define RETRO_DEVICE_ID_JOYPAD_B        0
 #define RETRO_DEVICE_ID_JOYPAD_Y        1
+#endif
 #define RETRO_DEVICE_ID_JOYPAD_SELECT   2
 #define RETRO_DEVICE_ID_JOYPAD_START    3
 #define RETRO_DEVICE_ID_JOYPAD_UP       4
 #define RETRO_DEVICE_ID_JOYPAD_DOWN     5
 #define RETRO_DEVICE_ID_JOYPAD_LEFT     6
 #define RETRO_DEVICE_ID_JOYPAD_RIGHT    7
+#if defined(HW_RVL) && defined(GEKKO)
+#define RETRO_DEVICE_ID_JOYPAD_A        1
+#else
 #define RETRO_DEVICE_ID_JOYPAD_A        8
+#endif
 #define RETRO_DEVICE_ID_JOYPAD_X        9
 #define RETRO_DEVICE_ID_JOYPAD_L       10
 #define RETRO_DEVICE_ID_JOYPAD_R       11
