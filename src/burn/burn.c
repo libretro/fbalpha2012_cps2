@@ -663,9 +663,6 @@ INT32 BurnDrvExit(void)
 	nRet = pDriver[nBurnDrvActive]->Exit();			// Forward to drivers function
 	
 	BurnExitMemoryManager();
-#if defined FBA_DEBUG
-	DebugTrackerExit();
-#endif
 
 	return nRet;
 }
