@@ -59,36 +59,30 @@ static INT32 Name##RomName(char** pszName, UINT32 i, INT32 nAka)		\
 #define STDINPUTINFO(Name)												\
 static INT32 Name##InputInfo(struct BurnInputInfo* pii, UINT32 i)		\
 {																		\
-	if (i >= sizeof(Name##InputList) / sizeof(Name##InputList[0])) {	\
+	if (i >= sizeof(Name##InputList) / sizeof(Name##InputList[0]))	\
 		return 1;														\
-	}																	\
-	if (pii) {															\
+	if (pii)															\
 		*pii = Name##InputList[i];										\
-	}																	\
 	return 0;															\
 }
 
 #define STDINPUTINFOSPEC(Name, Info1)									\
 static INT32 Name##InputInfo(struct BurnInputInfo* pii, UINT32 i)		\
 {																		\
-	if (i >= sizeof(Info1) / sizeof(Info1[0])) {						\
+	if (i >= sizeof(Info1) / sizeof(Info1[0]))						\
 		return 1;														\
-	}																	\
-	if (pii) {															\
+	if (pii)															\
 		*pii = Info1[i];												\
-	}																	\
 	return 0;															\
 }
 
 #define STDDIPINFO(Name)												\
 static INT32 Name##DIPInfo(struct BurnDIPInfo* pdi, UINT32 i)			\
 {																		\
-	if (i >= sizeof(Name##DIPList) / sizeof(Name##DIPList[0])) {		\
+	if (i >= sizeof(Name##DIPList) / sizeof(Name##DIPList[0]))		\
 		return 1;														\
-	}																	\
-	if (pdi) {															\
+	if (pdi)															\
 		*pdi = Name##DIPList[i];										\
-	}																	\
 	return 0;															\
 }
 
@@ -97,17 +91,14 @@ static INT32 Name##DIPInfo(struct BurnDIPInfo* pdi, UINT32 i)			\
 {																		\
 	if (i >= sizeof(Info1##DIPList) / sizeof(Info1##DIPList[0])) {		\
 		i -= sizeof(Info1##DIPList) / sizeof(Info1##DIPList[0]);		\
-		if (i >= sizeof(Info2##DIPList) / sizeof(Info2##DIPList[0])) {	\
+		if (i >= sizeof(Info2##DIPList) / sizeof(Info2##DIPList[0]))	\
 			return 1;													\
-		}																\
-		if (pdi) {														\
+		if (pdi)														\
 			*pdi = Info2##DIPList[i];									\
-		}																\
 		return 0;														\
 	}																	\
-	if (pdi) {															\
+	if (pdi)															\
 		*pdi = Info1##DIPList[i];										\
-	}																	\
 	return 0;															\
 }
 
@@ -115,9 +106,8 @@ static INT32 Name##DIPInfo(struct BurnDIPInfo* pdi, UINT32 i)			\
 #define STD_SAMPLE_PICK(Name)											\
 static struct BurnSampleInfo* Name##PickSample(UINT32 i)				\
 {																		\
-	if (i >= sizeof(Name##SampleDesc) / sizeof(Name##SampleDesc[0])) {	\
+	if (i >= sizeof(Name##SampleDesc) / sizeof(Name##SampleDesc[0]))	\
 		return NULL;													\
-	}																	\
 	return Name##SampleDesc + i;										\
 }
 
@@ -125,24 +115,20 @@ static struct BurnSampleInfo* Name##PickSample(UINT32 i)				\
 static INT32 Name##SampleInfo(struct BurnSampleInfo* pri, UINT32 i)		\
 {																		\
 	struct BurnSampleInfo* por = Name##PickSample(i);					\
-	if (por == NULL) {													\
+	if (por == NULL)													\
 		return 1;														\
-	}																	\
-	if (pri) {															\
+	if (pri)															\
 		pri->nFlags = por->nFlags;										\
-	}																	\
 	return 0;															\
 }																		\
 																		\
 static INT32 Name##SampleName(char** pszName, UINT32 i, INT32 nAka)		\
 {											   		 					\
 	struct BurnSampleInfo *por = Name##PickSample(i);					\
-	if (por == NULL) {													\
+	if (por == NULL)													\
 		return 1;														\
-	}																	\
-	if (nAka) {															\
+	if (nAka)															\
 		return 1;														\
-	}																	\
 	*pszName = por->szName;												\
 	return 0;															\
 }
