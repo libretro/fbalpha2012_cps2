@@ -188,7 +188,6 @@ struct BurnDIPInfo {
 
 // ---------------------------------------------------------------------------
 
-extern BOOL bBurnUseMMX;
 extern BOOL bBurnUseASMCPUEmulation;
 
 extern UINT32 nFramesEmulated;
@@ -239,9 +238,7 @@ INT32 BurnDrvExit();
 
 INT32 BurnDrvCartridgeSetup(enum BurnCartrigeCommand nCommand);
 
-INT32 BurnDrvRedraw();
 INT32 BurnRecalcPal();
-INT32 BurnDrvGetPaletteEntries();
 
 INT32 BurnSetProgressRange(double dProgressRange);
 INT32 BurnUpdateProgress(double dProgressStep, const TCHAR* pszText, BOOL bAbs);
@@ -275,15 +272,10 @@ INT32 BurnDrvGetRomName(char** pszName, UINT32 i, INT32 nAka);
 INT32 BurnDrvGetInputInfo(struct BurnInputInfo* pii, UINT32 i);
 INT32 BurnDrvGetDIPInfo(struct BurnDIPInfo* pdi, UINT32 i);
 INT32 BurnDrvGetVisibleSize(INT32* pnWidth, INT32* pnHeight);
-INT32 BurnDrvGetVisibleOffs(INT32* pnLeft, INT32* pnTop);
-INT32 BurnDrvGetFullSize(INT32* pnWidth, INT32* pnHeight);
-INT32 BurnDrvGetAspect(INT32* pnXAspect, INT32* pnYAspect);
 INT32 BurnDrvGetHardwareCode();
 INT32 BurnDrvGetFlags();
 BOOL BurnDrvIsWorking();
 INT32 BurnDrvGetMaxPlayers();
-INT32 BurnDrvSetVisibleSize(INT32 pnWidth, INT32 pnHeight);
-INT32 BurnDrvSetAspect(INT32 pnXAspect, INT32 pnYAspect);
 INT32 BurnDrvGetGenreFlags();
 INT32 BurnDrvGetFamilyFlags();
 INT32 BurnDrvGetSampleInfo(struct BurnSampleInfo *pri, UINT32 i);

@@ -21,7 +21,6 @@ UINT32 nBurnDrvCount = 0;		// Count of game drivers
 UINT32 nBurnDrvActive = ~0U;	// Which game driver is selected
 UINT32 nBurnDrvSelect[8] = { ~0U, ~0U, ~0U, ~0U, ~0U, ~0U, ~0U, ~0U }; // Which games are selected (i.e. loaded but not necessarily active)
 									
-BOOL bBurnUseMMX;
 #if defined BUILD_A68K
 BOOL bBurnUseASMCPUEmulation = TRUE;
 #else
@@ -61,31 +60,17 @@ BOOL bSaveCRoms = 0;
 
 UINT32 *pBurnDrvPalette;
 
-BOOL BurnCheckMMXSupport()
-{
-#if defined BUILD_X86_ASM
-	UINT32 nSignatureEAX = 0, nSignatureEBX = 0, nSignatureECX = 0, nSignatureEDX = 0;
-
-	CPUID(1, nSignatureEAX, nSignatureEBX, nSignatureECX, nSignatureEDX);
-
-	return (nSignatureEDX >> 23) & 1;						// bit 23 of edx indicates MMX support
-#else
-	return 0;
-#endif
-}
-
 INT32 BurnLibInit(void)
 {
 	BurnLibExit();
 	nBurnDrvCount = sizeof(pDriver) / sizeof(pDriver[0]);	// count available drivers
 
 	cmc_4p_Precalc();
-	bBurnUseMMX = BurnCheckMMXSupport();
 
 	return 0;
 }
 
-INT32 BurnLibExit()
+INT32 BurnLibExit(void)
 {
 	nBurnDrvCount = 0;
 
@@ -97,44 +82,45 @@ INT32 BurnGetZipName(char** pszName, UINT32 i)
 	static char szFilename[MAX_PATH];
 	char* pszGameName = NULL;
 
-	if (pszName == NULL) {
+	if (pszName == NULL)
 		return 1;
-	}
 
-	if (i == 0) {
+	if (i == 0)
 		pszGameName = pDriver[nBurnDrvActive]->szShortName;
-	} else {
-		INT32 nOldBurnDrvSelect = nBurnDrvActive;
-		UINT32 j = pDriver[nBurnDrvActive]->szBoardROM ? 1 : 0;
+	else
+   {
+      INT32 nOldBurnDrvSelect = nBurnDrvActive;
+      UINT32 j = pDriver[nBurnDrvActive]->szBoardROM ? 1 : 0;
 
-		// Try BIOS/board ROMs first
-		if (i == 1 && j == 1) {										// There is a BIOS/board ROM
-			pszGameName = pDriver[nBurnDrvActive]->szBoardROM;
-		}
+      // Try BIOS/board ROMs first
+      if (i == 1 && j == 1)
+      {										// There is a BIOS/board ROM
+         pszGameName = pDriver[nBurnDrvActive]->szBoardROM;
+      }
 
-		if (pszGameName == NULL) {
-			// Go through the list to seek out the parent
-			while (j < i) {
-				char* pszParent = pDriver[nBurnDrvActive]->szParent;
-				pszGameName = NULL;
+      if (pszGameName == NULL) {
+         // Go through the list to seek out the parent
+         while (j < i) {
+            char* pszParent = pDriver[nBurnDrvActive]->szParent;
+            pszGameName = NULL;
 
-				if (pszParent == NULL) {							// No parent
-					break;
-				}
+            if (pszParent == NULL) // No parent
+               break;
 
-				for (nBurnDrvActive = 0; nBurnDrvActive < nBurnDrvCount; nBurnDrvActive++) {
-		            if (strcmp(pszParent, pDriver[nBurnDrvActive]->szShortName) == 0) {	// Found parent
-						pszGameName = pDriver[nBurnDrvActive]->szShortName;
-						break;
-					}
-				}
+            for (nBurnDrvActive = 0; nBurnDrvActive < nBurnDrvCount; nBurnDrvActive++)
+            {
+               if (strcmp(pszParent, pDriver[nBurnDrvActive]->szShortName) == 0) {	// Found parent
+                  pszGameName = pDriver[nBurnDrvActive]->szShortName;
+                  break;
+               }
+            }
 
-				j++;
-			}
-		}
+            j++;
+         }
+      }
 
-		nBurnDrvActive = nOldBurnDrvSelect;
-	}
+      nBurnDrvActive = nOldBurnDrvSelect;
+   }
 
 	if (pszGameName == NULL) {
 		*pszName = NULL;
@@ -158,232 +144,228 @@ INT32 BurnStateInit();
 // Get the text fields for the driver in TCHARs
 TCHAR* BurnDrvGetText(UINT32 i)
 {
-	char* pszStringA = NULL;
-	wchar_t* pszStringW = NULL;
-	static char* pszCurrentNameA;
-	static wchar_t* pszCurrentNameW;
+   char* pszStringA = NULL;
+   wchar_t* pszStringW = NULL;
+   static char* pszCurrentNameA;
+   static wchar_t* pszCurrentNameW;
 
 #if defined (_UNICODE)
 
-	static wchar_t szShortNameW[32];
-	static wchar_t szDateW[32];
-	static wchar_t szFullNameW[256];
-	static wchar_t szCommentW[256];
-	static wchar_t szManufacturerW[256];
-	static wchar_t szSystemW[256];
-	static wchar_t szParentW[32];
-	static wchar_t szBoardROMW[32];
-	static wchar_t szSampleNameW[32];
+   static wchar_t szShortNameW[32];
+   static wchar_t szDateW[32];
+   static wchar_t szFullNameW[256];
+   static wchar_t szCommentW[256];
+   static wchar_t szManufacturerW[256];
+   static wchar_t szSystemW[256];
+   static wchar_t szParentW[32];
+   static wchar_t szBoardROMW[32];
+   static wchar_t szSampleNameW[32];
 
 #else
 
-	static char szShortNameA[32];
-	static char szDateA[32];
-	static char szFullNameA[256];
-	static char szCommentA[256];
-	static char szManufacturerA[256];
-	static char szSystemA[256];
-	static char szParentA[32];
-	static char szBoardROMA[32];
-	static char szSampleNameA[32];
+   static char szShortNameA[32];
+   static char szDateA[32];
+   static char szFullNameA[256];
+   static char szCommentA[256];
+   static char szManufacturerA[256];
+   static char szSystemA[256];
+   static char szParentA[32];
+   static char szBoardROMA[32];
+   static char szSampleNameA[32];
 
 #endif
 
-	if (!(i & DRV_ASCIIONLY)) {
-		switch (i & 0xFF) {
-			case DRV_FULLNAME:
-				pszStringW = pDriver[nBurnDrvActive]->szFullNameW;
-				
-				if (i & DRV_NEXTNAME) {
-					if (pszCurrentNameW && pDriver[nBurnDrvActive]->szFullNameW) {
-						pszCurrentNameW += wcslen(pszCurrentNameW) + 1;
-						if (!pszCurrentNameW[0]) {
-							return NULL;
-						}
-						pszStringW = pszCurrentNameW;
-					}
-				} else {
+   if (!(i & DRV_ASCIIONLY)) {
+      switch (i & 0xFF) {
+         case DRV_FULLNAME:
+            pszStringW = pDriver[nBurnDrvActive]->szFullNameW;
+
+            if (i & DRV_NEXTNAME) {
+               if (pszCurrentNameW && pDriver[nBurnDrvActive]->szFullNameW) {
+                  pszCurrentNameW += wcslen(pszCurrentNameW) + 1;
+                  if (!pszCurrentNameW[0]) {
+                     return NULL;
+                  }
+                  pszStringW = pszCurrentNameW;
+               }
+            } else {
 
 #if !defined (_UNICODE)
 
-					// Ensure all of the Unicode titles are printable in the current locale
-					pszCurrentNameW = pDriver[nBurnDrvActive]->szFullNameW;
-					if (pszCurrentNameW && pszCurrentNameW[0]) {
-						INT32 nRet;
+               // Ensure all of the Unicode titles are printable in the current locale
+               pszCurrentNameW = pDriver[nBurnDrvActive]->szFullNameW;
+               if (pszCurrentNameW && pszCurrentNameW[0]) {
+                  INT32 nRet;
 
-						do {
-							nRet = wcstombs(szFullNameA, pszCurrentNameW, 256);
-							pszCurrentNameW += wcslen(pszCurrentNameW) + 1;
-						} while	(nRet >= 0 && pszCurrentNameW[0]);
+                  do {
+                     nRet = wcstombs(szFullNameA, pszCurrentNameW, 256);
+                     pszCurrentNameW += wcslen(pszCurrentNameW) + 1;
+                  } while	(nRet >= 0 && pszCurrentNameW[0]);
 
-						// If all titles can be printed, we can use the Unicode versions
-						if (nRet >= 0) {
-							pszStringW = pszCurrentNameW = pDriver[nBurnDrvActive]->szFullNameW;
-						}
-					}
+                  // If all titles can be printed, we can use the Unicode versions
+                  if (nRet >= 0) {
+                     pszStringW = pszCurrentNameW = pDriver[nBurnDrvActive]->szFullNameW;
+                  }
+               }
 
 #else
 
-					pszStringW = pszCurrentNameW = pDriver[nBurnDrvActive]->szFullNameW;
+               pszStringW = pszCurrentNameW = pDriver[nBurnDrvActive]->szFullNameW;
 
 #endif
 
-				}
-				break;
-			case DRV_COMMENT:
-				pszStringW = pDriver[nBurnDrvActive]->szCommentW;
-				break;
-			case DRV_MANUFACTURER:
-				pszStringW = pDriver[nBurnDrvActive]->szManufacturerW;
-				break;
-			case DRV_SYSTEM:
-				pszStringW = pDriver[nBurnDrvActive]->szSystemW;
-		}
+            }
+            break;
+         case DRV_COMMENT:
+            pszStringW = pDriver[nBurnDrvActive]->szCommentW;
+            break;
+         case DRV_MANUFACTURER:
+            pszStringW = pDriver[nBurnDrvActive]->szManufacturerW;
+            break;
+         case DRV_SYSTEM:
+            pszStringW = pDriver[nBurnDrvActive]->szSystemW;
+      }
 
 #if defined (_UNICODE)
 
-		if (pszStringW && pszStringW[0]) {
-			return pszStringW;
-		}
+      if (pszStringW && pszStringW[0]) {
+         return pszStringW;
+      }
 
 #else
 
-		switch (i & 0xFF) {
-			case DRV_NAME:
-				pszStringA = szShortNameA;
-				break;
-			case DRV_DATE:
-				pszStringA = szDateA;
-				break;
-			case DRV_FULLNAME:
-				pszStringA = szFullNameA;
-				break;
-			case DRV_COMMENT:
-				pszStringA = szCommentA;
-				break;
-			case DRV_MANUFACTURER:
-				pszStringA = szManufacturerA;
-				break;
-			case DRV_SYSTEM:
-				pszStringA = szSystemA;
-				break;
-			case DRV_PARENT:
-				pszStringA = szParentA;
-				break;
-			case DRV_BOARDROM:
-				pszStringA = szBoardROMA;
-				break;
-			case DRV_SAMPLENAME:
-				pszStringA = szSampleNameA;
-				break;
-		}
+      switch (i & 0xFF) {
+         case DRV_NAME:
+            pszStringA = szShortNameA;
+            break;
+         case DRV_DATE:
+            pszStringA = szDateA;
+            break;
+         case DRV_FULLNAME:
+            pszStringA = szFullNameA;
+            break;
+         case DRV_COMMENT:
+            pszStringA = szCommentA;
+            break;
+         case DRV_MANUFACTURER:
+            pszStringA = szManufacturerA;
+            break;
+         case DRV_SYSTEM:
+            pszStringA = szSystemA;
+            break;
+         case DRV_PARENT:
+            pszStringA = szParentA;
+            break;
+         case DRV_BOARDROM:
+            pszStringA = szBoardROMA;
+            break;
+         case DRV_SAMPLENAME:
+            pszStringA = szSampleNameA;
+            break;
+      }
 
-		if (pszStringW && pszStringA && pszStringW[0]) {
-			if (wcstombs(pszStringA, pszStringW, 256) != -1U) {
-				return pszStringA;
-			}
+      if (pszStringW && pszStringA && pszStringW[0]) {
+         if (wcstombs(pszStringA, pszStringW, 256) != -1U) {
+            return pszStringA;
+         }
 
-		}
+      }
 
-		pszStringA = NULL;
+      pszStringA = NULL;
 
 #endif
 
-	}
+   }
 
-	if (i & DRV_UNICODEONLY) {
-		return NULL;
-	}
+   if (i & DRV_UNICODEONLY) {
+      return NULL;
+   }
 
-	switch (i & 0xFF) {
-		case DRV_NAME:
-			pszStringA = pDriver[nBurnDrvActive]->szShortName;
-			break;
-		case DRV_DATE:
-			pszStringA = pDriver[nBurnDrvActive]->szDate;
-			break;
-		case DRV_FULLNAME:
-			pszStringA = pDriver[nBurnDrvActive]->szFullNameA;
+   switch (i & 0xFF) {
+      case DRV_NAME:
+         pszStringA = pDriver[nBurnDrvActive]->szShortName;
+         break;
+      case DRV_DATE:
+         pszStringA = pDriver[nBurnDrvActive]->szDate;
+         break;
+      case DRV_FULLNAME:
+         pszStringA = pDriver[nBurnDrvActive]->szFullNameA;
 
-			if (i & DRV_NEXTNAME) {
-				if (!pszCurrentNameW && pDriver[nBurnDrvActive]->szFullNameA) {
-					pszCurrentNameA += strlen(pszCurrentNameA) + 1;
-					if (!pszCurrentNameA[0]) {
-						return NULL;
-					}
-					pszStringA = pszCurrentNameA;
-				}
-			} else {
-				pszStringA = pszCurrentNameA = pDriver[nBurnDrvActive]->szFullNameA;
-				pszCurrentNameW = NULL;
-			}
-			break;
-		case DRV_COMMENT:
-			pszStringA = pDriver[nBurnDrvActive]->szCommentA;
-			break;
-		case DRV_MANUFACTURER:
-			pszStringA = pDriver[nBurnDrvActive]->szManufacturerA;
-			break;
-		case DRV_SYSTEM:
-			pszStringA = pDriver[nBurnDrvActive]->szSystemA;
-			break;
-		case DRV_PARENT:
-			pszStringA = pDriver[nBurnDrvActive]->szParent;
-			break;
-		case DRV_BOARDROM:
-			pszStringA = pDriver[nBurnDrvActive]->szBoardROM;
-			break;
-		case DRV_SAMPLENAME:
-			pszStringA = pDriver[nBurnDrvActive]->szSampleName;
-	}
+         if (i & DRV_NEXTNAME) {
+            if (!pszCurrentNameW && pDriver[nBurnDrvActive]->szFullNameA) {
+               pszCurrentNameA += strlen(pszCurrentNameA) + 1;
+               if (!pszCurrentNameA[0]) {
+                  return NULL;
+               }
+               pszStringA = pszCurrentNameA;
+            }
+         } else {
+            pszStringA = pszCurrentNameA = pDriver[nBurnDrvActive]->szFullNameA;
+            pszCurrentNameW = NULL;
+         }
+         break;
+      case DRV_COMMENT:
+         pszStringA = pDriver[nBurnDrvActive]->szCommentA;
+         break;
+      case DRV_MANUFACTURER:
+         pszStringA = pDriver[nBurnDrvActive]->szManufacturerA;
+         break;
+      case DRV_SYSTEM:
+         pszStringA = pDriver[nBurnDrvActive]->szSystemA;
+         break;
+      case DRV_PARENT:
+         pszStringA = pDriver[nBurnDrvActive]->szParent;
+         break;
+      case DRV_BOARDROM:
+         pszStringA = pDriver[nBurnDrvActive]->szBoardROM;
+         break;
+      case DRV_SAMPLENAME:
+         pszStringA = pDriver[nBurnDrvActive]->szSampleName;
+   }
 
 #if defined (_UNICODE)
 
-	switch (i & 0xFF) {
-		case DRV_NAME:
-			pszStringW = szShortNameW;
-			break;
-		case DRV_DATE:
-			pszStringW = szDateW;
-			break;
-		case DRV_FULLNAME:
-			pszStringW = szFullNameW;
-			break;
-		case DRV_COMMENT:
-			pszStringW = szCommentW;
-			break;
-		case DRV_MANUFACTURER:
-			pszStringW = szManufacturerW;
-			break;
-		case DRV_SYSTEM:
-			pszStringW = szSystemW;
-			break;
-		case DRV_PARENT:
-			pszStringW = szParentW;
-			break;
-		case DRV_BOARDROM:
-			pszStringW = szBoardROMW;
-			break;
-		case DRV_SAMPLENAME:
-			pszStringW = szSampleNameW;
-			break;
-	}
+   switch (i & 0xFF) {
+      case DRV_NAME:
+         pszStringW = szShortNameW;
+         break;
+      case DRV_DATE:
+         pszStringW = szDateW;
+         break;
+      case DRV_FULLNAME:
+         pszStringW = szFullNameW;
+         break;
+      case DRV_COMMENT:
+         pszStringW = szCommentW;
+         break;
+      case DRV_MANUFACTURER:
+         pszStringW = szManufacturerW;
+         break;
+      case DRV_SYSTEM:
+         pszStringW = szSystemW;
+         break;
+      case DRV_PARENT:
+         pszStringW = szParentW;
+         break;
+      case DRV_BOARDROM:
+         pszStringW = szBoardROMW;
+         break;
+      case DRV_SAMPLENAME:
+         pszStringW = szSampleNameW;
+         break;
+   }
 
-	if (pszStringW && pszStringA && pszStringA[0]) {
-		if (mbstowcs(pszStringW, pszStringA, 256) != -1U) {
-			return pszStringW;
-		}
-	}
-
+   if (pszStringW && pszStringA && pszStringA[0])
+   {
+      if (mbstowcs(pszStringW, pszStringA, 256) != -1U)
+         return pszStringW;
+   }
 #else
-
-	if (pszStringA && pszStringA[0]) {
-		return pszStringA;
-	}
-
+   if (pszStringA && pszStringA[0])
+      return pszStringA;
 #endif
 
-	return NULL;
+   return NULL;
 }
 
 
@@ -479,57 +461,6 @@ INT32 BurnDrvGetVisibleSize(INT32* pnWidth, INT32* pnHeight)
 	return 0;
 }
 
-INT32 BurnDrvGetVisibleOffs(INT32* pnLeft, INT32* pnTop)
-{
-	*pnLeft = 0;
-	*pnTop = 0;
-
-	return 0;
-}
-
-INT32 BurnDrvGetFullSize(INT32* pnWidth, INT32* pnHeight)
-{
-	if (pDriver[nBurnDrvActive]->Flags & BDF_ORIENTATION_VERTICAL) {
-		*pnWidth =pDriver[nBurnDrvActive]->nHeight;
-		*pnHeight=pDriver[nBurnDrvActive]->nWidth;
-	} else {
-		*pnWidth =pDriver[nBurnDrvActive]->nWidth;
-		*pnHeight=pDriver[nBurnDrvActive]->nHeight;
-	}
-
-	return 0;
-}
-
-// Get screen aspect ratio
-INT32 BurnDrvGetAspect(INT32* pnXAspect, INT32* pnYAspect)
-{
-	*pnXAspect = pDriver[nBurnDrvActive]->nXAspect;
-	*pnYAspect = pDriver[nBurnDrvActive]->nYAspect;
-
-	return 0;
-}
-
-INT32 BurnDrvSetVisibleSize(INT32 pnWidth, INT32 pnHeight)
-{
-	if (pDriver[nBurnDrvActive]->Flags & BDF_ORIENTATION_VERTICAL) {
-		pDriver[nBurnDrvActive]->nHeight = pnWidth;
-		pDriver[nBurnDrvActive]->nWidth = pnHeight;
-	} else {
-		pDriver[nBurnDrvActive]->nWidth = pnWidth;
-		pDriver[nBurnDrvActive]->nHeight = pnHeight;
-	}
-	
-	return 0;
-}
-
-INT32 BurnDrvSetAspect(INT32 pnXAspect,INT32 pnYAspect)
-{
-	pDriver[nBurnDrvActive]->nXAspect = pnXAspect;
-	pDriver[nBurnDrvActive]->nYAspect = pnYAspect;
-
-	return 0;	
-}
-
 // Get the hardware code
 INT32 BurnDrvGetHardwareCode(void)
 {
@@ -571,9 +502,8 @@ INT32 BurnDrvInit(void)
 {
 	INT32 nReturnValue;
 
-	if (nBurnDrvActive >= nBurnDrvCount) {
+	if (nBurnDrvActive >= nBurnDrvCount)
 		return 1;
-	}
 
 #if defined (FBA_DEBUG)
 	{
@@ -696,15 +626,6 @@ INT32 BurnDrvCartridgeSetup(enum BurnCartrigeCommand nCommand)
 	return 0;
 }
 
-// Force redraw of the screen
-INT32 BurnDrvRedraw(void)
-{
-	if (pDriver[nBurnDrvActive]->Redraw)
-		return pDriver[nBurnDrvActive]->Redraw();	// Forward to drivers function
-
-	return 1;										// No funtion provide, so simply return
-}
-
 // Refresh Palette
 INT32 BurnRecalcPal(void)
 {
@@ -717,11 +638,6 @@ INT32 BurnRecalcPal(void)
 	}
 
 	return 0;
-}
-
-INT32 BurnDrvGetPaletteEntries(void)
-{
-	return pDriver[nBurnDrvActive]->nPaletteEntries;
 }
 
 // ----------------------------------------------------------------------------
@@ -755,32 +671,6 @@ INT32 BurnSetRefreshRate(double dFrameRate)
 	return 0;
 }
 
-static INLINE INT32 BurnClearSize(INT32 w, INT32 h)
-{
-	UINT8 *pl;
-	INT32 y;
-
-	w *= nBurnBpp;
-
-	// clear the screen to zero
-	for (pl = pBurnDraw, y = 0; y < h; pl += nBurnPitch, y++)
-		memset(pl, 0x00, w);
-
-	return 0;
-}
-
-INT32 BurnClearScreen(void)
-{
-	struct BurnDriver* pbd = pDriver[nBurnDrvActive];
-
-	if (pbd->Flags & BDF_ORIENTATION_VERTICAL)
-		BurnClearSize(pbd->nHeight, pbd->nWidth);
-   else
-		BurnClearSize(pbd->nWidth, pbd->nHeight);
-
-	return 0;
-}
-
 // Byteswaps an area of memory
 INT32 BurnByteswap(UINT8* pMem, INT32 nLen)
 {
@@ -798,63 +688,6 @@ INT32 BurnByteswap(UINT8* pMem, INT32 nLen)
 
 // Application-defined rom loading function:
 INT32 (__cdecl *BurnExtLoadRom)(UINT8 *Dest, INT32 *pnWrote, INT32 i) = NULL;
-
-// ----------------------------------------------------------------------------
-// Colour-depth independant image transfer
-
-UINT16* pTransDraw = NULL;
-
-static INT32 nTransWidth, nTransHeight;
-
-void BurnTransferClear(void)
-{
-	memset((void*)pTransDraw, 0, nTransWidth * nTransHeight * sizeof(UINT16));
-}
-
-INT32 BurnTransferCopy(UINT32* pPalette)
-{
-   INT32 y;
-	UINT16* pSrc = pTransDraw;
-	UINT8* pDest = pBurnDraw;
-	
-	pBurnDrvPalette = pPalette;
-
-   for (y = 0; y < nTransHeight; y++, pSrc += nTransWidth, pDest += nBurnPitch)
-   {
-      INT32 x;
-      for (x = 0; x < nTransWidth; x ++)
-         ((UINT16*)pDest)[x] = pPalette[pSrc[x]];
-   }
-
-	return 0;
-}
-
-void BurnTransferExit(void)
-{
-	if (pTransDraw)
-   {
-		free(pTransDraw);
-		pTransDraw = NULL;
-	}
-}
-
-INT32 BurnTransferInit()
-{
-	if (BurnDrvGetFlags() & BDF_ORIENTATION_VERTICAL)
-		BurnDrvGetVisibleSize(&nTransHeight, &nTransWidth);
-   else
-		BurnDrvGetVisibleSize(&nTransWidth, &nTransHeight);
-
-	pTransDraw = (UINT16*)malloc(nTransWidth * nTransHeight * sizeof(UINT16));
-	if (pTransDraw == NULL)
-		return 1;
-
-	BurnTransferClear();
-
-	return 0;
-}
-
-
 
 // ----------------------------------------------------------------------------
 // Savestate support
