@@ -1,11 +1,12 @@
 // Burn - Drivers module
+#include <stdio.h>
+
+#include <retro_inline.h>
 
 #include "version.h"
 #include "burnint.h"
 #include "burn_sound.h"
 #include "driverlist.h"
-
-#include <retro_inline.h>
 
 // filler function, used if the application is not printing debug messages
 static INT32 __cdecl BurnbprintfFiller(INT32 a, TCHAR *b, ...) { return 0; }

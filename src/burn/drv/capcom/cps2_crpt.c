@@ -110,20 +110,12 @@ the decryption keys.
 
 *******************************************************************************/
 
-#if 0
-#include "driver.h"
-#include "cpu/m68000/m68kmame.h"
-#include "ui.h"
-#include "includes/cps1.h"
-#endif
-
-#if 1
+#include <stdio.h>
 #include "cps.h"
 #include "bitswap.h"
 
 #define BIT(x,n) (((x)>>(n))&1)
 #define BITSWAP8(a, b, c, d, e, f, g, h, i) BITSWAP08(a, b, c, d, e, f, g, h, i)
-#endif
 
 
 /******************************************************************************/

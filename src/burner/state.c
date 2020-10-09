@@ -1,4 +1,5 @@
 // Driver Save State module
+#include <stdio.h>
 #include "burner.h"
 
 // If bAll=0 save/load all non-volatile ram to .fs
