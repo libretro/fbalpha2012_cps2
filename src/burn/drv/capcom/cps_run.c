@@ -337,7 +337,7 @@ INT32 Cps2Frame()
 //	nDone += SekRun(nCpsCyclesSegment[0] - nDone);
 
 	SekSetIRQLine(2, SEK_IRQSTATUS_AUTO);				// VBlank
-   CpsDraw();
+	if (!nSkipFrame) CpsDraw();
 	SekRun(nCpsCycles - SekTotalCycles());	
 
 	nCpsCyclesExtra = SekTotalCycles() - nCpsCycles;

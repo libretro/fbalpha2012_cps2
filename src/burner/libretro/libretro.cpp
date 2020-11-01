@@ -6,6 +6,7 @@
 #include <string>
 
 #include "libretro.h"
+#include "libretro_core_options.h"
 #include "burner.h"
 #include "input/inp_keys.h"
 #include "state.h"
@@ -42,6 +43,7 @@ static unsigned g_rom_count;
 
 #define AUDIO_SAMPLERATE 32000
 #define AUDIO_SEGMENT_LENGTH 534 // <-- Hardcoded value that corresponds well to 32kHz audio.
+#define VIDEO_REFRESH_RATE 59.629403f
 
 static uint16_t *g_fba_frame;
 static int16_t g_audio_buf[AUDIO_SEGMENT_LENGTH * 2];
@@ -64,13 +66,7 @@ void retro_set_environment(retro_environment_t cb)
 {
    environ_cb = cb;
 
-   static const struct retro_variable vars[] = {
-      { "cpu-speed-adjust", "CPU Speed Overclock; 100|110|120|130|140|150|160|170|180|190|200" },
-      { "fba-controls", "Controls; gamepad|arcade|newgen" },
-      { NULL, NULL },
-   };
-
-   cb(RETRO_ENVIRONMENT_SET_VARIABLES, (void*)vars);
+   libretro_set_core_options(environ_cb);
 }
 
 char g_rom_dir[1024];
@@ -88,6 +84,71 @@ void retro_get_system_info(struct retro_system_info *info)
 
 static void poll_input();
 static bool init_input();
+
+/* Frameskipping Support */
+
+static unsigned frameskip_type             = 0;
+static unsigned frameskip_threshold        = 0;
+static uint16_t frameskip_counter          = 0;
+
+static bool retro_audio_buff_active        = false;
+static unsigned retro_audio_buff_occupancy = 0;
+static bool retro_audio_buff_underrun      = false;
+/* Maximum number of consecutive frames that
+ * can be skipped */
+#define FRAMESKIP_MAX 30
+
+static unsigned audio_latency              = 0;
+static bool update_audio_latency           = false;
+
+static void retro_audio_buff_status_cb(
+      bool active, unsigned occupancy, bool underrun_likely)
+{
+   retro_audio_buff_active    = active;
+   retro_audio_buff_occupancy = occupancy;
+   retro_audio_buff_underrun  = underrun_likely;
+}
+
+static void init_frameskip(void)
+{
+   if (frameskip_type > 0)
+   {
+      struct retro_audio_buffer_status_callback buf_status_cb;
+
+      buf_status_cb.callback = retro_audio_buff_status_cb;
+      if (!environ_cb(RETRO_ENVIRONMENT_SET_AUDIO_BUFFER_STATUS_CALLBACK,
+            &buf_status_cb))
+      {
+         if (log_cb)
+            log_cb(RETRO_LOG_WARN, "Frameskip disabled - frontend does not support audio buffer status monitoring.\n");
+
+         retro_audio_buff_active    = false;
+         retro_audio_buff_occupancy = 0;
+         retro_audio_buff_underrun  = false;
+         audio_latency              = 0;
+      }
+      else
+      {
+         /* Frameskip is enabled - increase frontend
+          * audio latency to minimise potential
+          * buffer underruns */
+         float frame_time_msec = 1000.0f / VIDEO_REFRESH_RATE;
+
+         /* Set latency to 6x current frame time... */
+         audio_latency = (unsigned)((6.0f * frame_time_msec) + 0.5f);
+
+         /* ...then round up to nearest multiple of 32 */
+         audio_latency = (audio_latency + 0x1F) & ~0x1F;
+      }
+   }
+   else
+   {
+      environ_cb(RETRO_ENVIRONMENT_SET_AUDIO_BUFFER_STATUS_CALLBACK, NULL);
+      audio_latency = 0;
+   }
+
+   update_audio_latency = true;
+}
 
 // FBA stubs
 unsigned ArcadeJoystick;
@@ -375,6 +436,15 @@ void retro_init()
       log_cb = NULL;
    BurnLibInit();
    g_fba_frame = (uint16_t*)malloc(384 * 224 * sizeof(uint16_t));
+
+   frameskip_type             = 0;
+   frameskip_threshold        = 0;
+   frameskip_counter          = 0;
+   retro_audio_buff_active    = false;
+   retro_audio_buff_occupancy = 0;
+   retro_audio_buff_underrun  = false;
+   audio_latency              = 0;
+   update_audio_latency       = false;
 }
 
 void retro_deinit(void)
@@ -415,12 +485,16 @@ void retro_reset(void)
 
 static bool first_init = true;
 
-static void check_variables(void)
+static void check_variables(bool first_run)
 {
    struct retro_variable var = {0};
-   var.key = "cpu-speed-adjust";
+   unsigned last_frameskip_type;
 
-   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var))
+   var.key             = "fba2012cps2_cpu_speed_adjust";
+   var.value           = NULL;
+   nBurnCPUSpeedAdjust = 0x0100;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
       if (strcmp(var.value, "100") == 0)
          nBurnCPUSpeedAdjust = 0x0100;
@@ -445,19 +519,54 @@ static void check_variables(void)
       else if (strcmp(var.value, "200") == 0)
          nBurnCPUSpeedAdjust = 0x0200;
    }
-   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var))
+
+   var.key          = "fba2012cps2_controls";
+   var.value        = NULL;
+   gamepad_controls = true;
+   newgen_controls  = false;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
-      if (strcmp(var.value, "arcade") == 0) {
+      if (strcmp(var.value, "arcade") == 0)
+      {
          gamepad_controls = false;
          newgen_controls = false;
-     } else if (strcmp(var.value, "gamepad") == 0) {
+      }
+      else if (strcmp(var.value, "gamepad") == 0)
+      {
          gamepad_controls = true;
          newgen_controls = false;
-      } else if (strcmp(var.value, "newgen") == 0) {
+      }
+      else if (strcmp(var.value, "newgen") == 0)
+      {
          gamepad_controls = true;
          newgen_controls = true;
-     }
+      }
    }
+
+   var.key             = "fba2012cps2_frameskip";
+   var.value           = NULL;
+   last_frameskip_type = frameskip_type;
+   frameskip_type      = 0;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "auto") == 0)
+         frameskip_type = 1;
+      else if (strcmp(var.value, "manual") == 0)
+         frameskip_type = 2;
+   }
+
+   var.key             = "fba2012cps2_frameskip_threshold";
+   var.value           = NULL;
+   frameskip_threshold = 33;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+      frameskip_threshold = strtol(var.value, NULL, 10);
+
+   /* (Re)Initialise frameskipping, if required */
+   if ((frameskip_type != last_frameskip_type) || first_run)
+      init_frameskip();
 }
 
 void retro_run(void)
@@ -465,6 +574,7 @@ void retro_run(void)
    INT32 width, height;
    BurnDrvGetVisibleSize(&width, &height);
    pBurnDraw = (uint8_t*)g_fba_frame;
+   nSkipFrame = 0;
 
    poll_input();
 
@@ -492,14 +602,54 @@ void retro_run(void)
 
    nCurrentFrame++;
    HiscoreApply();
+
+   /* Check whether current frame should
+    * be skipped */
+   if ((frameskip_type > 0) && retro_audio_buff_active)
+   {
+      switch (frameskip_type)
+      {
+         case 1: /* auto */
+            nSkipFrame = retro_audio_buff_underrun ? 1 : 0;
+            break;
+         case 2: /* manual */
+            nSkipFrame = (retro_audio_buff_occupancy < frameskip_threshold) ? 1 : 0;
+            break;
+         default:
+            nSkipFrame = 0;
+            break;
+      }
+
+      if (!nSkipFrame || (frameskip_counter >= FRAMESKIP_MAX))
+      {
+         nSkipFrame        = 0;
+         frameskip_counter = 0;
+      }
+      else
+         frameskip_counter++;
+   }
+
+   /* If frameskip settings have changed, update
+    * frontend audio latency */
+   if (update_audio_latency)
+   {
+      environ_cb(RETRO_ENVIRONMENT_SET_MINIMUM_AUDIO_LATENCY,
+            &audio_latency);
+      update_audio_latency = false;
+   }
+
    Cps2Frame();
 
-   video_cb(g_fba_frame, width, height, nBurnPitch);
+   if (!nSkipFrame)
+      video_cb(g_fba_frame, width, height, nBurnPitch);
+   else
+      video_cb(NULL, width, height, nBurnPitch);
+
    audio_batch_cb(g_audio_buf, nBurnSoundLen);
 
    bool updated = false;
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
-      check_variables();
+      check_variables(false);
 }
 
 static uint8_t *write_state_ptr;
@@ -569,7 +719,7 @@ void retro_get_system_av_info(struct retro_system_av_info *info)
    BurnDrvGetVisibleSize(&width, &height);
    unsigned maximum = width > height ? width : height;
    struct retro_game_geometry geom = { (unsigned)width, (unsigned)height, maximum, maximum };
-   struct retro_system_timing timing = { 59.629403, 59.629403 * AUDIO_SEGMENT_LENGTH };
+   struct retro_system_timing timing = { VIDEO_REFRESH_RATE, VIDEO_REFRESH_RATE * AUDIO_SEGMENT_LENGTH };
 
    info->geometry = geom;
    info->timing   = timing;
@@ -718,7 +868,7 @@ bool retro_load_game(const struct retro_game_info *info)
 
    InpDIPSWInit();
 
-   check_variables();
+   check_variables(true);
 
    return retval;
 }
