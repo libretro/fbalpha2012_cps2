@@ -70,13 +70,23 @@ struct retro_core_option_definition option_defs_us[] = {
       "100"
    },
    {
+      "fba2012cps2_hiscores",
+      "Hiscores",
+      "Enables saving of high scores in supported games. Requires the file 'hiscore.dat' to be placed in your system/fbalpha2012/ folder.",
+      {
+         { "enabled",  NULL },
+         { "disabled", NULL },
+         { NULL, NULL },
+      },
+      "disabled"
+   },
+   {
       "fba2012cps2_controls",
       "Controls",
       "Set default controller mapping.",
       {
          { "gamepad", "Gamepad" },
          { "arcade",  "Arcade" },
-         { "newgen",  "Modern" },
          { NULL, NULL },
       },
       "gamepad"

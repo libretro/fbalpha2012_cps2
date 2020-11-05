@@ -13,5 +13,6 @@
 
 extern char g_rom_dir[1024];
 extern char g_save_dir[1024];
+extern char g_system_dir[1024];
 
 #endif

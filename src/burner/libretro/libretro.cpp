@@ -14,6 +14,8 @@
 
 static unsigned int BurnDrvGetIndexByName(const char* name);
 
+extern INT32 EnableHiscores;
+
 #define STAT_NOFIND   0
 #define STAT_OK      1
 #define STAT_CRC      2
@@ -35,7 +37,6 @@ struct ROMFIND
 };
 
 static bool gamepad_controls = true;
-static bool newgen_controls = false;
 
 static std::vector<std::string> g_find_list_path;
 static ROMFIND g_find_list[1024];
@@ -71,6 +72,7 @@ void retro_set_environment(retro_environment_t cb)
 
 char g_rom_dir[1024];
 char g_save_dir[1024];
+char g_system_dir[1024];
 static bool driver_inited;
 
 void retro_get_system_info(struct retro_system_info *info)
@@ -200,7 +202,8 @@ static void InpDIPSWGetOffset (void)
       if (bdi.nFlags == 0xF0) /* 0xF0 is beginning of DIP switch list */
       {
          nDIPOffset = bdi.nInput;
-         fprintf(stderr, "DIP switches offset: %d.\n", bdi.nInput);
+         if (log_cb)
+            log_cb(RETRO_LOG_INFO, "DIP switches offset: %d.\n", bdi.nInput);
          break;
       }
    }
@@ -241,7 +244,8 @@ static int InpDIPSWInit()
       /* 0xFD are region DIP switches */
       if (bdi.nFlags == 0xFE || bdi.nFlags == 0xFD)
       {
-         fprintf(stderr, "DIP switch label: %s.\n", bdi.szText);
+         if (log_cb)
+            log_cb(RETRO_LOG_INFO, "DIP switch label: %s.\n", bdi.szText);
 
          int l = 0;
          for (int k = 0; l < bdi.nSetting; k++)
@@ -253,7 +257,8 @@ static int InpDIPSWInit()
                   bdi_tmp.nMask == 0x30) /* filter away NULL entries */
                continue;
 
-            fprintf(stderr, "DIP switch option: %s.\n", bdi_tmp.szText);
+            if (log_cb)
+               log_cb(RETRO_LOG_INFO, "DIP switch option: %s.\n", bdi_tmp.szText);
             l++;
          }
          pgi = GameInp + bdi.nInput + nDIPOffset;
@@ -349,7 +354,8 @@ static bool open_archive()
       if (BurnDrvGetZipName(&rom_name, index))
          continue;
 
-      fprintf(stderr, "[FBA] Archive: %s\n", rom_name);
+      if (log_cb)
+         log_cb(RETRO_LOG_INFO, "[FBA] Archive: %s\n", rom_name);
 
       char path[1024];
 #ifdef _XBOX
@@ -360,7 +366,8 @@ static bool open_archive()
 
       if (ZipOpen(path) != 0)
       {
-         fprintf(stderr, "[FBA] Failed to find archive: %s\n", path);
+         if (log_cb)
+            log_cb(RETRO_LOG_ERROR, "[FBA] Failed to find archive: %s\n", path);
          return false;
       }
       ZipClose();
@@ -372,7 +379,8 @@ static bool open_archive()
    {
       if (ZipOpen((char*)g_find_list_path[z].c_str()) != 0)
       {
-         fprintf(stderr, "[FBA] Failed to open archive %s\n", g_find_list_path[z].c_str());
+         if (log_cb)
+            log_cb(RETRO_LOG_ERROR, "[FBA] Failed to open archive %s\n", g_find_list_path[z].c_str());
          return false;
       }
 
@@ -416,8 +424,9 @@ static bool open_archive()
    {
       if (g_find_list[i].nState != STAT_OK)
       {
-         fprintf(stderr, "[FBA] ROM index %i was not found ... CRC: 0x%08x\n",
-               i, g_find_list[i].ri.nCrc);
+         if (log_cb)
+            log_cb(RETRO_LOG_ERROR, "[FBA] ROM index %i was not found ... CRC: 0x%08x\n",
+                  i, g_find_list[i].ri.nCrc);
          if(!(g_find_list[i].ri.nType & BRF_OPT))
             return false;
       }
@@ -520,29 +529,21 @@ static void check_variables(bool first_run)
          nBurnCPUSpeedAdjust = 0x0200;
    }
 
+   var.key             = "fba2012cps2_hiscores";
+   var.value           = NULL;
+   EnableHiscores      = 0;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var))
+      if (strcmp(var.value, "enabled") == 0)
+         EnableHiscores = 1;
+
    var.key          = "fba2012cps2_controls";
    var.value        = NULL;
    gamepad_controls = true;
-   newgen_controls  = false;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
-   {
       if (strcmp(var.value, "arcade") == 0)
-      {
          gamepad_controls = false;
-         newgen_controls = false;
-      }
-      else if (strcmp(var.value, "gamepad") == 0)
-      {
-         gamepad_controls = true;
-         newgen_controls = false;
-      }
-      else if (strcmp(var.value, "newgen") == 0)
-      {
-         gamepad_controls = true;
-         newgen_controls = true;
-      }
-   }
 
    var.key             = "fba2012cps2_frameskip";
    var.value           = NULL;
@@ -774,7 +775,8 @@ static bool fba_init(unsigned driver, const char *game_zip_name)
          rotation = 0;
    }
 
-   fprintf(stderr, "Game: %s\n", game_zip_name);
+   if (log_cb)
+      log_cb(RETRO_LOG_INFO, "Game: %s\n", game_zip_name);
 
    environ_cb(RETRO_ENVIRONMENT_SET_ROTATION, &rotation);
 
@@ -783,7 +785,8 @@ static bool fba_init(unsigned driver, const char *game_zip_name)
    enum retro_pixel_format fmt = RETRO_PIXEL_FORMAT_RGB565;
 
    if(environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt))
-      fprintf(stderr, "Frontend supports RGB565 - will use that instead of XRGB1555.\n");
+      if (log_cb)
+         log_cb(RETRO_LOG_INFO, "Frontend supports RGB565 - will use that instead of XRGB1555.\n");
 
    return true;
 }
@@ -840,12 +843,31 @@ bool retro_load_game(const struct retro_game_info *info)
    extract_basename(basename, info->path, sizeof(basename));
    extract_directory(g_rom_dir, info->path, sizeof(g_rom_dir));
 
-   //todo, add a fallback in case save_directory is not defined
    const char *dir = NULL;
+   /* If save directory is defined use it... */
    if (environ_cb(RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY, &dir) && dir)
    {
-      snprintf(g_save_dir, sizeof(g_save_dir), "%s", dir);
-      log_cb(RETRO_LOG_ERROR, "Setting save dir to %s\n", g_save_dir);
+      strncpy(g_save_dir, dir, sizeof(g_save_dir));
+      log_cb(RETRO_LOG_INFO, "Setting save dir to %s\n", g_save_dir);
+   }
+   else
+   {
+      /* ...otherwise use ROM directory */
+      strncpy(g_save_dir, g_rom_dir, sizeof(g_save_dir));
+      log_cb(RETRO_LOG_ERROR, "Save dir not defined => use roms dir %s\n", g_save_dir);
+   }
+
+   /* If system directory is defined use it... */
+   if (environ_cb(RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY, &dir) && dir)
+   {
+      strncpy(g_system_dir, dir, sizeof(g_system_dir));
+      log_cb(RETRO_LOG_INFO, "Setting system dir to %s\n", g_system_dir);
+   }
+   else
+   {
+      /* ...otherwise use ROM directory */
+      strncpy(g_system_dir, g_rom_dir, sizeof(g_system_dir));
+      log_cb(RETRO_LOG_ERROR, "System dir not defined => use roms dir %s\n", g_system_dir);
    }
 
    unsigned i = BurnDrvGetIndexByName(basename);
@@ -855,6 +877,8 @@ bool retro_load_game(const struct retro_game_info *info)
       nBurnSoundRate = AUDIO_SAMPLERATE;
       nBurnSoundLen = AUDIO_SEGMENT_LENGTH;
 
+      check_variables(true);
+
       if (!fba_init(i, basename))
          return false;
 
@@ -863,12 +887,10 @@ bool retro_load_game(const struct retro_game_info *info)
 
       retval = true;
    }
-   else
-      fprintf(stderr, "[FBA] Cannot find driver.\n");
+   else if (log_cb)
+      log_cb(RETRO_LOG_ERROR, "[FBA] Cannot find driver.\n");
 
    InpDIPSWInit();
-
-   check_variables(true);
 
    return retval;
 }
@@ -2582,79 +2604,6 @@ static bool init_input(void)
       bind_map[PTR_INCR].nCode[0] = RETRO_DEVICE_ID_JOYPAD_A;
       bind_map[PTR_INCR].nCode[1] = 0;
 
-#ifdef CORES_NEO
-      /* Neo Geo default mapping */
-      if (newgen_controls == false)
-      {
-         /* Official neogeo mapping */
-         bind_map[PTR_INCR].bii_name = "P1 Button A";
-         bind_map[PTR_INCR].nCode[0] = RETRO_DEVICE_ID_JOYPAD_B;
-         bind_map[PTR_INCR].nCode[1] = 0;
-
-         bind_map[PTR_INCR].bii_name = "P1 Button B";
-         bind_map[PTR_INCR].nCode[0] = RETRO_DEVICE_ID_JOYPAD_A;
-         bind_map[PTR_INCR].nCode[1] = 0;
-
-         bind_map[PTR_INCR].bii_name = "P1 Button C";
-         bind_map[PTR_INCR].nCode[0] = RETRO_DEVICE_ID_JOYPAD_Y;
-         bind_map[PTR_INCR].nCode[1] = 0;
-
-         bind_map[PTR_INCR].bii_name = "P1 Button D";
-         bind_map[PTR_INCR].nCode[0] = RETRO_DEVICE_ID_JOYPAD_X;
-         bind_map[PTR_INCR].nCode[1] = 0;
-
-         bind_map[PTR_INCR].bii_name = "P2 Button A";
-         bind_map[PTR_INCR].nCode[0] = RETRO_DEVICE_ID_JOYPAD_B;
-         bind_map[PTR_INCR].nCode[1] = 1;
-
-         bind_map[PTR_INCR].bii_name = "P2 Button B";
-         bind_map[PTR_INCR].nCode[0] = RETRO_DEVICE_ID_JOYPAD_A;
-         bind_map[PTR_INCR].nCode[1] = 1;
-
-         bind_map[PTR_INCR].bii_name = "P2 Button C";
-         bind_map[PTR_INCR].nCode[0] = RETRO_DEVICE_ID_JOYPAD_Y;
-         bind_map[PTR_INCR].nCode[1] = 1;
-
-         bind_map[PTR_INCR].bii_name = "P2 Button D";
-         bind_map[PTR_INCR].nCode[0] = RETRO_DEVICE_ID_JOYPAD_X;
-         bind_map[PTR_INCR].nCode[1] = 1;
-      }
-      /* NewGen neogeo mapping from DC, PS, Xbox, ... remakes */
-      else
-      {
-         bind_map[PTR_INCR].bii_name = "P1 Button A";
-         bind_map[PTR_INCR].nCode[0] = RETRO_DEVICE_ID_JOYPAD_Y;
-         bind_map[PTR_INCR].nCode[1] = 0;
-
-         bind_map[PTR_INCR].bii_name = "P1 Button B";
-         bind_map[PTR_INCR].nCode[0] = RETRO_DEVICE_ID_JOYPAD_B;
-         bind_map[PTR_INCR].nCode[1] = 0;
-
-         bind_map[PTR_INCR].bii_name = "P1 Button C";
-         bind_map[PTR_INCR].nCode[0] = RETRO_DEVICE_ID_JOYPAD_X;
-         bind_map[PTR_INCR].nCode[1] = 0;
-
-         bind_map[PTR_INCR].bii_name = "P1 Button D";
-         bind_map[PTR_INCR].nCode[0] = RETRO_DEVICE_ID_JOYPAD_A;
-         bind_map[PTR_INCR].nCode[1] = 0;
-
-         bind_map[PTR_INCR].bii_name = "P2 Button A";
-         bind_map[PTR_INCR].nCode[0] = RETRO_DEVICE_ID_JOYPAD_Y;
-         bind_map[PTR_INCR].nCode[1] = 1;
-
-         bind_map[PTR_INCR].bii_name = "P2 Button B";
-         bind_map[PTR_INCR].nCode[0] = RETRO_DEVICE_ID_JOYPAD_B;
-         bind_map[PTR_INCR].nCode[1] = 1;
-
-         bind_map[PTR_INCR].bii_name = "P2 Button C";
-         bind_map[PTR_INCR].nCode[0] = RETRO_DEVICE_ID_JOYPAD_X;
-         bind_map[PTR_INCR].nCode[1] = 1;
-
-         bind_map[PTR_INCR].bii_name = "P2 Button D";
-         bind_map[PTR_INCR].nCode[0] = RETRO_DEVICE_ID_JOYPAD_A;
-         bind_map[PTR_INCR].nCode[1] = 1;
-      }
-#endif
       /* Street Fighter II, Darkstalkers, etc. */
 
       bind_map[PTR_INCR].bii_name = "P1 Weak Punch";
@@ -3374,22 +3323,9 @@ static bool init_input(void)
 
    /* add code to select between different descriptors here */
    if(gamepad_controls)
-   {
-      if(boardrom && !strcmp(boardrom,"neogeo"))
-         if(newgen_controls)
-            environ_cb(RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS, neogeo_gamepad_newgen);
-         else
-            environ_cb(RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS, neogeo_gamepad);
-      else
       environ_cb(RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS, default_gamepad);
-   }
    else
-   {
-      if(boardrom && !strcmp(boardrom,"neogeo"))
-         environ_cb(RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS, neogeo_arcade);
-      else
-         environ_cb(RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS, default_arcade);
-   }
+      environ_cb(RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS, default_arcade);
 
    return has_analog;
 }
