@@ -462,6 +462,19 @@ INT32 BurnDrvGetVisibleSize(INT32* pnWidth, INT32* pnHeight)
 	return 0;
 }
 
+INT32 BurnDrvGetFullSize(INT32* pnWidth, INT32* pnHeight)
+{
+	if (pDriver[nBurnDrvActive]->Flags & BDF_ORIENTATION_VERTICAL) {
+		*pnWidth =pDriver[nBurnDrvActive]->nHeight;
+		*pnHeight=pDriver[nBurnDrvActive]->nWidth;
+	} else {
+		*pnWidth =pDriver[nBurnDrvActive]->nWidth;
+		*pnHeight=pDriver[nBurnDrvActive]->nHeight;
+	}
+
+	return 0;
+}
+
 // Get the hardware code
 INT32 BurnDrvGetHardwareCode(void)
 {
