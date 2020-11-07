@@ -1057,7 +1057,7 @@ bool retro_load_game(const struct retro_game_info *info)
       analog_controls_enabled = init_input();
 
       BurnDrvGetFullSize(&width, &height);
-      g_fba_frame = (uint16_t*)malloc(width * height * sizeof(uint16_t));
+      g_fba_frame = (uint16_t*)malloc((uint32_t)width * (uint32_t)height * sizeof(uint16_t));
 
       retval = true;
    }
