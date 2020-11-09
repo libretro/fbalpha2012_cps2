@@ -273,6 +273,7 @@ INT32 BurnDrvGetRomName(char** pszName, UINT32 i, INT32 nAka);
 INT32 BurnDrvGetInputInfo(struct BurnInputInfo* pii, UINT32 i);
 INT32 BurnDrvGetDIPInfo(struct BurnDIPInfo* pdi, UINT32 i);
 INT32 BurnDrvGetVisibleSize(INT32* pnWidth, INT32* pnHeight);
+INT32 BurnDrvGetFullSize(INT32* pnWidth, INT32* pnHeight);
 INT32 BurnDrvGetHardwareCode();
 INT32 BurnDrvGetFlags();
 BOOL BurnDrvIsWorking();
