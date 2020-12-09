@@ -108,8 +108,6 @@ static INT32 DrawScroll1(INT32 i)
 
    nScrX += 0x40;
 
-   //	bprintf(PRINT_NORMAL, _T("1 %x, %x, %x\n"), nOff, nScrX, nScrY);
-
    nScrX += CpsLayer1XOffs;
    nScrY += 0x10;
    nScrY += CpsLayer1YOffs;
@@ -138,8 +136,6 @@ static INT32 DrawScroll2Init(INT32 i)
    nScr2Off <<= 8;
 
    nCpsrScrX += 0x40;
-
-   //	bprintf(PRINT_NORMAL, _T("2 %x, %x, %x\n"), nScr2Off, nCpsrScrX, nCpsrScrY);
 
    nCpsrScrX += CpsLayer2XOffs;
    nCpsrScrX &= 0x03FF;
@@ -271,8 +267,6 @@ static INT32 DrawScroll3(INT32 i)
    INT32 nScrY = BURN_ENDIAN_SWAP_INT16(*((UINT16 *)(CpsSaveReg[i] + 0x16))); // Scroll 3 Y
 
    nScrX += 0x40;
-
-   //	bprintf(PRINT_NORMAL, _T("3 %x, %x, %x\n"), nOff, nScrX, nScrY);
 
    nScrX += CpsLayer3XOffs;
    nScrY += 0x10;

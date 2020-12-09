@@ -35,9 +35,6 @@ void __fastcall QsndZWrite(UINT16 a, UINT8 d)
          break;
       case 0xd002:
          QscWrite(d, (QscCmd[0] << 8) | QscCmd[1]);
-#if 0
-         bprintf(PRINT_NORMAL, _T("QSound command %02X %04X sent.\n"), d, (QscCmd[0] << 8) | QscCmd[1]);
-#endif
          break;
       case 0xd003:
          {

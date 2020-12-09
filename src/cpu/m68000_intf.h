@@ -198,12 +198,6 @@ static INLINE INT32 SekTotalCycles(void)
 
 static INLINE INT32 SekCurrentScanline(void)
 {
-#if defined FBA_DEBUG
-	extern UINT8 DebugCPU_SekInitted;
-	if (!DebugCPU_SekInitted) bprintf(PRINT_ERROR, (TCHAR*)_T("SekCurrentScanline called without init\n"));
-	if (nSekActive == -1) bprintf(PRINT_ERROR, (TCHAR*)_T("SekCurrentScanline called when no CPU open\n"));
-#endif
-
 	return SekTotalCycles() / nSekCyclesScanline;
 }
 

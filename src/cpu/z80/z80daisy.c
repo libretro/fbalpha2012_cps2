@@ -52,8 +52,6 @@ int z80daisy_call_ack_device(const struct z80_irq_daisy_chain *daisy)
 		if (state & Z80_DAISY_INT)
 			return (*daisy->irq_ack)(daisy->param);
 	}
-
-//	logerror("z80daisy_call_ack_device: failed to find an device to ack!\n");
 	return 0;
 }
 
@@ -72,6 +70,4 @@ void z80daisy_call_reti_device(const struct z80_irq_daisy_chain *daisy)
 			return;
 		}
 	}
-
-//	logerror("z80daisy_call_reti_device: failed to find an device to reti!\n");
 }

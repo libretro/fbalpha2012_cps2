@@ -346,64 +346,6 @@ INT32 Cps2Frame()
 
 	SekClose();
 
-//	bprintf(PRINT_NORMAL, _T("    -\n"));
-
-#if 0 && defined FBA_DEBUG
-	if (nInterrupt) {
-		bprintf(PRINT_IMPORTANT, _T("Beam synchronized interrupt at line %2X.\r"), nRasterline[nInterrupt]);
-	} else {
-		bprintf(PRINT_NORMAL, _T("Beam synchronized interrupt disabled.   \r"));
-	}
-
-	extern INT32 counter;
-	if (counter) {
-		bprintf(PRINT_NORMAL, _T("\n\nSlices start at: "));
-		for (i = 0; i < MAX_RASTER + 2; i++) {
-			bprintf(PRINT_NORMAL, _T("%2X "), nRasterline[i]);
-		}
-		bprintf(PRINT_NORMAL, _T("\n"));
-		for (i = 0; i < 0x80; i++) {
-			if (*((UINT16*)(CpsSaveReg[0] + i * 2)) != *((UINT16*)(CpsSaveReg[nInterrupt] + i * 2))) {
-				bprintf(PRINT_NORMAL, _T("Register %2X: %4X -> %4X\n"), i * 2, *((UINT16*)(CpsSaveReg[0] + i * 2)), *((UINT16*)(CpsSaveReg[nInterrupt] + i * 2)));
-			}
-		}
-		bprintf(PRINT_NORMAL, _T("\n"));
-		for (i = 0; i < 0x010; i++) {
-			if (CpsSaveFrg[0][i] != CpsSaveFrg[nInterrupt][i]) {
-				bprintf(PRINT_NORMAL, _T("FRG %X: %02X -> %02X\n"), i, CpsSaveFrg[0][i], CpsSaveFrg[nInterrupt][i]);
-			}
-		}
-		bprintf(PRINT_NORMAL, _T("\n"));
-		if (((CpsSaveFrg[0][4] << 8) | CpsSaveFrg[0][5]) != ((CpsSaveFrg[nInterrupt][4] << 8) | CpsSaveFrg[nInterrupt][5])) {
-			bprintf(PRINT_NORMAL, _T("Layer-sprite priority: %04X -> %04X\n"), ((CpsSaveFrg[0][4] << 8) | CpsSaveFrg[0][5]), ((CpsSaveFrg[nInterrupt][4] << 8) | CpsSaveFrg[nInterrupt][5]));
-		}
-
-		bprintf(PRINT_NORMAL, _T("\n"));
-		for (INT32 j = 0; j <= nInterrupt; j++) {
-			if (j) {
-				bprintf(PRINT_NORMAL, _T("IRQ : %i (triggered at line %3i)\n\n"), j, nRasterline[j]);
-			} else {
-				bprintf(PRINT_NORMAL, _T("Initial register status\n\n"));
-			}
-
-			for (i = 0; i < 0x080; i+= 8) {
-				bprintf(PRINT_NORMAL, _T("%2X: %4X %4X %4X %4X %4X %4X %4X %4X\n"), i * 2, *((UINT16*)(CpsSaveReg[j] + 0 + i * 2)), *((UINT16*)(CpsSaveReg[j] + 2 + i * 2)), *((UINT16*)(CpsSaveReg[j] + 4 + i * 2)), *((UINT16*)(CpsSaveReg[j] + 6 + i * 2)), *((UINT16*)(CpsSaveReg[j] + 8 + i * 2)), *((UINT16*)(CpsSaveReg[j] + 10 + i * 2)), *((UINT16*)(CpsSaveReg[j] + 12 + i * 2)), *((UINT16*)(CpsSaveReg[j] + 14 + i * 2)));
-			}
-
-			bprintf(PRINT_NORMAL, _T("\nFRG: "));
-			for (i = 0; i < 0x010; i++) {
-				bprintf(PRINT_NORMAL, _T("%02X "), CpsSaveFrg[j][i]);
-			}
-			bprintf(PRINT_NORMAL, _T("\n\n"));
-
-		}
-
-		extern INT32 bRunPause;
-		bRunPause = 1;
-		counter = 0;
-	}
-#endif
-
 	return 0;
 }
 

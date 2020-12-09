@@ -499,27 +499,15 @@ static INT32 CpsGetROMs(BOOL bLoad)
 		cps2_decrypt_game_data();
 		
 //		if (!nCpsCodeLen) return 1;
-	} else {
+   }
+   else
+   {
+      if (nGfxMaxSize != ~0U)
+         nCpsGfxLen = nGfxNum * nGfxMaxSize;
 
-		if (nGfxMaxSize != ~0U) {
-			nCpsGfxLen = nGfxNum * nGfxMaxSize;
-		}
-
-#if 1 && defined FBA_DEBUG
-		if (!nCpsCodeLen) {
-			bprintf(PRINT_IMPORTANT, _T("  - 68K ROM size:\t0x%08X (Decrypted with key)\n"), nCpsRomLen);
-		} else {
-			bprintf(PRINT_IMPORTANT, _T("  - 68K ROM size:\t0x%08X (XOR table size: 0x%08X)\n"), nCpsRomLen, nCpsCodeLen);
-		}
-		bprintf(PRINT_IMPORTANT, _T("  - Z80 ROM size:\t0x%08X\n"), nCpsZRomLen);
-		bprintf(PRINT_IMPORTANT, _T("  - Graphics data:\t0x%08X\n"), nCpsGfxLen);
-		bprintf(PRINT_IMPORTANT, _T("  - QSound data:\t0x%08X\n"), nCpsQSamLen);
-#endif
-
-		if (/*!nCpsCodeLen ||*/ !nCpsRomLen || !nCpsGfxLen || !nCpsZRomLen || ! nCpsQSamLen) {
-			return 1;
-		}
-	}
+      if (/*!nCpsCodeLen ||*/ !nCpsRomLen || !nCpsGfxLen || !nCpsZRomLen || ! nCpsQSamLen)
+         return 1;
+   }
 
 	return 0;
 }

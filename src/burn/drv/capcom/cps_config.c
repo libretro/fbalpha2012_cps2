@@ -56,8 +56,6 @@ INT32 GfxRomBankMapper(INT32 Type, INT32 Code)
 		++Range;
 	}
 
-//	bprintf(PRINT_NORMAL, _T("tile %02x/%04x out of range\n"), Type,Code>>Shift);
-
 	return -1;
 }
 

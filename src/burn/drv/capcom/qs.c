@@ -5,7 +5,6 @@ static INT32 nQsndCyclesExtra;
 
 static INT32 qsndTimerOver(INT32 a, INT32 b)
 {
-   //	bprintf(PRINT_NORMAL, _T("  - IRQ -> 1.\n"));
    ZetSetIRQLine(0xFF, ZET_IRQSTATUS_AUTO);
 
    return 0;

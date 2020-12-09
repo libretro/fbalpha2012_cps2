@@ -10892,8 +10892,6 @@ void __fastcall PhoenixSpriteWriteByte(UINT32 a, UINT8 d)
 	
 	CpsRam708[(Offset ^ 1) + 0x0000] = d;
 	CpsRam708[(Offset ^ 1) + 0x8000] = d;
-	
-	bprintf(PRINT_NORMAL, _T("Phoenix Sprite Write Byte %x, %x\n"), a, d);
 }
 
 void __fastcall PhoenixSpriteWriteWord(UINT32 a, UINT16 d)

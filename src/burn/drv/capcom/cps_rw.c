@@ -129,8 +129,6 @@ static UINT8 CpsReadPort(const UINT32 ia)
    {
       static INT32 nRasterLine;
 
-      //			bprintf(PRINT_NORMAL, _T("  - port 0x%02X (%3i)\n"), ia & 255, SekCurrentScanline());
-
       // The linecounters seem to return the line at which the last IRQ triggered by this counter is scheduled minus the current line
       if ((ia & 0x0FE) == 0x50)
       {
@@ -152,8 +150,6 @@ static UINT8 CpsReadPort(const UINT32 ia)
          return nRasterLine & 0xFF;
       }
    }
-
-   //	bprintf(PRINT_NORMAL, _T("Read Port %x\n"), ia);
 
    return d;
 }
@@ -183,16 +179,12 @@ void CpsWritePort(const UINT32 ia, UINT8 d)
    // CPS2 object bank select
    if ((ia & 0x1FF) == 0x0E1)
    {
-      //			bprintf(PRINT_NORMAL, _T("  - %2i (%3i)\n"), d & 1, SekCurrentScanline());
-      //			CpsObjGet();
       CpsMapObjectBanks(d & 1);
       return;
    }
 
    if (ia == 0x41 && Pzloop2)
       ReadPaddle = d & 0x02;
-
-   //	bprintf(PRINT_NORMAL, _T("Write Port %x, %x\n"), ia, d);
 }
 
 UINT8 __fastcall CpsReadByte(UINT32 a)
@@ -231,21 +223,15 @@ void __fastcall CpsWriteByte(UINT32 a,UINT8 d)
       if (a == 0x664001)
          n664001 = d;
    }
-
-   //	bprintf(PRINT_NORMAL, _T("Write Byte %x, %x\n"), a, d);
 }
 
 UINT16 __fastcall CpsReadWord(UINT32 a)
 {
-	if ((a & 0xFF8FFF) == 0x800100 + CpsMProt[3]) {
+	if ((a & 0xFF8FFF) == 0x800100 + CpsMProt[3])
 		return (UINT16)((nCalc[0] * nCalc[1]) >> 16);
-	}
 	// ports mirrored between 0x800000 and 0x807fff
-	if ((a & 0xFF8FFF) == 0x800100 + CpsMProt[2]) {
+	if ((a & 0xFF8FFF) == 0x800100 + CpsMProt[2])
 		return (UINT16)((nCalc[0] * nCalc[1]));
-	}
-	
-//	bprintf(PRINT_NORMAL, _T("Read Word %x\n"), a);
 	
 	SEK_DEF_READ_WORD(0, a);
 }
@@ -262,11 +248,10 @@ void __fastcall CpsWriteWord(UINT32 a, UINT16 d)
    {
 		if ((d & 0x0008) == 0)
       {
-			if (!Cps2DisableQSnd) ZetReset();
+			if (!Cps2DisableQSnd)
+            ZetReset();
 		}
 	}
-	
-//	bprintf(PRINT_NORMAL, _T("Write Word %x, %x\n"), a, d);
 	
 	SEK_DEF_WRITE_WORD(0, a, d);
 }

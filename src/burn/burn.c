@@ -8,13 +8,6 @@
 #include "burn_sound.h"
 #include "driverlist.h"
 
-// filler function, used if the application is not printing debug messages
-static INT32 __cdecl BurnbprintfFiller(INT32 a, TCHAR *b, ...) { return 0; }
-// pointer to burner printing function
-#ifndef bprintf
-INT32 (__cdecl *bprintf)(INT32 nStatus, TCHAR* szFormat, ...) = BurnbprintfFiller;
-#endif
-
 INT32 nBurnVer = BURN_VERSION;		// Version number of the library
 
 UINT32 nBurnDrvCount = 0;		// Count of game drivers
@@ -532,25 +525,17 @@ INT32 BurnDrvInit(void)
 
 		// Print the title
 
-		bprintf(PRINT_IMPORTANT, _T("*** Starting emulation of %s - %s.\n"), BurnDrvGetText(DRV_NAME), BurnDrvGetText(DRV_FULLNAME));
-
 		// Then print the alternative titles
 
 		if (nName > 1) {
-			bprintf(PRINT_IMPORTANT, _T("    Alternative %s "), (nName > 2) ? _T("titles are") : _T("title is"));
 			pszName = BurnDrvGetText(DRV_FULLNAME);
 			nName = 1;
 			while ((pszName = BurnDrvGetText(DRV_NEXTNAME | DRV_FULLNAME)) != NULL) {
 				if (pszPosition + _tcslen(pszName) - 1022 > szText) {
 					break;
 				}
-				if (nName > 1) {
-					bprintf(PRINT_IMPORTANT, _T(SEPERATOR_1));
-				}
-				bprintf(PRINT_IMPORTANT, _T("%s"), pszName);
 				nName++;
 			}
-			bprintf(PRINT_IMPORTANT, _T(".\n"));
 		}
 	}
 #endif
@@ -584,17 +569,6 @@ INT32 BurnDrvInit(void)
 INT32 BurnDrvExit(void)
 {
    INT32 nRet;
-#if defined (FBA_DEBUG)
-	if (starttime)
-   {
-		clock_t endtime      = clock();
-		clock_t nElapsedSecs = (endtime - starttime);
-		bprintf(PRINT_IMPORTANT, _T(" ** Emulation ended (running for %.2f seconds).\n"), (float)nElapsedSecs / CLOCKS_PER_SEC);
-		bprintf(PRINT_IMPORTANT, _T("    %.2f%% of frames rendered (%d out of a total %d).\n"), (float)nFramesRendered / nFramesEmulated * 100, nFramesRendered, nFramesEmulated);
-		bprintf(PRINT_IMPORTANT, _T("    %.2f frames per second (average).\n"), (float)nFramesRendered / nFramesEmulated * nBurnFPS / 100);
-		bprintf(PRINT_NORMAL, _T("\n"));
-	}
-#endif
 
 	CheatExit();
 	CheatSearchExit();
@@ -626,10 +600,6 @@ INT32 BurnDrvCartridgeSetup(enum BurnCartrigeCommand nCommand)
 		return 1;
 
 	BurnExtCartridgeSetupCallback(CART_INIT_END);
-
-#if defined FBA_DEBUG
-		bprintf(PRINT_NORMAL, _T("  * Loading"));
-#endif
 
 	if (BurnExtCartridgeSetupCallback(CART_INIT_START))
 		return 1;
@@ -730,27 +700,6 @@ INT32 BurnAreaScan(INT32 nAction, INT32* pnMin)
 // Wrappers for MAME-specific function calls
 
 #include "driver.h"
-
-// ----------------------------------------------------------------------------
-// Wrapper for MAME logerror calls
-
-#if defined (FBA_DEBUG) && defined (MAME_USE_LOGERROR)
-void logerror(char* szFormat, ...)
-{
-	static char szLogMessage[1024];
-
-	va_list vaFormat;
-	va_start(vaFormat, szFormat);
-
-	_vsnprintf(szLogMessage, 1024, szFormat, vaFormat);
-
-	va_end(vaFormat);
-
-	bprintf(PRINT_ERROR, _T("%hs"), szLogMessage);
-
-	return;
-}
-#endif
 
 // ----------------------------------------------------------------------------
 // Wrapper for MAME state_save_register_* calls

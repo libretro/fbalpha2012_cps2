@@ -227,10 +227,6 @@ INT32 Cps2ObjDraw(INT32 nLevelFrom, INT32 nLevelTo)
       else
          nCpstType = CTT_16X16;
 
-      //		if (v == 0) {
-      //			bprintf(PRINT_IMPORTANT, _T("  - %4i: 0x%04X 0x%04X 0x%04X 0x%04X\n"), ZValue - (UINT16)nMaxZValue, ps[0], ps[1], ps[2], ps[3]);
-      //		}
-
       nCpstFlip = nFlip;
       for (dy = 0; dy < by; dy++) {
          for (dx = 0; dx < bx; dx++) {
