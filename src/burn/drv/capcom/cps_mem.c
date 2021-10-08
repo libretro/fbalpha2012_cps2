@@ -123,7 +123,7 @@ void __fastcall CPSQSoundC0WriteByte(UINT32 sekAddress, UINT8 byteValue)
 
    sekAddress &= 0x1FFF;
 
-#if 1 && defined USE_SPEEDHACKS
+#if defined USE_SPEEDHACKS
    // Sync only when the last byte of the sound command is written
    if (sekAddress == 0x001F)
       QsndSyncZ80();
@@ -152,7 +152,7 @@ void __fastcall CPSQSoundF0WriteByte(UINT32 sekAddress, UINT8 byteValue)
 
    sekAddress &= 0x1FFF;
 
-#if 1 && defined USE_SPEEDHACKS
+#if defined USE_SPEEDHACKS
    // Sync only when the last byte of the sound command is written
    if (sekAddress == 0x001F)
       QsndSyncZ80();
@@ -171,11 +171,10 @@ UINT8 __fastcall haxx0rReadByte(UINT32 sekAddress)
 	return CpsEncZRom[sekAddress];
 }
 
-INT32 CpsMemInit()
+INT32 CpsMemInit(void)
 {
-	if (AllocateMemory()) {
+	if (AllocateMemory())
 		return 1;
-	}
 
 	SekOpen(0);
 
@@ -198,13 +197,7 @@ INT32 CpsMemInit()
    nCpsObjectBank = -1;
    CpsMapObjectBanks(0);
 
-#if 0
-   SekMapHandler(3, 0x660000, 0x663FFF, SM_RAM);
-   SekSetReadByteHandler(3, CPSExtraNVRAMReadByte);
-   SekSetWriteByteHandler(3, CPSExtraNVRAMWriteByte);
-#else
    SekMapMemory(CpsRam660, 0x660000, 0x663FFF, SM_RAM);
-#endif
 
    //		SekMapHandler(4, 0x708000, 0x709FFF, SM_WRITE);
    //		SekMapHandler(4, 0x70A000, 0x70BFFF, SM_WRITE);
@@ -236,16 +229,8 @@ INT32 CpsMemInit()
 	return 0;
 }
 
-INT32 CpsMemExit()
+INT32 CpsMemExit(void)
 {
-#if 0
-	FILE* fp = fopen("mem.raw", "wb");
-	if (fp) {
-		fwrite(CpsRam660, 1, 0x4000, fp);
-		fclose(fp);
-	}
-#endif
-
 	// Deallocate all used memory
 	BurnFree(CpsMem);
 	
@@ -254,53 +239,74 @@ INT32 CpsMemExit()
 	return 0;
 }
 
-static INT32 ScanRam()
+static INT32 ScanRam(void)
 {
-	// scan ram:
-	struct BurnArea ba;
-	memset(&ba, 0, sizeof(ba));
+   // scan ram:
+   struct BurnArea ba;
+   memset(&ba, 0, sizeof(ba));
 
-	ba.Data = CpsRam90;  ba.nLen = 0x030000; ba.szName = "CpsRam90";  BurnAcb(&ba);
-	ba.Data = CpsRamFF;  ba.nLen = 0x010000; ba.szName = "CpsRamFF";  BurnAcb(&ba);
-	ba.Data = CpsReg;    ba.nLen = 0x000100; ba.szName = "CpsReg";    BurnAcb(&ba);
+   ba.Data   = CpsRam90;
+   ba.nLen   = 0x030000;
+   ba.szName = "CpsRam90";
+   BurnAcb(&ba);
+   ba.Data   = CpsRamFF;
+   ba.nLen = 0x010000;
+   ba.szName = "CpsRamFF";
+   BurnAcb(&ba);
+   ba.Data   = CpsReg;
+   ba.nLen = 0x000100;
+   ba.szName = "CpsReg";
+   BurnAcb(&ba);
 
-	if (!Cps2DisableQSnd)
+   if (!Cps2DisableQSnd)
    {
-		ba.Data = CpsZRamC0; ba.nLen = 0x001000; ba.szName = "CpsZRamC0"; BurnAcb(&ba);
-		ba.Data = CpsZRamF0; ba.nLen = 0x001000; ba.szName = "CpsZRamF0"; BurnAcb(&ba);
-	}
+      ba.Data = CpsZRamC0;
+      ba.nLen = 0x001000;
+      ba.szName = "CpsZRamC0";
+      BurnAcb(&ba);
+      ba.Data = CpsZRamF0;
+      ba.nLen = 0x001000;
+      ba.szName = "CpsZRamF0";
+      BurnAcb(&ba);
+   }
 
-   ba.Data = CpsRam708; ba.nLen = 0x010000; ba.szName = "CpsRam708"; BurnAcb(&ba);
-   ba.Data = CpsFrg;    ba.nLen = 0x000010; ba.szName = "CpsFrg";    BurnAcb(&ba);
+   ba.Data = CpsRam708;
+   ba.nLen = 0x010000;
+   ba.szName = "CpsRam708";
+   BurnAcb(&ba);
+   ba.Data = CpsFrg;
+   ba.nLen = 0x000010;
+   ba.szName = "CpsFrg";
+   BurnAcb(&ba);
 
-	return 0;
+   return 0;
 }
 
 // Scan the current state of the CPS1/2 machine
 INT32 CpsAreaScan(INT32 nAction, INT32 *pnMin)
 {
-	struct BurnArea ba;
+   struct BurnArea ba;
 
-	if (CpsMem == NULL)
-		return 1;
+   if (CpsMem == NULL)
+      return 1;
 
-	if (pnMin)										// Return minimum compatible version
-		*pnMin = 0x029521;
+   if (pnMin) // Return minimum compatible version
+      *pnMin = 0x029521;
 
-	if (nAction & ACB_MEMORY_ROM) {
-		memset(&ba, 0, sizeof(ba));
-		ba.Data   = CpsRom;
-		ba.nLen   = nCpsRomLen;
-		ba.szName = "CpsRom";
-		BurnAcb(&ba);
+   if (nAction & ACB_MEMORY_ROM) {
+      memset(&ba, 0, sizeof(ba));
+      ba.Data   = CpsRom;
+      ba.nLen   = nCpsRomLen;
+      ba.szName = "CpsRom";
+      BurnAcb(&ba);
 
-		if (nCpsZRomLen) {
-			ba.Data   = CpsZRom;
-			ba.nLen   = nCpsZRomLen;
-			ba.szName = "CpsZRom";
-			BurnAcb(&ba);
-		}
-	}
+      if (nCpsZRomLen) {
+         ba.Data   = CpsZRom;
+         ba.nLen   = nCpsZRomLen;
+         ba.szName = "CpsZRom";
+         BurnAcb(&ba);
+      }
+   }
 
    EEPROMScan(nAction, pnMin);
 
@@ -315,23 +321,21 @@ INT32 CpsAreaScan(INT32 nAction, INT32 *pnMin)
       BurnAcb(&ba);
    }
 
+   if (nAction & ACB_DRIVER_DATA)
+   {
+      // Scan volatile variables/registers/RAM
+      // Scan 68000 state 
+      SekScan(nAction);
+      // Palette could have changed
+      if (nAction & ACB_WRITE)
+         CpsRecalcPal = 1;
+   }
 
-	if (nAction & ACB_DRIVER_DATA) {					// Scan volatile variables/registers/RAM
+   if (!Cps2DisableQSnd) // Scan QSound chips
+      QsndScan(nAction);
 
-		SekScan(nAction);								// Scan 68000 state
-		
-		if (nAction & ACB_WRITE) {						// Palette could have changed
-			CpsRecalcPal = 1;
-		}
-	}
+   if (CpsMemScanCallbackFunction)
+      CpsMemScanCallbackFunction(nAction, pnMin);
 
-	if (!Cps2DisableQSnd) {						// Scan QSound chips
-		QsndScan(nAction);
-	}
-	
-	if (CpsMemScanCallbackFunction) {
-		CpsMemScanCallbackFunction(nAction, pnMin);
-	}
-	
-	return 0;
+   return 0;
 }

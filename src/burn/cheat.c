@@ -455,25 +455,6 @@ UINT32 CheatSearchValueIncreased()
 	return nMatchedAddresses;
 }
 
-void CheatSearchDumptoFile()
-{
-	FILE *fp = fopen("cheatsearchdump.txt", "wt");
-	UINT32 nAddress;
-	
-	if (fp) {
-		char Temp[256];
-		
-		for (nAddress = 0; nAddress < nMemorySize; nAddress++) {
-			if (MemoryStatus[nAddress] == IN_RESULTS) {
-				sprintf(Temp, "Address %08X Value %02X\n", nAddress, MemoryValues[nAddress]);
-				fwrite(Temp, 1, strlen(Temp), fp);
-			}
-		}
-		
-		fclose(fp);
-	}
-}
-
 void CheatSearchExcludeAddressRange(UINT32 nStart, UINT32 nEnd)
 {
    UINT32 nAddress;
