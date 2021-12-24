@@ -1681,14 +1681,14 @@ struct retro_core_options_v2 options_da = {
 
 #define FBA2012CPS2_CPU_SPEED_ADJUST_LABEL_DE "CPU-Geschwindigkeit (%)"
 #define FBA2012CPS2_CPU_SPEED_ADJUST_INFO_0_DE "Aktiviert das Übertakten der emulierten CPU. Kann Slowdown verringern, aber Glitches verursachen."
-#define FBA2012CPS2_HISCORES_LABEL_DE NULL
-#define FBA2012CPS2_HISCORES_INFO_0_DE NULL
+#define FBA2012CPS2_HISCORES_LABEL_DE "Highscores"
+#define FBA2012CPS2_HISCORES_INFO_0_DE "Ermöglicht das Speichern von Highscores in unterstützten Spielen. Erfordert, dass die Datei \"hiscore.dat\" im Ordner system/fbalpha2012/ angelegt wird."
 #define FBA2012CPS2_CONTROLS_LABEL_DE "Steuerung"
 #define FBA2012CPS2_CONTROLS_INFO_0_DE "Standard-Controller-Belegung festlegen."
 #define OPTION_VAL_GAMEPAD_DE NULL
 #define OPTION_VAL_ARCADE_DE NULL
-#define FBA2012CPS2_ASPECT_LABEL_DE NULL
-#define FBA2012CPS2_ASPECT_INFO_0_DE NULL
+#define FBA2012CPS2_ASPECT_LABEL_DE "Core-Bereitgestelltes Seitenverhältnis"
+#define FBA2012CPS2_ASPECT_INFO_0_DE "Wählt das bevorzugte Seitenverhältnis des Inhalts. Dies gilt nur, wenn das Seitenverhältnis von RetroArch in den Videoeinstellungen auf \"Core provided\" eingestellt ist."
 #define OPTION_VAL_DAR_DE NULL
 #define OPTION_VAL_PAR_DE NULL
 #define FBA2012CPS2_AUTO_ROTATE_LABEL_DE "Vertikal ausgerichtete Spiele drehen (Neustart erforderlich)"
@@ -2295,7 +2295,7 @@ struct retro_core_options_v2 options_eo = {
 /* RETRO_LANGUAGE_ES */
 
 #define FBA2012CPS2_CPU_SPEED_ADJUST_LABEL_ES "Velocidad de la CPU (%)"
-#define FBA2012CPS2_CPU_SPEED_ADJUST_INFO_0_ES "Overclockea la CPU emulada. Puede reducir las ralentizaciones, pero podría provocar fallos gráficos."
+#define FBA2012CPS2_CPU_SPEED_ADJUST_INFO_0_ES "Aumenta la velocidad de la CPU emulada. Puede reducir las ralentizaciones, pero podría provocar fallos gráficos."
 #define FBA2012CPS2_HISCORES_LABEL_ES "Tablas de puntuaciones"
 #define FBA2012CPS2_HISCORES_INFO_0_ES "Guarda las tablas con las mejores puntuaciones en los juegos compatibles con esta función. Es necesario tener el archivo «hiscore.dat» en la carpeta system/fbalpha2012/."
 #define FBA2012CPS2_CONTROLS_LABEL_ES "Controles"
@@ -2721,7 +2721,7 @@ struct retro_core_options_v2 options_fa = {
 #define FBA2012CPS2_LOWPASS_FILTER_LABEL_FI "Äänisuodatin"
 #define FBA2012CPS2_LOWPASS_FILTER_INFO_0_FI NULL
 #define FBA2012CPS2_LOWPASS_RANGE_LABEL_FI "Äänen suodatustaso (%)"
-#define FBA2012CPS2_LOWPASS_RANGE_INFO_0_FI NULL
+#define FBA2012CPS2_LOWPASS_RANGE_INFO_0_FI "Määritä alipäästösuodattimen katkaisu taajuus. Korkeampi arvo nostaa suodattimen \"vahvuutta\", koska suurempi osuus korkeamman taajuuden spektristä on vaimennettu."
 #define FBA2012CPS2_FRAMESKIP_LABEL_FI "Kuvanohitus"
 #define FBA2012CPS2_FRAMESKIP_INFO_0_FI "Ohita kuvia välttääksesi äänipuskurin ali ajon (säröily). Parantaa suorituskykyä visuaalisen tasaisuuden kustannuksella. \"Automaatti\" ohittaa kehykset käyttöliittymän asetusten mukaan. \"Manuaalinen\" käyttää \"Kuvienohituksen arvo (%)\" -asetusta."
 #define OPTION_VAL_AUTO_FI "Automaattinen"
@@ -7232,7 +7232,7 @@ struct retro_core_options_v2 options_tr = {
 #define FBA2012CPS2_LOWPASS_FILTER_INFO_0_UK NULL
 #define FBA2012CPS2_LOWPASS_RANGE_LABEL_UK NULL
 #define FBA2012CPS2_LOWPASS_RANGE_INFO_0_UK NULL
-#define FBA2012CPS2_FRAMESKIP_LABEL_UK NULL
+#define FBA2012CPS2_FRAMESKIP_LABEL_UK "Пропуск кадру"
 #define FBA2012CPS2_FRAMESKIP_INFO_0_UK "Пропускати кадри, щоб уникнути спустошення буферу (тріскіт). Покращує швидкодію, погіршуючи плавність зображення. 'Авто' пропускає кадри, керуючись командами зовнішньої оболонки. 'Ручний' використовує налаштування 'Межа пропуску кадрів (%)'."
 #define OPTION_VAL_AUTO_UK "Авто"
 #define OPTION_VAL_MANUAL_UK "Ручний"
