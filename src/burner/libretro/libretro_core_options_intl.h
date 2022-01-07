@@ -2317,7 +2317,7 @@ struct retro_core_options_v2 options_eo = {
 #define OPTION_VAL_AUTO_ES "Selección automática"
 #define OPTION_VAL_MANUAL_ES NULL
 #define FBA2012CPS2_FRAMESKIP_THRESHOLD_LABEL_ES "Umbral de omisión de fotogramas (%)"
-#define FBA2012CPS2_FRAMESKIP_THRESHOLD_INFO_0_ES "Cuando la omisión de fotogramas esté configurada como Manual, este ajuste especifica el umbral de ocupación del búfer de audio (en porcentaje) por el que se omitirán fotogramas si el valor es inferior. Un valor más elevado reduce el riesgo de chasquidos omitiendo fotogramas con una mayor frecuencia."
+#define FBA2012CPS2_FRAMESKIP_THRESHOLD_INFO_0_ES "Cuando la omisión de fotogramas esté configurada como Manual, este ajuste especifica el umbral de ocupación del búfer de audio (en porcentaje) por debajo del cual se omitirán fotogramas si el valor. Un valor más elevado reduce el riesgo de chasquidos omitiendo fotogramas con una mayor frecuencia."
 
 struct retro_core_option_v2_category option_cats_es[] = {
    { NULL, NULL, NULL },
@@ -6808,17 +6808,17 @@ struct retro_core_options_v2 options_sr = {
 #define FBA2012CPS2_CPU_SPEED_ADJUST_INFO_0_SV "Aktiverar överklockning av den emulerade CPU: n. Kan minska tröghet, men kan orsaka problem."
 #define FBA2012CPS2_HISCORES_LABEL_SV NULL
 #define FBA2012CPS2_HISCORES_INFO_0_SV NULL
-#define FBA2012CPS2_CONTROLS_LABEL_SV NULL
+#define FBA2012CPS2_CONTROLS_LABEL_SV "Kontroller"
 #define FBA2012CPS2_CONTROLS_INFO_0_SV "Ange standardmappning för kontrollen."
 #define OPTION_VAL_GAMEPAD_SV NULL
-#define OPTION_VAL_ARCADE_SV NULL
+#define OPTION_VAL_ARCADE_SV "Arkad"
 #define FBA2012CPS2_ASPECT_LABEL_SV NULL
 #define FBA2012CPS2_ASPECT_INFO_0_SV NULL
 #define OPTION_VAL_DAR_SV NULL
 #define OPTION_VAL_PAR_SV NULL
 #define FBA2012CPS2_AUTO_ROTATE_LABEL_SV NULL
 #define FBA2012CPS2_AUTO_ROTATE_INFO_0_SV NULL
-#define FBA2012CPS2_LOWPASS_FILTER_LABEL_SV NULL
+#define FBA2012CPS2_LOWPASS_FILTER_LABEL_SV "Ljudfilter"
 #define FBA2012CPS2_LOWPASS_FILTER_INFO_0_SV NULL
 #define FBA2012CPS2_LOWPASS_RANGE_LABEL_SV NULL
 #define FBA2012CPS2_LOWPASS_RANGE_INFO_0_SV NULL
