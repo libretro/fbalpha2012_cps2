@@ -4957,6 +4957,211 @@ struct retro_core_options_v2 options_nl = {
    option_defs_nl
 };
 
+/* RETRO_LANGUAGE_NO */
+
+#define FBA2012CPS2_CPU_SPEED_ADJUST_LABEL_NO NULL
+#define FBA2012CPS2_CPU_SPEED_ADJUST_INFO_0_NO NULL
+#define FBA2012CPS2_HISCORES_LABEL_NO NULL
+#define FBA2012CPS2_HISCORES_INFO_0_NO NULL
+#define FBA2012CPS2_CONTROLS_LABEL_NO NULL
+#define FBA2012CPS2_CONTROLS_INFO_0_NO NULL
+#define OPTION_VAL_GAMEPAD_NO NULL
+#define OPTION_VAL_ARCADE_NO NULL
+#define FBA2012CPS2_ASPECT_LABEL_NO NULL
+#define FBA2012CPS2_ASPECT_INFO_0_NO NULL
+#define OPTION_VAL_DAR_NO NULL
+#define OPTION_VAL_PAR_NO NULL
+#define FBA2012CPS2_AUTO_ROTATE_LABEL_NO NULL
+#define FBA2012CPS2_AUTO_ROTATE_INFO_0_NO NULL
+#define FBA2012CPS2_LOWPASS_FILTER_LABEL_NO NULL
+#define FBA2012CPS2_LOWPASS_FILTER_INFO_0_NO NULL
+#define FBA2012CPS2_LOWPASS_RANGE_LABEL_NO NULL
+#define FBA2012CPS2_LOWPASS_RANGE_INFO_0_NO NULL
+#define FBA2012CPS2_FRAMESKIP_LABEL_NO NULL
+#define FBA2012CPS2_FRAMESKIP_INFO_0_NO NULL
+#define OPTION_VAL_AUTO_NO NULL
+#define OPTION_VAL_MANUAL_NO NULL
+#define FBA2012CPS2_FRAMESKIP_THRESHOLD_LABEL_NO NULL
+#define FBA2012CPS2_FRAMESKIP_THRESHOLD_INFO_0_NO NULL
+
+struct retro_core_option_v2_category option_cats_no[] = {
+   { NULL, NULL, NULL },
+};
+struct retro_core_option_v2_definition option_defs_no[] = {
+   {
+      "fba2012cps2_cpu_speed_adjust",
+      FBA2012CPS2_CPU_SPEED_ADJUST_LABEL_NO,
+      NULL,
+      FBA2012CPS2_CPU_SPEED_ADJUST_INFO_0_NO,
+      NULL,
+      NULL,
+      {
+         { "100", NULL },
+         { "110", NULL },
+         { "120", NULL },
+         { "130", NULL },
+         { "140", NULL },
+         { "150", NULL },
+         { "160", NULL },
+         { "170", NULL },
+         { "180", NULL },
+         { "190", NULL },
+         { "200", NULL },
+         { NULL, NULL },
+      },
+      "100"
+   },
+   {
+      "fba2012cps2_hiscores",
+      FBA2012CPS2_HISCORES_LABEL_NO,
+      NULL,
+      FBA2012CPS2_HISCORES_INFO_0_NO,
+      NULL,
+      NULL,
+      {
+         { "enabled",  NULL },
+         { "disabled", NULL },
+         { NULL, NULL },
+      },
+      "disabled"
+   },
+   {
+      "fba2012cps2_controls",
+      FBA2012CPS2_CONTROLS_LABEL_NO,
+      NULL,
+      FBA2012CPS2_CONTROLS_INFO_0_NO,
+      NULL,
+      NULL,
+      {
+         { "gamepad", OPTION_VAL_GAMEPAD_NO },
+         { "arcade",  OPTION_VAL_ARCADE_NO },
+         { NULL, NULL },
+      },
+      "gamepad"
+   },
+   {
+      "fba2012cps2_aspect",
+      FBA2012CPS2_ASPECT_LABEL_NO,
+      NULL,
+      FBA2012CPS2_ASPECT_INFO_0_NO,
+      NULL,
+      NULL,
+      {
+         { "DAR", OPTION_VAL_DAR_NO },
+         { "PAR", OPTION_VAL_PAR_NO },
+         { NULL, NULL },
+      },
+      "DAR"
+   },
+   {
+      "fba2012cps2_auto_rotate",
+      FBA2012CPS2_AUTO_ROTATE_LABEL_NO,
+      NULL,
+      FBA2012CPS2_AUTO_ROTATE_INFO_0_NO,
+      NULL,
+      NULL,
+      {
+         { "enabled",  NULL },
+         { "disabled", NULL },
+         { NULL, NULL },
+      },
+      "enabled"
+   },
+   {
+      "fba2012cps2_lowpass_filter",
+      FBA2012CPS2_LOWPASS_FILTER_LABEL_NO,
+      NULL,
+      FBA2012CPS2_LOWPASS_FILTER_INFO_0_NO,
+      NULL,
+      NULL,
+      {
+         { "disabled", NULL },
+         { "enabled",  NULL },
+         { NULL, NULL },
+      },
+      "disabled"
+   },
+   {
+      "fba2012cps2_lowpass_range",
+      FBA2012CPS2_LOWPASS_RANGE_LABEL_NO,
+      NULL,
+      FBA2012CPS2_LOWPASS_RANGE_INFO_0_NO,
+      NULL,
+      NULL,
+      {
+         { "5",  NULL },
+         { "10", NULL },
+         { "15", NULL },
+         { "20", NULL },
+         { "25", NULL },
+         { "30", NULL },
+         { "35", NULL },
+         { "40", NULL },
+         { "45", NULL },
+         { "50", NULL },
+         { "55", NULL },
+         { "60", NULL },
+         { "65", NULL },
+         { "70", NULL },
+         { "75", NULL },
+         { "80", NULL },
+         { "85", NULL },
+         { "90", NULL },
+         { "95", NULL },
+         { NULL, NULL },
+      },
+      "60"
+   },
+   {
+      "fba2012cps2_frameskip",
+      FBA2012CPS2_FRAMESKIP_LABEL_NO,
+      NULL,
+      FBA2012CPS2_FRAMESKIP_INFO_0_NO,
+      NULL,
+      NULL,
+      {
+         { "disabled", NULL },
+         { "auto",     OPTION_VAL_AUTO_NO },
+         { "manual",   OPTION_VAL_MANUAL_NO },
+         { NULL, NULL },
+      },
+      "disabled"
+   },
+   {
+      "fba2012cps2_frameskip_threshold",
+      FBA2012CPS2_FRAMESKIP_THRESHOLD_LABEL_NO,
+      NULL,
+      FBA2012CPS2_FRAMESKIP_THRESHOLD_INFO_0_NO,
+      NULL,
+      NULL,
+      {
+         { "15", NULL },
+         { "18", NULL },
+         { "21", NULL },
+         { "24", NULL },
+         { "27", NULL },
+         { "30", NULL },
+         { "33", NULL },
+         { "36", NULL },
+         { "39", NULL },
+         { "42", NULL },
+         { "45", NULL },
+         { "48", NULL },
+         { "51", NULL },
+         { "54", NULL },
+         { "57", NULL },
+         { "60", NULL },
+         { NULL, NULL },
+      },
+      "33"
+   },
+   { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
+};
+struct retro_core_options_v2 options_no = {
+   option_cats_no,
+   option_defs_no
+};
+
 /* RETRO_LANGUAGE_OC */
 
 #define FBA2012CPS2_CPU_SPEED_ADJUST_LABEL_OC NULL
