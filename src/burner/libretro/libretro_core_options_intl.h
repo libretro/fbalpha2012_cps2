@@ -878,7 +878,7 @@ struct retro_core_options_v2 options_chs = {
 #define FBA2012CPS2_LOWPASS_RANGE_LABEL_CHT NULL
 #define FBA2012CPS2_LOWPASS_RANGE_INFO_0_CHT NULL
 #define FBA2012CPS2_FRAMESKIP_LABEL_CHT "跳幀"
-#define FBA2012CPS2_FRAMESKIP_INFO_0_CHT "設定跳幀以避免音頻緩衝區不足(產生破音)。以視覺平畫度為代價提高效能。<自動> 由前端系統控制跳幀。<手動> 使用「跳幀上限 (%)」設定。"
+#define FBA2012CPS2_FRAMESKIP_INFO_0_CHT "設定跳幀用以避免音訊緩衝區不足(產生破音)。用影像流暢度為代價提高效能。\n設定 <自動> 由前端系統控制跳幀。設定 <手動> 由「跳幀上限 (%)」控制跳幀。"
 #define OPTION_VAL_AUTO_CHT "自動"
 #define OPTION_VAL_MANUAL_CHT "手動"
 #define FBA2012CPS2_FRAMESKIP_THRESHOLD_LABEL_CHT "跳幀上限 (%)"
@@ -3934,24 +3934,24 @@ struct retro_core_options_v2 options_hr = {
 
 /* RETRO_LANGUAGE_HU */
 
-#define FBA2012CPS2_CPU_SPEED_ADJUST_LABEL_HU NULL
-#define FBA2012CPS2_CPU_SPEED_ADJUST_INFO_0_HU NULL
-#define FBA2012CPS2_HISCORES_LABEL_HU NULL
-#define FBA2012CPS2_HISCORES_INFO_0_HU NULL
+#define FBA2012CPS2_CPU_SPEED_ADJUST_LABEL_HU "CPU sebesség (%)"
+#define FBA2012CPS2_CPU_SPEED_ADJUST_INFO_0_HU "Az emulált CPU túlhajtásának engedélyezése. Csökkentheti a belassulást, de hibákat okozhat."
+#define FBA2012CPS2_HISCORES_LABEL_HU "Legjobb pontszámok"
+#define FBA2012CPS2_HISCORES_INFO_0_HU "A legjobb pontszámok mentésének engedélyezése a támogatott játékokban. A \"hiscore.dat\" fájlnak a system/fbalpha2012/ mappában kell lennie."
 #define FBA2012CPS2_CONTROLS_LABEL_HU "Irányítás"
-#define FBA2012CPS2_CONTROLS_INFO_0_HU NULL
+#define FBA2012CPS2_CONTROLS_INFO_0_HU "Az alapértelmezett kontrollerkiosztás."
 #define OPTION_VAL_GAMEPAD_HU NULL
 #define OPTION_VAL_ARCADE_HU NULL
 #define FBA2012CPS2_ASPECT_LABEL_HU "Mag által meghatározott képarány"
-#define FBA2012CPS2_ASPECT_INFO_0_HU NULL
+#define FBA2012CPS2_ASPECT_INFO_0_HU "A tartalom kívánt képaránya. Csak akkor lép életbe, ha a RetroArch saját képarány beállítása \"Mag által meghatározott\" értékre van állítva a kép beállításainál."
 #define OPTION_VAL_DAR_HU NULL
 #define OPTION_VAL_PAR_HU NULL
-#define FBA2012CPS2_AUTO_ROTATE_LABEL_HU NULL
-#define FBA2012CPS2_AUTO_ROTATE_INFO_0_HU NULL
+#define FBA2012CPS2_AUTO_ROTATE_LABEL_HU "Függőleges képállású játékok forgatása (újraindítás szükséges)"
+#define FBA2012CPS2_AUTO_ROTATE_INFO_0_HU "A kijelző automatikus forgatása függőleges képállású játékoknál. Kikapcsolva a D-Pad bemenete a képernyőhöz viszonyított irányokba lesz elforgatva."
 #define FBA2012CPS2_LOWPASS_FILTER_LABEL_HU "Hangszűrő"
-#define FBA2012CPS2_LOWPASS_FILTER_INFO_0_HU NULL
-#define FBA2012CPS2_LOWPASS_RANGE_LABEL_HU NULL
-#define FBA2012CPS2_LOWPASS_RANGE_INFO_0_HU NULL
+#define FBA2012CPS2_LOWPASS_FILTER_INFO_0_HU "Aluláteresztő hangszűrő engedélyezése, néhány arcade játék \"nyers\" hangjának tompításához."
+#define FBA2012CPS2_LOWPASS_RANGE_LABEL_HU "Hangszűrő szintje (%)"
+#define FBA2012CPS2_LOWPASS_RANGE_INFO_0_HU "Az aluláteresztő hangszűrő vágási frekvenciája. Nagyobb érték \"erősebb\" szűrésként hallatszik, mivel a magastartomány szélesebb sávja halkul el."
 #define FBA2012CPS2_FRAMESKIP_LABEL_HU "Képkocka kihagyás"
 #define FBA2012CPS2_FRAMESKIP_INFO_0_HU "A hangbuffer kiürülése (recsegés) elkerülésére képkockák eldobása. Javít a teljesítményen a vizuális folyamatosság kárára. Az \"Automatikus\" beállítás akkor dob képkockát, ha a frontend azt javasolja. A \"Kézi\" a \"Képkocka kihagyás határértéke (%)\" beállítást használja."
 #define OPTION_VAL_AUTO_HU "Automatikus"
