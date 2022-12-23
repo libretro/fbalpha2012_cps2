@@ -6810,8 +6810,8 @@ struct retro_core_options_v2 options_si = {
 #define FBA2012CPS2_HISCORES_INFO_0_SK NULL
 #define FBA2012CPS2_CONTROLS_LABEL_SK "Ovládanie"
 #define FBA2012CPS2_CONTROLS_INFO_0_SK "Nastaviť východzie mapovanie herného ovládača."
-#define OPTION_VAL_GAMEPAD_SK NULL
-#define OPTION_VAL_ARCADE_SK NULL
+#define OPTION_VAL_GAMEPAD_SK "Herný ovládač"
+#define OPTION_VAL_ARCADE_SK "Arkáda"
 #define FBA2012CPS2_ASPECT_LABEL_SK NULL
 #define FBA2012CPS2_ASPECT_INFO_0_SK NULL
 #define OPTION_VAL_DAR_SK NULL
@@ -6825,7 +6825,7 @@ struct retro_core_options_v2 options_si = {
 #define FBA2012CPS2_FRAMESKIP_LABEL_SK NULL
 #define FBA2012CPS2_FRAMESKIP_INFO_0_SK NULL
 #define OPTION_VAL_AUTO_SK NULL
-#define OPTION_VAL_MANUAL_SK NULL
+#define OPTION_VAL_MANUAL_SK "Ručne"
 #define FBA2012CPS2_FRAMESKIP_THRESHOLD_LABEL_SK NULL
 #define FBA2012CPS2_FRAMESKIP_THRESHOLD_INFO_0_SK "Ak je 'Preskočenie snímkov' nastavené na 'Ručne', určuje obsadenosť zvukového zásobníka (v percentách) pod ktorou budú snímky preskočené. Vyššie hodnoty znižujú riziko praskania za cenu zahodenia snímkov častejšie."
 
