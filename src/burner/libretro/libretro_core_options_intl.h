@@ -6804,7 +6804,7 @@ struct retro_core_options_v2 options_si = {
 
 /* RETRO_LANGUAGE_SK */
 
-#define FBA2012CPS2_CPU_SPEED_ADJUST_LABEL_SK NULL
+#define FBA2012CPS2_CPU_SPEED_ADJUST_LABEL_SK "Rýchlosť CPU (%)"
 #define FBA2012CPS2_CPU_SPEED_ADJUST_INFO_0_SK "Umožniť pretaktovanie emulovaného CPU. Môže znížiť spomalenia, ale môže spôsobiť vady."
 #define FBA2012CPS2_HISCORES_LABEL_SK NULL
 #define FBA2012CPS2_HISCORES_INFO_0_SK NULL
@@ -6812,7 +6812,7 @@ struct retro_core_options_v2 options_si = {
 #define FBA2012CPS2_CONTROLS_INFO_0_SK "Nastaviť východzie mapovanie herného ovládača."
 #define OPTION_VAL_GAMEPAD_SK "Herný ovládač"
 #define OPTION_VAL_ARCADE_SK "Arkáda"
-#define FBA2012CPS2_ASPECT_LABEL_SK NULL
+#define FBA2012CPS2_ASPECT_LABEL_SK "Jadrom poskytnutý pomer strán"
 #define FBA2012CPS2_ASPECT_INFO_0_SK NULL
 #define OPTION_VAL_DAR_SK NULL
 #define OPTION_VAL_PAR_SK NULL
@@ -6822,11 +6822,11 @@ struct retro_core_options_v2 options_si = {
 #define FBA2012CPS2_LOWPASS_FILTER_INFO_0_SK NULL
 #define FBA2012CPS2_LOWPASS_RANGE_LABEL_SK NULL
 #define FBA2012CPS2_LOWPASS_RANGE_INFO_0_SK NULL
-#define FBA2012CPS2_FRAMESKIP_LABEL_SK NULL
+#define FBA2012CPS2_FRAMESKIP_LABEL_SK "Preskočenie snímky"
 #define FBA2012CPS2_FRAMESKIP_INFO_0_SK NULL
 #define OPTION_VAL_AUTO_SK NULL
 #define OPTION_VAL_MANUAL_SK "Ručne"
-#define FBA2012CPS2_FRAMESKIP_THRESHOLD_LABEL_SK NULL
+#define FBA2012CPS2_FRAMESKIP_THRESHOLD_LABEL_SK "Prah preskočenia snímky (%)"
 #define FBA2012CPS2_FRAMESKIP_THRESHOLD_INFO_0_SK "Ak je 'Preskočenie snímkov' nastavené na 'Ručne', určuje obsadenosť zvukového zásobníka (v percentách) pod ktorou budú snímky preskočené. Vyššie hodnoty znižujú riziko praskania za cenu zahodenia snímkov častejšie."
 
 struct retro_core_option_v2_category option_cats_sk[] = {
