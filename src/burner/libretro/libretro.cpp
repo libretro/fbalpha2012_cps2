@@ -3567,8 +3567,6 @@ static void poll_input(void)
 
                bool state = input_cb(port, RETRO_DEVICE_JOYPAD, 0, id);
 
-               //fprintf(stderr, "GIT_SWITCH: %s, port: %d, pressed: %d.\n", print_label(id), port, state);
-
                if (pgi->nType & BIT_GROUP_ANALOG)
                {
                   // Set analog controls to full
@@ -3594,7 +3592,6 @@ static void poll_input(void)
                break;
             }
          case GIT_KEYSLIDER:                  // Keyboard slider
-            //fprintf(stderr, "GIT_JOYSLIDER\n");
             {
                int nAdd = 0;
 
