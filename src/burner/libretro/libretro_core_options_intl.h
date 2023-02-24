@@ -859,7 +859,7 @@ struct retro_core_options_v2 options_chs = {
 
 /* RETRO_LANGUAGE_CHT */
 
-#define FBA2012CPS2_CPU_SPEED_ADJUST_LABEL_CHT NULL
+#define FBA2012CPS2_CPU_SPEED_ADJUST_LABEL_CHT "CPU速度 (%)"
 #define FBA2012CPS2_CPU_SPEED_ADJUST_INFO_0_CHT "啟用模擬CPU的超頻。可以減少延遲，但有機會引致閃爍。"
 #define FBA2012CPS2_HISCORES_LABEL_CHT NULL
 #define FBA2012CPS2_HISCORES_INFO_0_CHT NULL
@@ -878,11 +878,11 @@ struct retro_core_options_v2 options_chs = {
 #define FBA2012CPS2_LOWPASS_RANGE_LABEL_CHT NULL
 #define FBA2012CPS2_LOWPASS_RANGE_INFO_0_CHT NULL
 #define FBA2012CPS2_FRAMESKIP_LABEL_CHT "跳幀"
-#define FBA2012CPS2_FRAMESKIP_INFO_0_CHT "設定跳幀用以避免音訊緩衝區不足(產生破音)。用影像流暢度為代價提高效能。\n設定 <自動> 由前端系統控制跳幀。設定 <手動> 由「跳幀上限 (%)」控制跳幀。"
+#define FBA2012CPS2_FRAMESKIP_INFO_0_CHT "設定跳幀用以避免音訊緩衝區不足(產生破音), 用影像流暢度為代價提高效能。\n設定<自動>由前端系統控制跳幀, 設定<手動>由「跳幀上限(%)」控制跳幀。"
 #define OPTION_VAL_AUTO_CHT "自動"
 #define OPTION_VAL_MANUAL_CHT "手動"
 #define FBA2012CPS2_FRAMESKIP_THRESHOLD_LABEL_CHT "跳幀上限 (%)"
-#define FBA2012CPS2_FRAMESKIP_THRESHOLD_INFO_0_CHT "設定「跳幀」為 <手動> 時音頻緩衝區使用上限(%)，低於上限的影格將被跳過。設定過高會導致頻繁丟失影格，過低則是出現破音。"
+#define FBA2012CPS2_FRAMESKIP_THRESHOLD_INFO_0_CHT "設定「跳幀」為<手動>時音頻緩衝區使用上限(%)。\n低於上限的影格將被跳過, 設定過高會導致頻繁丟失影格, 過低則是出現破音。"
 
 struct retro_core_option_v2_category option_cats_cht[] = {
    { NULL, NULL, NULL },
