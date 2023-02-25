@@ -42,8 +42,6 @@ enum {
 	PULSE_LINE
 };
 
-#define timer_get_time() BurnTimerGetTime()
-
 #define READ8_HANDLER(name) 	UINT8 name(void)
 #define WRITE8_HANDLER(name) 	void  name(UINT8 data)
 
@@ -56,8 +54,6 @@ enum {
 #ifdef __cplusplus
  extern "C" {
 #endif
-  double BurnTimerGetTime(void);
-
   typedef UINT8 (*read8_handler)(UINT32 offset);
   typedef void (*write8_handler)(UINT32 offset, UINT32 data);
 #ifdef __cplusplus
