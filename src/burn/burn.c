@@ -20,15 +20,8 @@ BOOL bBurnUseASMCPUEmulation = TRUE;
 BOOL bBurnUseASMCPUEmulation = FALSE;
 #endif
 
-#if defined (FBA_DEBUG)
- clock_t starttime = 0;
-#endif
-
 UINT32 nCurrentFrame;			// Framecount for emulated game
 
-UINT32 nFramesEmulated;		// Counters for FPS	display
-UINT32 nFramesRendered;		//
-BOOL bForce60Hz = FALSE;
 INT32 nBurnFPS = 6000;
 INT32 nBurnCPUSpeedAdjust = 0x0100;	// CPU speed adjustment (clock * nBurnCPUSpeedAdjust / 0x0100)
 
@@ -49,8 +42,6 @@ UINT8 nSpriteEnable = 0xFF;	// Can be used externally to select which Sprites to
 UINT8 nSkipFrame = 0;		// Can be used to skip rendering of the current frame
 
 INT32 nMaxPlayers;
-
-BOOL bSaveCRoms = 0;
 
 UINT32 *pBurnDrvPalette;
 
@@ -132,8 +123,8 @@ INT32 BurnGetZipName(char** pszName, UINT32 i)
 // Static functions which forward to each driver's data and functions
 
 INT32 BurnStateMAMEScan(INT32 nAction, INT32* pnMin);
-void BurnStateExit();
-INT32 BurnStateInit();
+void BurnStateExit(void);
+INT32 BurnStateInit(void);
 
 // Get the text fields for the driver in TCHARs
 TCHAR* BurnDrvGetText(UINT32 i)
@@ -221,11 +212,8 @@ TCHAR* BurnDrvGetText(UINT32 i)
       }
 
 #if defined (_UNICODE)
-
-      if (pszStringW && pszStringW[0]) {
+      if (pszStringW && pszStringW[0])
          return pszStringW;
-      }
-
 #else
 
       switch (i & 0xFF) {
@@ -258,11 +246,10 @@ TCHAR* BurnDrvGetText(UINT32 i)
             break;
       }
 
-      if (pszStringW && pszStringA && pszStringW[0]) {
-         if (wcstombs(pszStringA, pszStringW, 256) != -1U) {
+      if (pszStringW && pszStringA && pszStringW[0])
+      {
+         if (wcstombs(pszStringA, pszStringW, 256) != -1U)
             return pszStringA;
-         }
-
       }
 
       pszStringA = NULL;
@@ -271,9 +258,8 @@ TCHAR* BurnDrvGetText(UINT32 i)
 
    }
 
-   if (i & DRV_UNICODEONLY) {
+   if (i & DRV_UNICODEONLY)
       return NULL;
-   }
 
    switch (i & 0xFF) {
       case DRV_NAME:
@@ -386,21 +372,10 @@ char* BurnDrvGetTextA(UINT32 i)
 		case DRV_SAMPLENAME:
 			return pDriver[nBurnDrvActive]->szSampleName;
 		default:
-			return NULL;
+			break;
 	}
+	return NULL;
 }
-
-#if defined (_UNICODE)
-void BurnLocalisationSetName(char *szName, TCHAR *szLongName)
-{
-	for (UINT32 i = 0; i < nBurnDrvCount; i++) {
-		nBurnDrvActive = i;
-		if (!strcmp(szName, pDriver[i]->szShortName)) {
-			pDriver[i]->szFullNameW = szLongName;
-		}
-	}
-}
-#endif
 
 // Get the zip names for the driver
 INT32 BurnDrvGetZipName(char** pszName, UINT32 i)
@@ -551,17 +526,6 @@ INT32 BurnDrvInit(void)
 
 	nMaxPlayers = pDriver[nBurnDrvActive]->Players;
 	
-#if defined (FBA_DEBUG)
-	if (!nReturnValue) {
-		starttime = clock();
-		nFramesEmulated = 0;
-		nFramesRendered = 0;
-		nCurrentFrame = 0;
-	} else {
-		starttime = 0;
-	}
-#endif
-
 	return nReturnValue;
 }
 
@@ -649,9 +613,7 @@ INT32 BurnUpdateProgress(double fProgress, const TCHAR* pszText, BOOL bAbs)
 
 INT32 BurnSetRefreshRate(double dFrameRate)
 {
-	if (!bForce60Hz)
-		nBurnFPS = (INT32)(100.0 * dFrameRate);
-
+	nBurnFPS = (INT32)(100.0 * dFrameRate);
 	return 0;
 }
 

@@ -10,16 +10,13 @@
 extern "C" {
 #endif
 
-#if defined(__LIBRETRO__) && defined(_MSC_VER)
+#if defined(_MSC_VER)
 #include <tchar.h>
 #else
 #include "tchar.h"
 #endif
 
-#ifdef __LIBRETRO_OPTIMIZATIONS__
 #include "burn_libretro_opts.h"
-#endif
-
 #include "burn.h"
 
 #ifdef MSB_FIRST

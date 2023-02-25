@@ -187,12 +187,6 @@ struct BurnDIPInfo {
 
 extern BOOL bBurnUseASMCPUEmulation;
 
-extern UINT32 nFramesEmulated;
-extern UINT32 nFramesRendered;
-extern clock_t starttime;					// system time when emulation started and after roms loaded
-
-extern BOOL bForce60Hz;
-
 extern INT32 nBurnFPS;
 extern INT32 nBurnCPUSpeedAdjust;
 
@@ -237,8 +231,6 @@ INT32 BurnRecalcPal();
 INT32 BurnSetProgressRange(double dProgressRange);
 INT32 BurnUpdateProgress(double dProgressStep, const TCHAR* pszText, BOOL bAbs);
 
-void BurnLocalisationSetName(char *szName, TCHAR *szLongName);
-
 // ---------------------------------------------------------------------------
 // Retrieve driver information
 
@@ -275,8 +267,6 @@ INT32 BurnDrvGetGenreFlags();
 INT32 BurnDrvGetFamilyFlags();
 INT32 BurnDrvGetSampleInfo(struct BurnSampleInfo *pri, UINT32 i);
 INT32 BurnDrvGetSampleName(char** pszName, UINT32 i, INT32 nAka);
-
-void Reinitialise();
 
 extern BOOL bDoIpsPatch;
 void IpsApplyPatches(UINT8* base, char* rom_name);

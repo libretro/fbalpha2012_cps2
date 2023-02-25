@@ -37,6 +37,7 @@ struct ROMFIND
 };
 
 static bool gamepad_controls = true;
+static bool analog_controls_enabled = false;
 
 static std::vector<std::string> g_find_list_path;
 static ROMFIND g_find_list[1024];
@@ -226,22 +227,6 @@ TCHAR szAppBurnVer[16];
 }
 #endif
 
-#ifdef WANT_NEOGEOCD
-CDEmuStatusValue CDEmuStatus;
-
-const char* isowavLBAToMSF(const int LBA) { return ""; }
-int isowavMSFToLBA(const char* address) { return 0; }
-TCHAR* GetIsoPath() { return NULL; }
-INT32 CDEmuInit() { return 0; }
-INT32 CDEmuExit() { return 0; }
-INT32 CDEmuStop() { return 0; }
-INT32 CDEmuPlay(UINT8 M, UINT8 S, UINT8 F) { return 0; }
-INT32 CDEmuLoadSector(INT32 LBA, char* pBuffer) { return 0; }
-UINT8* CDEmuReadTOC(INT32 track) { return 0; }
-UINT8* CDEmuReadQChannel() { return 0; }
-INT32 CDEmuGetSoundBuffer(INT16* buffer, INT32 samples) { return 0; }
-#endif
-
 static int nDIPOffset;
 
 static void InpDIPSWGetOffset (void)
@@ -282,7 +267,7 @@ void InpDIPSWResetDIPs (void)
    }
 }
 
-static int InpDIPSWInit()
+static int InpDIPSWInit(void)
 {
    BurnDIPInfo bdi;
 
@@ -318,24 +303,6 @@ static int InpDIPSWInit()
    return 0;
 }
 
-int InputSetCooperativeLevel(const bool bExclusive, const bool bForeGround) { return 0; }
-void Reinitialise(void) { }
-
-// Non-idiomatic (OutString should be to the left to match strcpy())
-// Seems broken to not check nOutSize.
-char* TCHARToANSI(const TCHAR* pszInString, char* pszOutString, int /*nOutSize*/)
-{
-   if (pszOutString)
-   {
-      strcpy(pszOutString, pszInString);
-      return pszOutString;
-   }
-
-   return (char*)pszInString;
-}
-
-INT32 QuoteRead(TCHAR **, TCHAR **, TCHAR*) { return 1; }
-char *LabelCheck(TCHAR *, TCHAR *) { return 0; }
 const INT32 nConfigMinVersion = 0x020921;
 
 static int find_rom_by_crc(uint32_t crc, const ZipEntry *list, unsigned elems)
@@ -383,7 +350,7 @@ static INT32 archive_load_rom(UINT8 *dest, INT32 *wrote, INT32 i)
 }
 
 // This code is very confusing. The original code is even more confusing :(
-static bool open_archive()
+static bool open_archive(void)
 {
    memset(g_find_list, 0, sizeof(g_find_list));
 
@@ -484,7 +451,7 @@ static bool open_archive()
    return true;
 }
 
-void retro_init()
+void retro_init(void)
 {
    struct retro_log_callback log;
    if (environ_cb(RETRO_ENVIRONMENT_GET_LOG_INTERFACE, &log))
@@ -546,7 +513,6 @@ void retro_reset(void)
    nBurnLayer = 0xff;
    pBurnSoundOut = g_audio_buf;
    nBurnSoundRate = AUDIO_SAMPLERATE;
-   //nBurnSoundLen = AUDIO_SEGMENT_LENGTH;
    nCurrentFrame++;
    HiscoreApply();
    Cps2Frame();
@@ -876,11 +842,6 @@ void retro_get_system_av_info(struct retro_system_av_info *info)
    info->timing.sample_rate       = VIDEO_REFRESH_RATE * AUDIO_SEGMENT_LENGTH;
 }
 
-int VidRecalcPal()
-{
-   return BurnRecalcPal();
-}
-
 static bool fba_init(unsigned driver, const char *game_zip_name)
 {
    nBurnDrvActive = driver;
@@ -949,7 +910,7 @@ static bool fba_init(unsigned driver, const char *game_zip_name)
       }
    }
 
-   VidRecalcPal();
+   BurnRecalcPal();
 
 #ifdef FRONTEND_SUPPORTS_RGB565
    enum retro_pixel_format fmt = RETRO_PIXEL_FORMAT_RGB565;
@@ -960,10 +921,6 @@ static bool fba_init(unsigned driver, const char *game_zip_name)
 #endif
 
    return true;
-}
-
-static void init_video()
-{
 }
 
 static void extract_basename(char *buf, const char *path, size_t size)
@@ -999,9 +956,6 @@ static void extract_directory(char *buf, const char *path, size_t size)
    else
       buf[0] = '\0';
 }
-
-bool analog_controls_enabled = false;
-
 
 bool retro_load_game(const struct retro_game_info *info)
 {
