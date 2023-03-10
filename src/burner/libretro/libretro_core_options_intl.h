@@ -867,8 +867,8 @@ struct retro_core_options_v2 options_chs = {
 #define FBA2012CPS2_CONTROLS_INFO_0_CHT NULL
 #define OPTION_VAL_GAMEPAD_CHT NULL
 #define OPTION_VAL_ARCADE_CHT NULL
-#define FBA2012CPS2_ASPECT_LABEL_CHT NULL
-#define FBA2012CPS2_ASPECT_INFO_0_CHT NULL
+#define FBA2012CPS2_ASPECT_LABEL_CHT "寬高比 (核心參數)"
+#define FBA2012CPS2_ASPECT_INFO_0_CHT "設定畫面的寬高比, 僅限「設定/顯示/縮放」選項中, 設定「寬高比」為<核心參數>時使用。"
 #define OPTION_VAL_DAR_CHT NULL
 #define OPTION_VAL_PAR_CHT "標準"
 #define FBA2012CPS2_AUTO_ROTATE_LABEL_CHT NULL
