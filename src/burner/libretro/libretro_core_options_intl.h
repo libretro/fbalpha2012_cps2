@@ -6601,7 +6601,7 @@ struct retro_core_options_v2 options_ru = {
 
 #define FBA2012CPS2_CPU_SPEED_ADJUST_LABEL_SK "Rýchlosť CPU (%)"
 #define FBA2012CPS2_CPU_SPEED_ADJUST_INFO_0_SK "Umožniť pretaktovanie emulovaného CPU. Môže znížiť spomalenia, ale môže spôsobiť vady."
-#define FBA2012CPS2_HISCORES_LABEL_SK NULL
+#define FBA2012CPS2_HISCORES_LABEL_SK "Najvyššie skóre"
 #define FBA2012CPS2_HISCORES_INFO_0_SK NULL
 #define FBA2012CPS2_CONTROLS_LABEL_SK "Ovládanie"
 #define FBA2012CPS2_CONTROLS_INFO_0_SK "Nastaviť východzie mapovanie herného ovládača."
