@@ -1893,7 +1893,7 @@ struct retro_core_options_v2 options_da = {
 #define OPTION_VAL_GAMEPAD_DE NULL
 #define OPTION_VAL_ARCADE_DE NULL
 #define FBA2012CPS2_ASPECT_LABEL_DE "Core-Bereitgestelltes Seitenverhältnis"
-#define FBA2012CPS2_ASPECT_INFO_0_DE "Wählt das bevorzugte Seitenverhältnis des Inhalts. Dies gilt nur, wenn das Seitenverhältnis von RetroArch in den Videoeinstellungen auf \"Core provided\" eingestellt ist."
+#define FBA2012CPS2_ASPECT_INFO_0_DE "Wählt das bevorzugte Seitenverhältnis des Inhalts. Dies gilt nur, wenn das Seitenverhältnis von RetroArch in den Videoeinstellungen auf \"Wie von Core vorgesehen\" eingestellt ist."
 #define OPTION_VAL_DAR_DE NULL
 #define OPTION_VAL_PAR_DE NULL
 #define FBA2012CPS2_AUTO_ROTATE_LABEL_DE "Vertikal ausgerichtete Spiele drehen (Neustart erforderlich)"
@@ -1903,11 +1903,11 @@ struct retro_core_options_v2 options_da = {
 #define FBA2012CPS2_LOWPASS_RANGE_LABEL_DE "Audiofilterstufe (%)"
 #define FBA2012CPS2_LOWPASS_RANGE_INFO_0_DE "Legt die Höchstfrequenz des Tiefpass-Audiofilters fest. Ein höherer Wert erhöht die wahrgenommene „Stärke“ des Filters, da ein größerer Bereich des Hochfrequenzspektrums abgeschwächt wird."
 #define FBA2012CPS2_FRAMESKIP_LABEL_DE NULL
-#define FBA2012CPS2_FRAMESKIP_INFO_0_DE "Überspringen Sie Frames um zu vermeiden, dass Audio-Puffer unterlaufen (Knistern). Verbessert die Leistung auf Kosten der visuellen Glätte. 'Auto' überspringt Frames wenn vom Frontend empfohlen wird. 'Manuell' verwendet die Einstellung 'Frameskip Grenzwert (%)'."
+#define FBA2012CPS2_FRAMESKIP_INFO_0_DE "Überspringt Frames, um zu vermeiden, dass Audio-Puffer unterlaufen (Knistern). Verbessert die Leistung auf Kosten der visuellen Glätte. 'Automatisch' überspringt Frames wenn vom Frontend empfohlen. 'Manuell' verwendet die Einstellung 'Frameskip Grenzwert (%)'."
 #define OPTION_VAL_AUTO_DE "Automatisch"
 #define OPTION_VAL_MANUAL_DE "Manuell"
 #define FBA2012CPS2_FRAMESKIP_THRESHOLD_LABEL_DE "Frameskip Grenzwert (%)"
-#define FBA2012CPS2_FRAMESKIP_THRESHOLD_INFO_0_DE "Gibt den Audiopuffer-Belegungsschwellenwert (Prozent) an, unter dem Frames übersprungen werden, wenn 'Frameskip' auf 'Manual' eingestellt ist. Höhere Werte verringern das Risiko von Knistern, da Frames häufiger weggelassen werden."
+#define FBA2012CPS2_FRAMESKIP_THRESHOLD_INFO_0_DE "Gibt den Audiopuffer-Belegungsschwellenwert (Prozent) an, unter dem Frames übersprungen werden, wenn 'Frameskip' auf 'Manuell' eingestellt ist. Höhere Werte verringern das Risiko von Knistern, da Frames häufiger weggelassen werden."
 
 struct retro_core_option_v2_category option_cats_de[] = {
    { NULL, NULL, NULL },
