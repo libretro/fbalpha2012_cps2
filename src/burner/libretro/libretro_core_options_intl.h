@@ -1893,7 +1893,7 @@ struct retro_core_options_v2 options_da = {
 #define OPTION_VAL_GAMEPAD_DE NULL
 #define OPTION_VAL_ARCADE_DE NULL
 #define FBA2012CPS2_ASPECT_LABEL_DE "Core-Bereitgestelltes Seitenverhältnis"
-#define FBA2012CPS2_ASPECT_INFO_0_DE "Wählt das bevorzugte Seitenverhältnis des Inhalts. Dies gilt nur, wenn das Seitenverhältnis von RetroArch in den Videoeinstellungen auf \"Core provided\" eingestellt ist."
+#define FBA2012CPS2_ASPECT_INFO_0_DE "Wählt das bevorzugte Seitenverhältnis des Inhalts. Dies gilt nur, wenn das Seitenverhältnis von RetroArch in den Videoeinstellungen auf \"Wie von Core vorgesehen\" eingestellt ist."
 #define OPTION_VAL_DAR_DE NULL
 #define OPTION_VAL_PAR_DE NULL
 #define FBA2012CPS2_AUTO_ROTATE_LABEL_DE "Vertikal ausgerichtete Spiele drehen (Neustart erforderlich)"
@@ -1903,11 +1903,11 @@ struct retro_core_options_v2 options_da = {
 #define FBA2012CPS2_LOWPASS_RANGE_LABEL_DE "Audiofilterstufe (%)"
 #define FBA2012CPS2_LOWPASS_RANGE_INFO_0_DE "Legt die Höchstfrequenz des Tiefpass-Audiofilters fest. Ein höherer Wert erhöht die wahrgenommene „Stärke“ des Filters, da ein größerer Bereich des Hochfrequenzspektrums abgeschwächt wird."
 #define FBA2012CPS2_FRAMESKIP_LABEL_DE NULL
-#define FBA2012CPS2_FRAMESKIP_INFO_0_DE "Überspringen Sie Frames um zu vermeiden, dass Audio-Puffer unterlaufen (Knistern). Verbessert die Leistung auf Kosten der visuellen Glätte. 'Auto' überspringt Frames wenn vom Frontend empfohlen wird. 'Manuell' verwendet die Einstellung 'Frameskip Grenzwert (%)'."
+#define FBA2012CPS2_FRAMESKIP_INFO_0_DE "Überspringt Frames, um zu vermeiden, dass Audio-Puffer unterlaufen (Knistern). Verbessert die Leistung auf Kosten der visuellen Glätte. 'Automatisch' überspringt Frames wenn vom Frontend empfohlen. 'Manuell' verwendet die Einstellung 'Frameskip Grenzwert (%)'."
 #define OPTION_VAL_AUTO_DE "Automatisch"
 #define OPTION_VAL_MANUAL_DE "Manuell"
 #define FBA2012CPS2_FRAMESKIP_THRESHOLD_LABEL_DE "Frameskip Grenzwert (%)"
-#define FBA2012CPS2_FRAMESKIP_THRESHOLD_INFO_0_DE "Gibt den Audiopuffer-Belegungsschwellenwert (Prozent) an, unter dem Frames übersprungen werden, wenn 'Frameskip' auf 'Manual' eingestellt ist. Höhere Werte verringern das Risiko von Knistern, da Frames häufiger weggelassen werden."
+#define FBA2012CPS2_FRAMESKIP_THRESHOLD_INFO_0_DE "Gibt den Audiopuffer-Belegungsschwellenwert (Prozent) an, unter dem Frames übersprungen werden, wenn 'Frameskip' auf 'Manuell' eingestellt ist. Höhere Werte verringern das Risiko von Knistern, da Frames häufiger weggelassen werden."
 
 struct retro_core_option_v2_category option_cats_de[] = {
    { NULL, NULL, NULL },
@@ -7009,29 +7009,29 @@ struct retro_core_options_v2 options_sr = {
 
 /* RETRO_LANGUAGE_SV */
 
-#define FBA2012CPS2_CPU_SPEED_ADJUST_LABEL_SV NULL
+#define FBA2012CPS2_CPU_SPEED_ADJUST_LABEL_SV "CPU-hastighet (%)"
 #define FBA2012CPS2_CPU_SPEED_ADJUST_INFO_0_SV "Aktiverar överklockning av den emulerade CPU: n. Kan minska tröghet, men kan orsaka problem."
-#define FBA2012CPS2_HISCORES_LABEL_SV NULL
-#define FBA2012CPS2_HISCORES_INFO_0_SV NULL
+#define FBA2012CPS2_HISCORES_LABEL_SV "Bästa resultat"
+#define FBA2012CPS2_HISCORES_INFO_0_SV "Aktiverar sparande av bästa resultat i stödda spel. Kräver att filen 'hiscore.dat' placeras i din system/fbalpha2012/-mapp."
 #define FBA2012CPS2_CONTROLS_LABEL_SV "Kontroller"
 #define FBA2012CPS2_CONTROLS_INFO_0_SV "Ange standardmappning för kontrollen."
-#define OPTION_VAL_GAMEPAD_SV NULL
+#define OPTION_VAL_GAMEPAD_SV "Gamepad-kontroller"
 #define OPTION_VAL_ARCADE_SV "Arkad"
-#define FBA2012CPS2_ASPECT_LABEL_SV NULL
-#define FBA2012CPS2_ASPECT_INFO_0_SV NULL
+#define FBA2012CPS2_ASPECT_LABEL_SV "Kärnspecifikt bildförhållande"
+#define FBA2012CPS2_ASPECT_INFO_0_SV "Väljer önskat innehållsbildförhållande. Detta kommer endast att tillämpas när RetroArchs bildförhållande är inställt på \"Kärnspecifikt\" i Videoinställningarna."
 #define OPTION_VAL_DAR_SV NULL
 #define OPTION_VAL_PAR_SV NULL
-#define FBA2012CPS2_AUTO_ROTATE_LABEL_SV NULL
-#define FBA2012CPS2_AUTO_ROTATE_INFO_0_SV NULL
+#define FBA2012CPS2_AUTO_ROTATE_LABEL_SV "Rotera vertikalt inriktade spel (Omstart krävs)"
+#define FBA2012CPS2_AUTO_ROTATE_INFO_0_SV "Rotera skärmen automatiskt när vertikalt inriktade spel körs. När det är inaktiverat kommer D-Pad-ingången att roteras för att matcha skärmens riktningar."
 #define FBA2012CPS2_LOWPASS_FILTER_LABEL_SV "Ljudfilter"
-#define FBA2012CPS2_LOWPASS_FILTER_INFO_0_SV NULL
-#define FBA2012CPS2_LOWPASS_RANGE_LABEL_SV NULL
-#define FBA2012CPS2_LOWPASS_RANGE_INFO_0_SV NULL
-#define FBA2012CPS2_FRAMESKIP_LABEL_SV NULL
-#define FBA2012CPS2_FRAMESKIP_INFO_0_SV NULL
+#define FBA2012CPS2_LOWPASS_FILTER_INFO_0_SV "Aktiverar ett lågpassljudfilter för att mildra det \"skarpa\" ljudet i vissa arkadspel."
+#define FBA2012CPS2_LOWPASS_RANGE_LABEL_SV "Ljudfilternivå (%)"
+#define FBA2012CPS2_LOWPASS_RANGE_INFO_0_SV "Anger avskärningsfrekvensen för det lågpassiga ljudfiltret. Ett högre värde ökar den upplevda \"styrkan\" hos filtret, eftersom ett bredare område av den höga frekvensspektrumet dämpas."
+#define FBA2012CPS2_FRAMESKIP_LABEL_SV "Bildruteskippning"
+#define FBA2012CPS2_FRAMESKIP_INFO_0_SV "Hoppa över bildrutor för att undvika ljudbuffert-underkörning (sprakande). Förbättrar prestanda på bekostnad av visuell jämnhet. \"Automatiskt\" hoppar över bildrutor när det rekommenderas av gränssnittet. \"Manuell\" använder inställningen \"Bildrutetröskel (%)\" för att hoppa över bildrutor."
 #define OPTION_VAL_AUTO_SV "Automatiskt"
-#define OPTION_VAL_MANUAL_SV NULL
-#define FBA2012CPS2_FRAMESKIP_THRESHOLD_LABEL_SV NULL
+#define OPTION_VAL_MANUAL_SV "Manuell"
+#define FBA2012CPS2_FRAMESKIP_THRESHOLD_LABEL_SV "Bildrutetröskel (%)"
 #define FBA2012CPS2_FRAMESKIP_THRESHOLD_INFO_0_SV "När 'Frameskip' är satt till 'Manuell', ange ljudbuffertens tröskel (i procent) under vilka ramar som kommer att hoppas över. Högre värden minskar risken för hackigt ljud genom att bildrutor tappas oftare."
 
 struct retro_core_option_v2_category option_cats_sv[] = {
