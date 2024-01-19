@@ -4755,20 +4755,20 @@ struct retro_core_options_v2 options_it = {
 /* RETRO_LANGUAGE_JA */
 
 #define FBA2012CPS2_CPU_SPEED_ADJUST_LABEL_JA "CPU速度 (%)"
-#define FBA2012CPS2_CPU_SPEED_ADJUST_INFO_0_JA "エミュレートされたCPUのオーバークロックを有効にします. 速度低下を減らせますが, 不具合を引き起こす可能性があります."
+#define FBA2012CPS2_CPU_SPEED_ADJUST_INFO_0_JA "エミュレートされた CPU のオーバークロックを有効にします。実行速度の低下を減らすことができますが、不具合を引き起こす可能性があります。"
 #define FBA2012CPS2_HISCORES_LABEL_JA "ハイスコア"
 #define FBA2012CPS2_HISCORES_INFO_0_JA "対応ゲームでハイスコアの保存を有効にします。「hiscore.dat」 ファイルを「system/fbalpha2012/・ フォルダに配置する必要があります。"
 #define FBA2012CPS2_CONTROLS_LABEL_JA "コントロール"
-#define FBA2012CPS2_CONTROLS_INFO_0_JA "デフォルトのコントローラマッピングを設定します."
+#define FBA2012CPS2_CONTROLS_INFO_0_JA "デフォルトのコントローラーマッピングを設定します。"
 #define OPTION_VAL_GAMEPAD_JA "ゲームパッド"
 #define OPTION_VAL_ARCADE_JA "アーケード"
 #define FBA2012CPS2_ASPECT_LABEL_JA "コア提供アスペクト比"
-#define FBA2012CPS2_ASPECT_INFO_0_JA "推奨コンテンツのアスペクト比を選択します。これは、ビデオ設定でRetroArchのアスペクト比が「コアが指定されている」に設定されている場合にのみ適用されます。"
+#define FBA2012CPS2_ASPECT_INFO_0_JA "コンテンツの優先アスペクト比を選択します。ビデオ設定で RetroArch のアスペクト比が [コア提供] に設定されている場合にのみ適用されます。"
 #define OPTION_VAL_DAR_JA NULL
 #define OPTION_VAL_PAR_JA NULL
 #define FBA2012CPS2_AUTO_ROTATE_LABEL_JA "垂直方向に整列したゲームを回転させる (再起動が必要)"
 #define FBA2012CPS2_AUTO_ROTATE_INFO_0_JA "画面を垂直に整列させたゲームを実行するときに自動的に回転させます。無効にすると、画面上の方向に合わせてD-Pad入力が回転します。"
-#define FBA2012CPS2_LOWPASS_FILTER_LABEL_JA "オーディオフィルタ"
+#define FBA2012CPS2_LOWPASS_FILTER_LABEL_JA "オーディオフィルター"
 #define FBA2012CPS2_LOWPASS_FILTER_INFO_0_JA "ローパスオーディオフィルターを有効にして、いくつかのアーケードゲームの「硬い音」を柔らかくします。"
 #define FBA2012CPS2_LOWPASS_RANGE_LABEL_JA "オーディオフィルターレベル (%)"
 #define FBA2012CPS2_LOWPASS_RANGE_INFO_0_JA "ローパスオーディオフィルターのカットオフ周波数を指定します。 値を大きくすると、高周波数スペクトルの広い範囲が減衰するため、フィルタの知覚された「強さ」が増加します。"
