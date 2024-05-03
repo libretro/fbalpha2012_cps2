@@ -3729,29 +3729,29 @@ struct retro_core_options_v2 options_fr = {
 
 /* RETRO_LANGUAGE_GL */
 
-#define FBA2012CPS2_CPU_SPEED_ADJUST_LABEL_GL NULL
+#define FBA2012CPS2_CPU_SPEED_ADJUST_LABEL_GL "Velocidade da CPU (%)"
 #define FBA2012CPS2_CPU_SPEED_ADJUST_INFO_0_GL "Permite facer overclocking á CPU emulada. Pode disminuir a ralentización, máis tamén pode causar defectos visuais."
-#define FBA2012CPS2_HISCORES_LABEL_GL NULL
-#define FBA2012CPS2_HISCORES_INFO_0_GL NULL
-#define FBA2012CPS2_CONTROLS_LABEL_GL NULL
+#define FBA2012CPS2_HISCORES_LABEL_GL "Mellores Puntuacións"
+#define FBA2012CPS2_HISCORES_INFO_0_GL "Permite gardar puntuacións altas nos xogos compatibles. Require que o ficheiro 'hiscore.dat' se coloque no cartafol system/fbalpha2012/."
+#define FBA2012CPS2_CONTROLS_LABEL_GL "Controis"
 #define FBA2012CPS2_CONTROLS_INFO_0_GL "Definir o mapeamento predeterminado do mando."
-#define OPTION_VAL_GAMEPAD_GL NULL
+#define OPTION_VAL_GAMEPAD_GL "Mando de Xogos"
 #define OPTION_VAL_ARCADE_GL NULL
-#define FBA2012CPS2_ASPECT_LABEL_GL NULL
-#define FBA2012CPS2_ASPECT_INFO_0_GL NULL
+#define FBA2012CPS2_ASPECT_LABEL_GL "Relación de aspecto proporcionada polo núcleo"
+#define FBA2012CPS2_ASPECT_INFO_0_GL "Selecciona a relación de aspecto do contido preferida. Isto só se aplicará cando a relación de aspecto de RetroArch estea definida como \"Núcleo proporcionado\" na configuración de vídeo."
 #define OPTION_VAL_DAR_GL NULL
 #define OPTION_VAL_PAR_GL NULL
-#define FBA2012CPS2_AUTO_ROTATE_LABEL_GL NULL
-#define FBA2012CPS2_AUTO_ROTATE_INFO_0_GL NULL
-#define FBA2012CPS2_LOWPASS_FILTER_LABEL_GL NULL
-#define FBA2012CPS2_LOWPASS_FILTER_INFO_0_GL NULL
-#define FBA2012CPS2_LOWPASS_RANGE_LABEL_GL NULL
-#define FBA2012CPS2_LOWPASS_RANGE_INFO_0_GL NULL
-#define FBA2012CPS2_FRAMESKIP_LABEL_GL NULL
-#define FBA2012CPS2_FRAMESKIP_INFO_0_GL NULL
+#define FBA2012CPS2_AUTO_ROTATE_LABEL_GL "Xira os xogos aliñados verticalmente (reinicio necesario)"
+#define FBA2012CPS2_AUTO_ROTATE_INFO_0_GL "Xira automaticamente a pantalla cando se executan xogos aliñados verticalmente. Cando estea desactivado, a entrada do D-Pad xirarase para que coincida coas indicacións da pantalla."
+#define FBA2012CPS2_LOWPASS_FILTER_LABEL_GL "Filtro de son"
+#define FBA2012CPS2_LOWPASS_FILTER_INFO_0_GL "Activa un filtro de audio de paso baixo para suavizar o son \"duro\" dalgúns xogos de arcade."
+#define FBA2012CPS2_LOWPASS_RANGE_LABEL_GL "Nivel de filtro de audio (%)"
+#define FBA2012CPS2_LOWPASS_RANGE_INFO_0_GL "Especifica a frecuencia de corte do filtro de son de paso baixo. Un valor máis alto aumenta a \"forza\" percibida do filtro, xa que se atenúa un rango máis amplo do espectro de alta frecuencia."
+#define FBA2012CPS2_FRAMESKIP_LABEL_GL "Omitir Fotograma"
+#define FBA2012CPS2_FRAMESKIP_INFO_0_GL "Omita fotogramas para evitar que o búfer de audio non se execute (crepitamento). Mellora o rendemento a costa da suavidade visual. \"Automático\" omite fotogramas cando o aconselle a interface. \"Manual\" utiliza a configuración \"Limiar de omisión de fotogramas (%)\"."
 #define OPTION_VAL_AUTO_GL NULL
 #define OPTION_VAL_MANUAL_GL NULL
-#define FBA2012CPS2_FRAMESKIP_THRESHOLD_LABEL_GL NULL
+#define FBA2012CPS2_FRAMESKIP_THRESHOLD_LABEL_GL "Limiar de salto de fotogramas (%)"
 #define FBA2012CPS2_FRAMESKIP_THRESHOLD_INFO_0_GL "Cando a omisión de fotogramas sexa configurada en 'Manual', este axuste especifíca o umbral de ocupación do búfer de audio (en porcentaxe). Os valores altos reducen o risco de aparición de chasquidos omitindo fotogramas de forma máis frecuente."
 
 struct retro_core_option_v2_category option_cats_gl[] = {
