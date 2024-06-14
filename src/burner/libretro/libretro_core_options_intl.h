@@ -3122,11 +3122,11 @@ struct retro_core_options_v2 options_es = {
 #define FBA2012CPS2_CONTROLS_INFO_0_FA "نقشه پیش فرض کنترلر را تنظیم کنید."
 #define OPTION_VAL_GAMEPAD_FA "دسته‌بازی"
 #define OPTION_VAL_ARCADE_FA "آرکید"
-#define FBA2012CPS2_ASPECT_LABEL_FA "نسبت تصویر فراهم‌شده توسط هسته"
+#define FBA2012CPS2_ASPECT_LABEL_FA "نرخ نسبت فراهم‌شده توسط هسته"
 #define FBA2012CPS2_ASPECT_INFO_0_FA NULL
 #define OPTION_VAL_DAR_FA NULL
 #define OPTION_VAL_PAR_FA NULL
-#define FBA2012CPS2_AUTO_ROTATE_LABEL_FA "بازی‌های با تصویر عمودی را بچرخانید (نیازمند بازآغاز)"
+#define FBA2012CPS2_AUTO_ROTATE_LABEL_FA "چرخاندن بازی‌های با تصویر عمودی (نیازمند شروع مجدد)"
 #define FBA2012CPS2_AUTO_ROTATE_INFO_0_FA NULL
 #define FBA2012CPS2_LOWPASS_FILTER_LABEL_FA "پالایهٔ صدا"
 #define FBA2012CPS2_LOWPASS_FILTER_INFO_0_FA "به‌منظور نرم کردن صدای «زبر» بعضی از بازی‌های آرکید، یک پالایهٔ پایین‌گذر روی صدا فعال می‌کند."
