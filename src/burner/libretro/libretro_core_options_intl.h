@@ -467,7 +467,7 @@ struct retro_core_options_v2 options_ast = {
 #define FBA2012CPS2_LOWPASS_FILTER_INFO_0_BE "Уключае фільтр ніжніх частот для змякчэння гуку некаторых аркадных гульняў."
 #define FBA2012CPS2_LOWPASS_RANGE_LABEL_BE "Узровень аўдыяфільтра (%)"
 #define FBA2012CPS2_LOWPASS_RANGE_INFO_0_BE "Ўстаноўка частаты зрэзу для нізкачастотнага аўдыяфільтра. Большыя значэнні ўзмацняюць эфект фільтрацыі для зніжэння ўплыву на больш шырокі дыяпазон высокай частаты."
-#define FBA2012CPS2_FRAMESKIP_LABEL_BE "Пропуск кадраў"
+#define FBA2012CPS2_FRAMESKIP_LABEL_BE "Прапусканне кадраў"
 #define FBA2012CPS2_FRAMESKIP_INFO_0_BE "Прапускаць кадры, каб пазбегнуць з'яўлення (трэска) пры спусташэнні аўдыёбуфера. Паляпшае прадукцыйнасць, але зніжае плаўнасць выявы. У рэжыме 'Аўта' пропуск кадраў рэгулюецца франтэндам. У рэжыме 'Уручную' выкарыстоўваецца значэнне опцыі 'Мяжа пропуску кадраў (%)'."
 #define OPTION_VAL_AUTO_BE "Аўта"
 #define OPTION_VAL_MANUAL_BE "Уручную"
@@ -7644,7 +7644,7 @@ struct retro_core_options_v2 options_tr = {
 #define FBA2012CPS2_LOWPASS_RANGE_INFO_0_TT NULL
 #define FBA2012CPS2_FRAMESKIP_LABEL_TT NULL
 #define FBA2012CPS2_FRAMESKIP_INFO_0_TT NULL
-#define OPTION_VAL_AUTO_TT NULL
+#define OPTION_VAL_AUTO_TT "Автоматик"
 #define OPTION_VAL_MANUAL_TT NULL
 #define FBA2012CPS2_FRAMESKIP_THRESHOLD_LABEL_TT NULL
 #define FBA2012CPS2_FRAMESKIP_THRESHOLD_INFO_0_TT NULL
