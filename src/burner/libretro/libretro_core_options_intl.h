@@ -860,25 +860,25 @@ struct retro_core_options_v2 options_bg = {
 /* RETRO_LANGUAGE_CA */
 
 #define FBA2012CPS2_CPU_SPEED_ADJUST_LABEL_CA "Velocitat de la CPU (%)"
-#define FBA2012CPS2_CPU_SPEED_ADJUST_INFO_0_CA NULL
-#define FBA2012CPS2_HISCORES_LABEL_CA NULL
-#define FBA2012CPS2_HISCORES_INFO_0_CA NULL
+#define FBA2012CPS2_CPU_SPEED_ADJUST_INFO_0_CA "Augmenta la velocitat de la CPU emulada. Pot reduir els alentiments en els jocs, però pot causar errors gràfics."
+#define FBA2012CPS2_HISCORES_LABEL_CA "Puntuacions més altes"
+#define FBA2012CPS2_HISCORES_INFO_0_CA "Habilitar el desat de les puntuacions més altes en els jocs que ho permeten. És necessari un fitxer 'hiscore.dat' en la carpeta 'system/fbalpha2012/."
 #define FBA2012CPS2_CONTROLS_LABEL_CA NULL
-#define FBA2012CPS2_CONTROLS_INFO_0_CA NULL
-#define OPTION_VAL_GAMEPAD_CA NULL
+#define FBA2012CPS2_CONTROLS_INFO_0_CA "Estableix l'assignació predeterminada pels controladors."
+#define OPTION_VAL_GAMEPAD_CA "Comandament"
 #define OPTION_VAL_ARCADE_CA NULL
 #define FBA2012CPS2_ASPECT_LABEL_CA "Relació d'aspecte proveïda pel nucli"
 #define FBA2012CPS2_ASPECT_INFO_0_CA "Escull la relació d'aspecte preferida. Aquesta relació d'aspecte només s'aplicarà si la relació d'aspecte a RetroArch està fixada a 'Core provided' en la configuració de vídeo."
 #define OPTION_VAL_DAR_CA NULL
 #define OPTION_VAL_PAR_CA NULL
-#define FBA2012CPS2_AUTO_ROTATE_LABEL_CA NULL
+#define FBA2012CPS2_AUTO_ROTATE_LABEL_CA "Girar els jocs que tenen una alineació vertical (Es requereix reinici)"
 #define FBA2012CPS2_AUTO_ROTATE_INFO_0_CA "Gira automàticament la pantalla en els jocs amb alineació vertical. Si aquesta opció està desactivada, l'entrada de la creueta girarà perquè l'entrada de la creueta coincideixi amb la creueta en pantalla."
 #define FBA2012CPS2_LOWPASS_FILTER_LABEL_CA "Filtre d'àudio"
-#define FBA2012CPS2_LOWPASS_FILTER_INFO_0_CA NULL
+#define FBA2012CPS2_LOWPASS_FILTER_INFO_0_CA "Habilita un filtre d'àudio passabaix per suavitzar els pics de so en alguns jocs arcade."
 #define FBA2012CPS2_LOWPASS_RANGE_LABEL_CA "Nivell del filtre d'àudio (%)"
-#define FBA2012CPS2_LOWPASS_RANGE_INFO_0_CA NULL
+#define FBA2012CPS2_LOWPASS_RANGE_INFO_0_CA "Especifica el tall de freqüència del filtre d'àudio passabaix. Un valor alt es pot captar com un filtre amb més força, perquè esmorteeix un rang més gran de freqüències altes."
 #define FBA2012CPS2_FRAMESKIP_LABEL_CA "Ometre fotogrames"
-#define FBA2012CPS2_FRAMESKIP_INFO_0_CA NULL
+#define FBA2012CPS2_FRAMESKIP_INFO_0_CA "Omet fotogrames per no saturar la memòria intermèdia de l'àudio. Millora el rendiment a canvi de perdre fluïdesa visual. Selecció automàtica omet fotogrames a petició del front-end. El valor manual ajusta el llindar d'omissió de fotogrames (%)."
 #define OPTION_VAL_AUTO_CA "Automàtic"
 #define OPTION_VAL_MANUAL_CA NULL
 #define FBA2012CPS2_FRAMESKIP_THRESHOLD_LABEL_CA "Llindar d'omissió de fotogrames (%)"
